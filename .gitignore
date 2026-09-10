@@ -1,0 +1,22 @@
+# Laufzeit und Daten
+data/
+.run/
+*.log
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+frontend/dist/
+
+# System
+.DS_Store

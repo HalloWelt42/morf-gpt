@@ -1,0 +1,50 @@
+# Nur die Datenbank läuft im Container. Backend und Frontend starten über start.sh
+# direkt auf dem Rechner (schnelle Iteration). Für einen Umzug der Bibliothek auf einen
+# Server gibt es zusätzlich das Profil "app" mit dem gebauten Backend samt Oberfläche.
+#
+# Die Daten liegen als Bind-Mount IM PROJEKT (../data/postgres), nicht in einem
+# benannten Volume: 'docker compose down -v' lässt sie unberührt, und zwei Klone des
+# Projekts teilen sich nie dieselbe Datenbank.
+#
+# Projektname und Ports kommen aus ../.env (start.sh legt sie an), damit mehrere
+# Docker-Projekte auf demselben Rechner nicht kollidieren.
+name: ${COMPOSE_PROJECT_NAME:-morf-gpt}
+
+services:
+  datenbank:
+    image: pgvector/pgvector:pg17
+    container_name: ${COMPOSE_PROJECT_NAME:-morf-gpt}-datenbank
+    environment:
+      POSTGRES_DB: ${MORF_DB_NAME:-morfgpt}
+      POSTGRES_USER: ${MORF_DB_NUTZER:-morf}
+      POSTGRES_PASSWORD: ${MORF_DB_PASSWORT:-morf}
+    ports:
+      - "127.0.0.1:${MORF_DB_PORT:-5462}:5432"
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${MORF_DB_NUTZER:-morf} -d ${MORF_DB_NAME:-morfgpt}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  app:
+    profiles: ["app"]
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ${COMPOSE_PROJECT_NAME:-morf-gpt}-app
+    environment:
+      MORF_DB_URL: postgresql+asyncpg://${MORF_DB_NUTZER:-morf}:${MORF_DB_PASSWORT:-morf}@datenbank:5432/${MORF_DB_NAME:-morfgpt}
+      MORF_BACKEND_HOST: 0.0.0.0
+      MORF_BACKEND_PORT: 8460
+      MORF_DATEN_VERZEICHNIS: /app/data
+    ports:
+      - "${MORF_APP_PORT:-8460}:8460"
+    volumes:
+      - ../data/app:/app/data
+    depends_on:
+      datenbank:
+        condition: service_healthy
+    restart: unless-stopped

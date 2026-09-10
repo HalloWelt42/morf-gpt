@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Zwang zur Versionsanpassung: jeder Commit erhält eine neue Version.
+# - version.json schon manuell angepasst  -> nur neue Build-id (Nummer bleibt)
+# - sonst                                 -> Patch hochzählen
+# Aktivierung pro Klon: git config core.hooksPath tools/git-hooks (macht start.sh)
+set -euo pipefail
+WURZEL="$(git rev-parse --show-toplevel)"
+cd "$WURZEL"
+
+if git diff --cached --name-only | grep -qx "version.json"; then
+  neu="$(bash tools/version.sh id)"
+else
+  neu="$(bash tools/version.sh patch)"
+fi
+git add version.json
+echo "morf-gpt-Version: $neu"
