@@ -39,7 +39,8 @@ class FastembedEinbettung:
     def __init__(self, info: AnbieterInfo) -> None:
         self.info = info
 
-    async def einbetten(self, texte: list[str], zeitgrenze_s: float = 600.0) -> list[list[float]]:
+    async def einbetten(self, texte: list[str], zeitgrenze_s: float = 600.0, instanz: str | None = None) -> list[list[float]]:
+        """Lokal, ohne Instanzen: `instanz` wird nicht gebraucht."""
         if not texte:
             return []
 

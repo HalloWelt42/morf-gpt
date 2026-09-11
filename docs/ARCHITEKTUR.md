@@ -111,6 +111,17 @@ Schnittstellen in `dienste/anbieter/`:
 - Ein Einbettungswechsel erzeugt einen neuen Einbettungslauf (je Chunk und Modell ein
   Vektor); die Suche fragt immer mit demselben Modell, das den Index gebaut hat.
 
+### 4a. Mehrere Instanzen des Einbettungsmodells
+
+`dienste/einbettung/instanzen.py` hält in LM Studio bis zu `einbettung.instanzen` Instanzen
+des Einbettungsmodells geladen (Kennungen `<modell>-instanz-<n>`, geladen über die
+Befehlszeile `lms`), prüft vor jedem Laden den freien Speicher (frei plus inaktiv aus
+`vm_stat`, minus `einbettung.speicher_reserve_gb`) und meldet, was nicht passt. Der
+Einbettungsdienst verteilt die Stapel im Wechsel und schickt je Instanz
+`einbettung.anfragen_je_instanz` Stapel gleichzeitig. Messung (bge-m3, 80B nebenbei aktiv):
+eine Instanz 3,9 Texte/s, zwei Instanzen mit je vier Anfragen 6,2 Texte/s; die Grafikeinheit
+ist die gemeinsame Grenze. Router `/api/einbettung/instanzen` (Stand, sicherstellen, abbauen).
+
 ## 5. Korrektur ohne Sinnverlust
 
 Das Sprachmodell darf Form verbessern, nicht Inhalt. Darum:

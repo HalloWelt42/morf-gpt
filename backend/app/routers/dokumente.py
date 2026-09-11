@@ -357,7 +357,7 @@ async def auftrag(dokument_id: str, art: str, session: AsyncSession = Depends(si
     await session.commit()
     if a is None:
         raise HTTPException(409, "Ein solcher Auftrag wartet bereits oder läuft")
-    return AuftragAngelegt(auftrag_id=a.id, art=a.art, art_titel=AUFTRAGSART_TITEL[a_art])
+    return AuftragAngelegt(auftrag_id=a.id, dokument_id=d.id, art=a.art, art_titel=AUFTRAGSART_TITEL[a_art], status=a.status)
 
 
 @router.delete("/{dokument_id}", status_code=204)

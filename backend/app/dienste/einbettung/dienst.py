@@ -73,18 +73,25 @@ def _stapel(liste: list[Chunk], groesse: int) -> list[list[Chunk]]:
     return [liste[i : i + groesse] for i in range(0, len(liste), groesse)]
 
 
+def instanzen_verteilung(stapel: list[list[Chunk]], kennungen: list[str | None]) -> list[tuple[list[Chunk], str | None]]:
+    """Stapel im Wechsel auf die Instanzkennungen verteilen (None = eingestelltes Modell)."""
+    return [(s, kennungen[i % len(kennungen)]) for i, s in enumerate(stapel)]
+
+
 async def chunks_einbetten(
     video_id: str | None,
     werte: dict[str, Any],
     *,
     dokument_id: str | None = None,
     nur_chunk_ids: list[str] | None = None,
+    instanzen: list[str] | None = None,
     fortschritt: Fortschrittsmelder | None = None,
     abbruch: asyncio.Event | None = None,
 ) -> Einbettungsergebnis:
-    """Bettet die Chunks eines Videos (oder eine Auswahl) ein und schreibt die Vektoren.
+    """Bettet die Chunks eines Werks (oder eine Auswahl) ein und schreibt die Vektoren.
 
-    Je Stapel ein Aufruf; vorhandene Vektoren desselben Modells werden ersetzt. Jeder
+    Stapel gehen gleichzeitig an die übergebenen Instanzen (Kennungen beim Dienst; leer heißt
+    nur das eingestellte Modell). Vorhandene Vektoren desselben Modells werden ersetzt; jeder
     Stapel wird sofort gespeichert, damit ein Abbruch nichts Fertiges verliert.
     """
     async with sitzung() as s:
@@ -110,24 +117,44 @@ async def chunks_einbetten(
     zeitgrenze = float(werte["einbettung.zeitgrenze_s"])
     modell = anbieter.info.modell
     dimension = einstellungen.einbettung_dimension
-    fertig = 0
     stapel = _stapel(chunks, stapelgroesse)
-    for nr, gruppe in enumerate(stapel, start=1):
-        if abbruch is not None and abbruch.is_set():
-            raise asyncio.CancelledError()
-        texte = [einbettungstext(titel, c.thema, c.text, kontextkopf, werk) for c in gruppe]
-        vektoren = await anbieter.einbetten(texte, zeitgrenze_s=zeitgrenze)
-        if len(vektoren) != len(gruppe):
-            raise AnbieterFehler(f"{anbieter_name}: {len(vektoren)} Vektoren für {len(gruppe)} Stücke")
-        dimension = dimension_pruefen(vektoren, anbieter_name)
-        async with sitzung() as s:
-            await s.execute(delete(Einbettung).where(Einbettung.chunk_id.in_([c.id for c in gruppe]), Einbettung.modell == modell))
-            for c, v in zip(gruppe, vektoren, strict=True):
-                s.add(Einbettung(chunk_id=c.id, anbieter=anbieter_name, modell=modell, dimension=dimension, vektor=v))
-            await s.commit()
-        fertig += len(gruppe)
-        if fortschritt is not None:
-            await fortschritt(
-                0.05 + 0.9 * (fertig / len(chunks)), f"Stapel {nr} von {len(stapel)}: {fertig} von {len(chunks)} Stücken eingebettet"
-            )
+    # Instanzen (nur LM Studio) und gleichzeitige Anfragen: Stapel werden im Wechsel verteilt
+    # und je Instanz bis zur eingestellten Zahl gleichzeitig geschickt.
+    instanzen_kennungen = instanzen or [None]
+    gleichzeitig = max(1, int(werte.get("einbettung.anfragen_je_instanz", 1))) * len(instanzen_kennungen)
+    schleuse = asyncio.Semaphore(gleichzeitig)
+    fertig = 0
+    fortschritt_sperre = asyncio.Lock()
+
+    async def _ein_stapel(nr: int, gruppe: list[Chunk], kennung: str | None) -> None:
+        nonlocal fertig, dimension
+        async with schleuse:
+            if abbruch is not None and abbruch.is_set():
+                raise asyncio.CancelledError()
+            texte = [einbettungstext(titel, c.thema, c.text, kontextkopf, werk) for c in gruppe]
+            vektoren = await anbieter.einbetten(texte, zeitgrenze_s=zeitgrenze, instanz=kennung)
+            if len(vektoren) != len(gruppe):
+                raise AnbieterFehler(f"{anbieter_name}: {len(vektoren)} Vektoren für {len(gruppe)} Stücke")
+            dimension = dimension_pruefen(vektoren, anbieter_name)
+            async with sitzung() as s:
+                await s.execute(delete(Einbettung).where(Einbettung.chunk_id.in_([c.id for c in gruppe]), Einbettung.modell == modell))
+                for c, v in zip(gruppe, vektoren, strict=True):
+                    s.add(Einbettung(chunk_id=c.id, anbieter=anbieter_name, modell=modell, dimension=dimension, vektor=v))
+                await s.commit()
+            async with fortschritt_sperre:
+                fertig += len(gruppe)
+                if fortschritt is not None:
+                    await fortschritt(
+                        0.05 + 0.9 * (fertig / len(chunks)),
+                        f"Stapel {nr} von {len(stapel)}: {fertig} von {len(chunks)} Stücken eingebettet"
+                        + (f" ({len(instanzen_kennungen)} Instanzen)" if len(instanzen_kennungen) > 1 else ""),
+                    )
+
+    verteilt = [
+        (nr, gruppe, kennung)
+        for nr, (gruppe, kennung) in enumerate(
+            zip(stapel, [k for _, k in instanzen_verteilung(stapel, instanzen_kennungen)], strict=True), start=1
+        )
+    ]
+    await asyncio.gather(*(_ein_stapel(nr, gruppe, kennung) for nr, gruppe, kennung in verteilt))
     return Einbettungsergebnis(anzahl=fertig, modell=modell, anbieter=anbieter_name, dimension=dimension)

@@ -787,3 +787,15 @@ export interface DokumentArt {
   titel: string;
   endungen: string[];
 }
+
+// --- Einbettung: Instanzen -------------------------------------------------------
+export interface InstanzenStand {
+  modell: string;
+  gewuenscht: number;
+  geladen: { kennung: string; groesse_gb: number }[];
+  speicher: { gesamt_gb: number; frei_gb: number; inaktiv_gb: number; verfuegbar_gb: number };
+  hinweise: string[];
+  lms_vorhanden: boolean;
+  anbieter_typ: string;
+}
+

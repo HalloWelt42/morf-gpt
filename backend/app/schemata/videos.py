@@ -200,7 +200,8 @@ class AuswahlStapelErgebnis(BaseModel):
 
 class AuftragAngelegt(BaseModel):
     auftrag_id: str
-    video_id: str
+    video_id: str = ""  # leer bei Aufträgen für Dokumente
+    dokument_id: str = ""
     art: str
     art_titel: str
     status: str

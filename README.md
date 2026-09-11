@@ -61,6 +61,8 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   mit den Themen, YouTube an derselben Stelle.
 - **Einstellungen**: jede Grenze mit Beschreibung, Bereich und Vorgabe; Anbieter für
   Sprachmodelle und Einbettungen mit Rollen; Quellen; Umzug der Bibliothek als Paket.
+  Die Einbettung lässt sich auf mehrere Modellinstanzen in LM Studio verteilen (gemessen bis
+  1,6-fach), mit Prüfung des freien Speichers vor jedem Laden.
 - **Werkzeuge und fremde Dienste** als Zusatzoption: MCP-Server und beliebige HTTP-Dienste
   mit JSON-Antwort lassen sich als weitere Quellen im Chat zuschalten. Ohne angelegte
   Werkzeuge bleibt der Chat reine Bibliothek; nichts davon ist Voraussetzung oder von

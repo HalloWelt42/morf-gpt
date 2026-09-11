@@ -12,6 +12,7 @@
   import Werkzeuge from "./einstellungen/Werkzeuge.svelte";
   import Quellen from "./einstellungen/Quellen.svelte";
   import Umzug from "./einstellungen/Umzug.svelte";
+  import EinbettungInstanzen from "./einstellungen/EinbettungInstanzen.svelte";
 
   let { gruppe = "" }: { gruppe?: string } = $props();
 
@@ -126,6 +127,9 @@
       <input class="form-control form-control-sm" style="width: 280px" title="Sucht in Titel, Schlüssel und Beschreibung aller Einstellungen" placeholder="Einstellung suchen ..." bind:value={suche} />
     </div>
     <div class="m-ansicht-koerper">
+      {#if aktiv === "einbettung" && !woerter.length}
+        <EinbettungInstanzen />
+      {/if}
       {#if laden}
         <div class="m-leer"><i class="fa-solid fa-circle-notch fa-spin"></i>Einstellungen werden geladen.</div>
       {:else if !sichtbar.length}

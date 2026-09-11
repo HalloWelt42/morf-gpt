@@ -10,4 +10,8 @@ Was passiert: Das Einbettungsmodell (bge-m3, 1024 Dimensionen) berechnet für je
 
 Warum das wichtig ist: Erst jetzt kann der Chat das Video finden. Eine Frage wird mit demselben Modell eingebettet und mit allen Stücken verglichen; die ähnlichsten werden zu Fundstellen, aus denen das Sprachmodell antwortet. Ohne Einbettung existiert ein Video für den Chat nicht, auch wenn Transkript und Stücke fertig sind.
 
+## Mehrere Instanzen
+
+Unter Einstellungen, Einbettung lässt sich die Zahl der Instanzen des Modells in LM Studio wählen (1 bis 4) und wie viele Anfragen je Instanz gleichzeitig laufen. Die Stapel eines Auftrags werden im Wechsel auf die Instanzen verteilt. Gemessen an echten Stücken: eine Instanz 3,9 Texte je Sekunde, mit 2 bis 4 gleichzeitigen Anfragen 4,5 bis 4,8, zwei Instanzen mit je vier Anfragen 6,2. Mehr bringt kaum etwas, weil alle Instanzen dieselbe Grafikeinheit teilen. Vor dem Laden einer weiteren Instanz prüft die Werkstatt den freien Speicher (frei plus inaktiv) gegen die Modellgröße und die eingestellte Reserve; was nicht passt, wird nicht geladen, sondern gemeldet. Die Einstellungsseite zeigt die geladenen Instanzen und den Speicher und lädt oder entlädt sie auf Knopfdruck.
+
 <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Für den Betrieb ohne große Hardware reicht das lokale bge-m3 über fastembed; die Vektoren sind Teil des Bibliothekspakets und müssen am Zielort nicht neu gerechnet werden.</div>

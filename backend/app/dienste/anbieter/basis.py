@@ -118,7 +118,9 @@ class SprachmodellAnbieter(Protocol):
 class EinbettungsAnbieter(Protocol):
     info: AnbieterInfo
 
-    async def einbetten(self, texte: list[str], zeitgrenze_s: float = 600.0) -> list[list[float]]: ...
+    async def einbetten(self, texte: list[str], zeitgrenze_s: float = 600.0, instanz: str | None = None) -> list[list[float]]:
+        """`instanz`: Kennung einer geladenen Modellinstanz beim Dienst; None heißt das eingestellte Modell."""
+        ...
 
     async def erreichbar(self) -> tuple[bool, str]: ...
 

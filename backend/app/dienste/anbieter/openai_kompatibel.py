@@ -223,7 +223,7 @@ class OpenAiKompatibelEinbettung:
             kopf["Authorization"] = f"Bearer {self._schluessel}"
         return kopf
 
-    async def einbetten(self, texte: list[str], zeitgrenze_s: float = 600.0) -> list[list[float]]:
+    async def einbetten(self, texte: list[str], zeitgrenze_s: float = 600.0, instanz: str | None = None) -> list[list[float]]:
         if not texte:
             return []
         try:
@@ -231,7 +231,7 @@ class OpenAiKompatibelEinbettung:
                 resp = await client.post(
                     f"{self._basis}/embeddings",
                     headers=self._kopf(),
-                    json={"model": self.info.modell, "input": texte},
+                    json={"model": instanz or self.info.modell, "input": texte},
                 )
         except httpx.HTTPError as e:
             raise AnbieterFehler(f"{self.info.name}: nicht erreichbar ({e.__class__.__name__})") from e
