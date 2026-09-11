@@ -95,6 +95,61 @@ def naechste_auftragsart(stufe: Stufe) -> Auftragsart | None:
     return AUFTRAG_JE_STUFE[folge]
 
 
+# --------------------------------------------------------------------------- Dokumente
+# Dokumente (EPUB, Markdown, Text) sind die zweite Werkart der Bibliothek. Sie brauchen weder
+# Audio noch Transkription noch Korrektur; ihr Band ist kürzer und nutzt dieselben
+# Auftragsarten für Stückelung und Einbettung.
+
+
+class Dokumentstufe(StrEnum):
+    """Höchste fertige Stufe eines Dokuments."""
+
+    IMPORTIERT = "importiert"
+    GESTUECKELT = "gestueckelt"
+    EINGEBETTET = "eingebettet"
+
+
+DOKUMENT_STUFEN_REIHENFOLGE: tuple[Dokumentstufe, ...] = (
+    Dokumentstufe.IMPORTIERT,
+    Dokumentstufe.GESTUECKELT,
+    Dokumentstufe.EINGEBETTET,
+)
+
+DOKUMENT_AUFTRAG_JE_STUFE: dict[Dokumentstufe, Auftragsart] = {
+    Dokumentstufe.GESTUECKELT: Auftragsart.STUECKELUNG,
+    Dokumentstufe.EINGEBETTET: Auftragsart.EINBETTUNG,
+}
+
+DOKUMENT_STUFE_JE_AUFTRAG: dict[Auftragsart, Dokumentstufe] = {v: k for k, v in DOKUMENT_AUFTRAG_JE_STUFE.items()}
+
+DOKUMENT_AUFTRAGSARTEN: tuple[Auftragsart, ...] = (Auftragsart.STUECKELUNG, Auftragsart.EINBETTUNG)
+
+
+def dokumentstufen_index(stufe: Dokumentstufe) -> int:
+    return DOKUMENT_STUFEN_REIHENFOLGE.index(stufe)
+
+
+def naechste_dokumentauftragsart(stufe: Dokumentstufe) -> Auftragsart | None:
+    """Der Auftrag, der ein Dokument mit dieser Stufe eine Stufe weiterbringt."""
+    i = dokumentstufen_index(stufe)
+    if i + 1 >= len(DOKUMENT_STUFEN_REIHENFOLGE):
+        return None
+    return DOKUMENT_AUFTRAG_JE_STUFE[DOKUMENT_STUFEN_REIHENFOLGE[i + 1]]
+
+
+def dokument_vorstufe(art: Auftragsart) -> Dokumentstufe:
+    """Welche Stufe ein Dokument mindestens haben muss, damit dieser Auftrag laufen kann."""
+    ziel = DOKUMENT_STUFE_JE_AUFTRAG[art]
+    return DOKUMENT_STUFEN_REIHENFOLGE[dokumentstufen_index(ziel) - 1]
+
+
+DOKUMENT_STUFEN_TITEL: dict[Dokumentstufe, str] = {
+    Dokumentstufe.IMPORTIERT: "Importiert",
+    Dokumentstufe.GESTUECKELT: "Gestückelt",
+    Dokumentstufe.EINGEBETTET: "Eingebettet",
+}
+
+
 STUFEN_TITEL: dict[Stufe, str] = {
     Stufe.ENTDECKT: "Entdeckt",
     Stufe.AUDIO: "Audio bereit",

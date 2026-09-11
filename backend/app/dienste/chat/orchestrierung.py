@@ -85,7 +85,9 @@ class Orchestrierung:
 
                 verlauf = await self._verlauf(s, u.id, int(werte["chat.verlauf_nachrichten"]), ohne=nutzer_id)
                 zusammenfassungen = (
-                    await self._zusammenfassungen(s, [t.video_id for t in ergebnis.stellen]) if werte["chat.videoebene"] else {}
+                    await self._zusammenfassungen(s, [t.video_id for t in ergebnis.stellen if t.video_id])
+                    if werte["chat.videoebene"]
+                    else {}
                 )
                 anbieter_zeile = await anbieter_dienst.anbieter_fuer_rolle(s, "chat")
                 anbieter = anbieter_dienst.baue_sprachmodell(anbieter_zeile)

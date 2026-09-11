@@ -1,8 +1,9 @@
 # morf-gpt
 
-Wissensbibliothek und Chat über die Erklärvideos des Kanals morf. Die Audiospuren der
-Videos werden bezogen, mit Whisper transkribiert, von einem Sprachmodell behutsam in Form
-gebracht, in große Textstücke zerlegt, eingebettet und im Chat befragt. Jede Antwort
+Wissensbibliothek und Chat über die Erklärvideos des Kanals morf und die Dokumente dazu.
+Die Audiospuren der Videos werden bezogen, mit Whisper transkribiert, von einem Sprachmodell
+behutsam in Form gebracht, in große Textstücke zerlegt, eingebettet und im Chat befragt;
+E-Books und Texte gehen ohne Umweg über Kapitel in dieselbe Bibliothek. Jede Antwort
 belegt ihre Aussagen mit Textstellen, die Video, Folge und Zeitfenster nennen und sich
 sofort abspielen oder bei YouTube an derselben Sekunde öffnen lassen.
 
@@ -26,6 +27,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 - **Video im Detail**: Transkript mit Zeitmarken, Korrektur im Vergleich (roh und
   korrigiert Block für Block, verworfene Blöcke mit Begründung und Übernahme), Themen mit
   Zeitfenstern, Stücke, Aufträge, eigene Notizen.
+- **Dokumente**: E-Books (EPUB), Markdown und Text hochladen oder eigene Texte anlegen.
+  Sie werden in Kapitel gelesen, je Kapitel gestückelt und eingebettet und stehen dem Chat
+  neben den Videos zur Verfügung; ein Beleg springt ins Kapitel der Leseansicht. Im Chat
+  lässt sich auf Videos, Dokumente oder ein einzelnes Dokument einschränken.
 - **Textstellen**: alle Stücke durchblättern, suchen, Überlappungen sehen, bearbeiten,
   teilen, zusammenlegen, neu einbetten oder ein Video neu stückeln.
 - **Fließband**: sechs Stufen mit Zählern, Durchsatz und Restzeit, Pause je Stufe,
@@ -110,11 +115,8 @@ Layoutänderungen werden zuerst dort gemacht, dann im Svelte-Code nachgezogen.
 
 ## Lizenz
 
-**Nicht-kommerzielle Nutzung** - Siehe [LICENSE](LICENSE)
-
-Erlaubt: Private Nutzung, Installation, persönliche Anpassungen, Teilen mit Quellenangabe
-
-Verboten: Kommerzielle Nutzung, Verkauf, Einbindung in kommerzielle Produkte
+MIT-Lizenz, siehe [LICENSE](LICENSE). Nutzung, Änderung und Weitergabe sind frei, auch
+kommerziell, solange der Lizenzhinweis erhalten bleibt.
 
 ---
 

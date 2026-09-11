@@ -10,6 +10,7 @@
   const eintraege: { ansicht: Ansicht; titel: string; icon: string; zaehler: () => number | null; mit: Ansicht[] }[] = [
     { ansicht: "chat", titel: "Chat", icon: "fa-comments", zaehler: () => null, mit: ["chat"] },
     { ansicht: "bibliothek", titel: "Bibliothek", icon: "fa-film", zaehler: () => uebersicht?.videos_ausgewaehlt ?? null, mit: ["bibliothek", "video"] },
+    { ansicht: "dokumente", titel: "Dokumente", icon: "fa-book", zaehler: () => uebersicht?.dokumente ?? null, mit: ["dokumente", "dokument"] },
     { ansicht: "stellen", titel: "Textstellen", icon: "fa-align-left", zaehler: () => uebersicht?.chunks ?? null, mit: ["stellen", "stelle"] },
     { ansicht: "fliessband", titel: "Fließband", icon: "fa-diagram-next", zaehler: () => uebersicht?.auftraege_laufend ?? null, mit: ["fliessband", "auftrag"] },
     { ansicht: "einstellungen", titel: "Einstellungen", icon: "fa-sliders", zaehler: () => null, mit: ["einstellungen"] },

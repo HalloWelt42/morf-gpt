@@ -11,7 +11,7 @@ from sqlalchemy import delete, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db.engine import sitzung_abhaengigkeit
-from ..db.modelle import Chunk, Einbettung, Video
+from ..db.modelle import Chunk, Dokument, DokumentAbschnitt, Einbettung, Video
 from ..dienste.anbieter.basis import AnbieterFehler
 from ..dienste.auftraege.laeufer import auftrag_anlegen
 from ..dienste.einbettung import dienst as einbettung_dienst
@@ -23,13 +23,20 @@ router = APIRouter(prefix="/chunks", tags=["chunks"])
 
 
 class ChunkEintrag(BaseModel):
+    """Ein Stück mit seinem Werk: Video (video_id gesetzt) oder Dokument (dokument_id gesetzt)."""
+
     id: str
+    werkart: str  # "video" oder "dokument"
     video_id: str
-    video_titel: str
+    video_titel: str  # Titel des Werks (Video oder Dokument)
     serie: str
     folge_nr: int | None
     original_url: str
     miniatur_url: str | None
+    dokument_id: str
+    abschnitt: str
+    abschnitt_nr: int | None
+    position_von: int | None
     reihenfolge: int
     anzahl_im_video: int
     text: str
@@ -98,8 +105,24 @@ class EinbettungErgebnis(BaseModel):
     dimension: int
 
 
-async def _anzahl_im_video(session: AsyncSession, video_id: str) -> int:
-    return int(await session.scalar(select(func.count(Chunk.id)).where(Chunk.video_id == video_id)) or 0)
+async def _anzahl_im_werk(session: AsyncSession, werk_id: str) -> int:
+    return int(await session.scalar(select(func.count(Chunk.id)).where(or_(Chunk.video_id == werk_id, Chunk.dokument_id == werk_id))) or 0)
+
+
+Werk = tuple[Video | None, Dokument | None, DokumentAbschnitt | None]
+
+
+def _werk_id(w: Werk) -> str:
+    video, dokument, _ = w
+    return video.id if video is not None else (dokument.id if dokument is not None else "")
+
+
+def _werke(q):  # noqa: ANN001, ANN202 - Select mit beiden Werken, äußere Verbünde
+    return (
+        q.outerjoin(Video, Video.id == Chunk.video_id)
+        .outerjoin(Dokument, Dokument.id == Chunk.dokument_id)
+        .outerjoin(DokumentAbschnitt, DokumentAbschnitt.id == Chunk.abschnitt_id)
+    )
 
 
 async def _modelle(session: AsyncSession, chunk_ids: list[str]) -> dict[str, list[str]]:
@@ -112,15 +135,21 @@ async def _modelle(session: AsyncSession, chunk_ids: list[str]) -> dict[str, lis
     return aus
 
 
-def _eintrag(c: Chunk, v: Video, anzahl: int, modelle: list[str]) -> ChunkEintrag:
+def _eintrag(c: Chunk, w: Werk, anzahl: int, modelle: list[str]) -> ChunkEintrag:
+    v, d, a = w
     return ChunkEintrag(
         id=c.id,
-        video_id=v.id,
-        video_titel=v.titel,
-        serie=v.serie,
-        folge_nr=v.folge_nr,
-        original_url=v.original_url,
-        miniatur_url=f"/api/videos/{v.id}/miniatur" if v.miniatur_pfad else None,
+        werkart="dokument" if d is not None else "video",
+        video_id=v.id if v is not None else "",
+        video_titel=v.titel if v is not None else (d.titel if d is not None else ""),
+        serie=v.serie if v is not None else "",
+        folge_nr=v.folge_nr if v is not None else None,
+        original_url=v.original_url if v is not None else "",
+        miniatur_url=f"/api/videos/{v.id}/miniatur" if v is not None and v.miniatur_pfad else None,
+        dokument_id=d.id if d is not None else "",
+        abschnitt=a.titel if a is not None else "",
+        abschnitt_nr=a.reihenfolge if a is not None else None,
+        position_von=c.position_von,
         reihenfolge=c.reihenfolge,
         anzahl_im_video=anzahl,
         text=c.text,
@@ -137,38 +166,49 @@ def _eintrag(c: Chunk, v: Video, anzahl: int, modelle: list[str]) -> ChunkEintra
     )
 
 
-async def _laden(session: AsyncSession, chunk_id: str) -> tuple[Chunk, Video]:
-    row = (await session.execute(select(Chunk, Video).join(Video, Video.id == Chunk.video_id).where(Chunk.id == chunk_id))).first()
+async def _laden(session: AsyncSession, chunk_id: str) -> tuple[Chunk, Werk]:
+    row = (await session.execute(_werke(select(Chunk, Video, Dokument, DokumentAbschnitt)).where(Chunk.id == chunk_id))).first()
     if row is None:
         raise HTTPException(404, "Textstelle nicht gefunden")
-    return row[0], row[1]
+    return row[0], (row[1], row[2], row[3])
 
 
-async def _nachbar(session: AsyncSession, video_id: str, reihenfolge: int) -> Nachbar | None:
-    c = (await session.execute(select(Chunk).where(Chunk.video_id == video_id, Chunk.reihenfolge == reihenfolge))).scalar_one_or_none()
+async def _nachbar(session: AsyncSession, werk_id: str, reihenfolge: int) -> Nachbar | None:
+    c = (
+        await session.execute(
+            select(Chunk).where(or_(Chunk.video_id == werk_id, Chunk.dokument_id == werk_id), Chunk.reihenfolge == reihenfolge)
+        )
+    ).scalar_one_or_none()
     if c is None:
         return None
     return Nachbar(id=c.id, reihenfolge=c.reihenfolge, start_s=c.start_s, end_s=c.end_s, text=c.text)
 
 
-async def _detail(session: AsyncSession, c: Chunk, v: Video) -> ChunkDetail:
-    anzahl = await _anzahl_im_video(session, v.id)
+async def _detail(session: AsyncSession, c: Chunk, w: Werk) -> ChunkDetail:
+    werk_id = _werk_id(w)
+    anzahl = await _anzahl_im_werk(session, werk_id)
     eb = (await session.execute(select(Einbettung).where(Einbettung.chunk_id == c.id).order_by(Einbettung.erstellt))).scalars().all()
-    basis = _eintrag(c, v, anzahl, [e.modell for e in eb])
+    basis = _eintrag(c, w, anzahl, [e.modell for e in eb])
     return ChunkDetail(
         **basis.model_dump(),
-        vorheriger=await _nachbar(session, v.id, c.reihenfolge - 1),
-        naechster=await _nachbar(session, v.id, c.reihenfolge + 1),
+        vorheriger=await _nachbar(session, werk_id, c.reihenfolge - 1),
+        naechster=await _nachbar(session, werk_id, c.reihenfolge + 1),
         einbettung_details=[EinbettungInfo(modell=e.modell, anbieter=e.anbieter, dimension=e.dimension, erstellt=e.erstellt) for e in eb],
         korrektur_id=c.korrektur_id,
     )
 
 
-async def _neu_nummerieren(session: AsyncSession, video_id: str) -> None:
+async def _neu_nummerieren(session: AsyncSession, werk_id: str) -> None:
     chunks = (
-        (await session.execute(select(Chunk).where(Chunk.video_id == video_id).order_by(Chunk.reihenfolge, Chunk.start_s))).scalars().all()
+        (
+            await session.execute(
+                select(Chunk).where(or_(Chunk.video_id == werk_id, Chunk.dokument_id == werk_id)).order_by(Chunk.reihenfolge, Chunk.start_s)
+            )
+        )
+        .scalars()
+        .all()
     )
-    # Zwei Durchgänge wegen der Eindeutigkeit (video_id, reihenfolge)
+    # Zwei Durchgänge wegen der Eindeutigkeit (werk, reihenfolge)
     for i, c in enumerate(chunks, start=1):
         c.reihenfolge = -i
     await session.flush()
@@ -180,6 +220,8 @@ async def _neu_nummerieren(session: AsyncSession, video_id: str) -> None:
 @router.get("", response_model=ChunkSeite)
 async def liste(
     video_id: str | None = None,
+    dokument_id: str | None = None,
+    werkart: str | None = None,
     q: str | None = None,
     serie: str | None = None,
     thema: str | None = None,
@@ -188,35 +230,52 @@ async def liste(
     je_seite: int = Query(50, ge=1, le=500),
     session: AsyncSession = Depends(sitzung_abhaengigkeit),
 ) -> ChunkSeite:
-    basis = select(Chunk, Video).join(Video, Video.id == Chunk.video_id)
+    basis = _werke(select(Chunk, Video, Dokument, DokumentAbschnitt))
     if video_id:
         basis = basis.where(Chunk.video_id == video_id)
+    if dokument_id:
+        basis = basis.where(Chunk.dokument_id == dokument_id)
+    if werkart == "video":
+        basis = basis.where(Chunk.video_id.is_not(None))
+    elif werkart == "dokument":
+        basis = basis.where(Chunk.dokument_id.is_not(None))
     if serie:
         basis = basis.where(Video.serie == serie)
     if thema:
         basis = basis.where(Chunk.thema.ilike(f"%{thema}%"))
     if q:
-        basis = basis.where(or_(Chunk.text.ilike(f"%{q}%"), Video.titel.ilike(f"%{q}%")))
+        basis = basis.where(or_(Chunk.text.ilike(f"%{q}%"), Video.titel.ilike(f"%{q}%"), Dokument.titel.ilike(f"%{q}%")))
     if ohne_einbettung:
         basis = basis.where(~select(Einbettung.id).where(Einbettung.chunk_id == Chunk.id).exists())
     gesamt = int(await session.scalar(select(func.count()).select_from(basis.subquery())) or 0)
     rows = (
         await session.execute(
-            basis.order_by(Video.veroeffentlicht.desc().nulls_last(), Chunk.reihenfolge).offset((seite - 1) * je_seite).limit(je_seite)
+            basis.order_by(Video.veroeffentlicht.desc().nulls_last(), Dokument.erstellt.desc().nulls_last(), Chunk.reihenfolge)
+            .offset((seite - 1) * je_seite)
+            .limit(je_seite)
         )
     ).all()
-    modelle = await _modelle(session, [c.id for c, _ in rows])
+    modelle = await _modelle(session, [c.id for c, _, _, _ in rows])
     anzahlen: dict[str, int] = {}
     if rows:
-        video_ids = list({v.id for _, v in rows})
-        for vid, n in (
-            await session.execute(
-                select(Chunk.video_id, func.count(Chunk.id)).where(Chunk.video_id.in_(video_ids)).group_by(Chunk.video_id)
-            )
-        ).all():
-            anzahlen[vid] = int(n)
+        video_ids = list({v.id for _, v, _, _ in rows if v is not None})
+        dokument_ids = list({d.id for _, _, d, _ in rows if d is not None})
+        if video_ids:
+            for vid, n in (
+                await session.execute(
+                    select(Chunk.video_id, func.count(Chunk.id)).where(Chunk.video_id.in_(video_ids)).group_by(Chunk.video_id)
+                )
+            ).all():
+                anzahlen[str(vid)] = int(n)
+        if dokument_ids:
+            for did, n in (
+                await session.execute(
+                    select(Chunk.dokument_id, func.count(Chunk.id)).where(Chunk.dokument_id.in_(dokument_ids)).group_by(Chunk.dokument_id)
+                )
+            ).all():
+                anzahlen[str(did)] = int(n)
     return ChunkSeite(
-        eintraege=[_eintrag(c, v, anzahlen.get(v.id, 0), modelle.get(c.id, [])) for c, v in rows],
+        eintraege=[_eintrag(c, (v, d, a), anzahlen.get(_werk_id((v, d, a)), 0), modelle.get(c.id, [])) for c, v, d, a in rows],
         gesamt=gesamt,
         seite=seite,
         je_seite=je_seite,
@@ -233,28 +292,28 @@ async def themen(video_id: str | None = None, session: AsyncSession = Depends(si
 
 @router.get("/{chunk_id}", response_model=ChunkDetail)
 async def detail(chunk_id: str, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> ChunkDetail:
-    c, v = await _laden(session, chunk_id)
-    return await _detail(session, c, v)
+    c, w = await _laden(session, chunk_id)
+    return await _detail(session, c, w)
 
 
 @router.put("/{chunk_id}", response_model=AenderungErgebnis)
 async def bearbeiten(chunk_id: str, e: TextEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> AenderungErgebnis:
-    c, v = await _laden(session, chunk_id)
+    c, w = await _laden(session, chunk_id)
     c.text = e.text.strip()
     c.zeichen = len(c.text)
     c.manuell_bearbeitet = True
     await session.execute(delete(Einbettung).where(Einbettung.chunk_id == c.id))
     await session.commit()
-    bus.veroeffentliche("chunks", aktion="bearbeitet", video_id=v.id, chunk_id=c.id)
+    bus.veroeffentliche("chunks", aktion="bearbeitet", video_id=c.video_id, dokument_id=c.dokument_id, chunk_id=c.id)
     return AenderungErgebnis(
-        chunk=await _detail(session, c, v), hinweis="Text gespeichert. Die Einbettung wurde entfernt - bitte neu einbetten."
+        chunk=await _detail(session, c, w), hinweis="Text gespeichert. Die Einbettung wurde entfernt - bitte neu einbetten."
     )
 
 
 @router.post("/{chunk_id}/teilen", response_model=AenderungErgebnis)
 async def teilen(chunk_id: str, e: TeilenEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> AenderungErgebnis:
     """Teilt an einer Zeichenposition (an der nächsten Wortgrenze) in zwei Stücke."""
-    c, v = await _laden(session, chunk_id)
+    c, w = await _laden(session, chunk_id)
     text = c.text
     pos = min(e.position, len(text) - 1)
     while 0 < pos < len(text) and not text[pos].isspace():
@@ -265,7 +324,11 @@ async def teilen(chunk_id: str, e: TeilenEingabe, session: AsyncSession = Depend
     dauer = max(0.0, c.end_s - c.start_s)
     grenze = c.start_s + dauer * (len(links) / max(1, len(text)))
     neu = Chunk(
-        video_id=v.id,
+        video_id=c.video_id,
+        dokument_id=c.dokument_id,
+        abschnitt_id=c.abschnitt_id,
+        position_von=c.position_von,
+        position_bis=c.position_bis,
         korrektur_id=c.korrektur_id,
         reihenfolge=c.reihenfolge * 1000 + 1,  # vorläufig, wird neu nummeriert
         text=rechts,
@@ -281,17 +344,23 @@ async def teilen(chunk_id: str, e: TeilenEingabe, session: AsyncSession = Depend
     await session.execute(delete(Einbettung).where(Einbettung.chunk_id == c.id))
     session.add(neu)
     await session.flush()
-    await _neu_nummerieren(session, v.id)
+    await _neu_nummerieren(session, _werk_id(w))
     await session.commit()
-    bus.veroeffentliche("chunks", aktion="geteilt", video_id=v.id, chunk_id=c.id)
-    return AenderungErgebnis(chunk=await _detail(session, c, v), hinweis="Stück geteilt. Beide Teile müssen neu eingebettet werden.")
+    bus.veroeffentliche("chunks", aktion="geteilt", video_id=c.video_id, dokument_id=c.dokument_id, chunk_id=c.id)
+    return AenderungErgebnis(chunk=await _detail(session, c, w), hinweis="Stück geteilt. Beide Teile müssen neu eingebettet werden.")
 
 
 @router.post("/{chunk_id}/zusammenlegen", response_model=AenderungErgebnis)
 async def zusammenlegen(chunk_id: str, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> AenderungErgebnis:
     """Legt das Stück mit dem nächsten zusammen; die Überlappung wird nicht doppelt genommen."""
-    c, v = await _laden(session, chunk_id)
-    n = (await session.execute(select(Chunk).where(Chunk.video_id == v.id, Chunk.reihenfolge == c.reihenfolge + 1))).scalar_one_or_none()
+    c, w = await _laden(session, chunk_id)
+    n = (
+        await session.execute(
+            select(Chunk).where(
+                or_(Chunk.video_id == _werk_id(w), Chunk.dokument_id == _werk_id(w)), Chunk.reihenfolge == c.reihenfolge + 1
+            )
+        )
+    ).scalar_one_or_none()
     if n is None:
         raise HTTPException(409, "Es gibt kein nächstes Stück")
     rest = n.text[n.ueberlappung_vor :].lstrip() if n.ueberlappung_vor and len(n.text) > n.ueberlappung_vor else n.text
@@ -303,20 +372,20 @@ async def zusammenlegen(chunk_id: str, session: AsyncSession = Depends(sitzung_a
     await session.execute(delete(Einbettung).where(Einbettung.chunk_id == c.id))
     await session.delete(n)
     await session.flush()
-    await _neu_nummerieren(session, v.id)
+    await _neu_nummerieren(session, _werk_id(w))
     await session.commit()
-    bus.veroeffentliche("chunks", aktion="zusammengelegt", video_id=v.id, chunk_id=c.id)
-    return AenderungErgebnis(chunk=await _detail(session, c, v), hinweis="Stücke zusammengelegt. Bitte neu einbetten.")
+    bus.veroeffentliche("chunks", aktion="zusammengelegt", video_id=c.video_id, dokument_id=c.dokument_id, chunk_id=c.id)
+    return AenderungErgebnis(chunk=await _detail(session, c, w), hinweis="Stücke zusammengelegt. Bitte neu einbetten.")
 
 
 @router.delete("/{chunk_id}", status_code=204)
 async def loeschen(chunk_id: str, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> None:
-    c, v = await _laden(session, chunk_id)
+    c, w = await _laden(session, chunk_id)
     await session.delete(c)
     await session.flush()
-    await _neu_nummerieren(session, v.id)
+    await _neu_nummerieren(session, _werk_id(w))
     await session.commit()
-    bus.veroeffentliche("chunks", aktion="geloescht", video_id=v.id, chunk_id=chunk_id)
+    bus.veroeffentliche("chunks", aktion="geloescht", video_id=c.video_id, dokument_id=c.dokument_id, chunk_id=chunk_id)
 
 
 @router.post("/video/{video_id}/neu", response_model=AuftragAusgabe)
@@ -336,11 +405,11 @@ async def neu_stueckeln(video_id: str, session: AsyncSession = Depends(sitzung_a
 @router.post("/{chunk_id}/einbetten", response_model=EinbettungErgebnis)
 async def einbetten(chunk_id: str, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> EinbettungErgebnis:
     """Bettet nur dieses Stück sofort ein (nach einer Bearbeitung)."""
-    c, v = await _laden(session, chunk_id)
+    c, w = await _laden(session, chunk_id)
     werte = await einstellungen_dienst.alle(session)
     try:
-        ergebnis = await einbettung_dienst.chunks_einbetten(v.id, werte, nur_chunk_ids=[c.id])
+        ergebnis = await einbettung_dienst.chunks_einbetten(c.video_id, werte, dokument_id=c.dokument_id, nur_chunk_ids=[c.id])
     except (AnbieterFehler, RuntimeError) as e:
         raise HTTPException(502, str(e)) from e
-    bus.veroeffentliche("chunks", aktion="eingebettet", video_id=v.id, chunk_id=c.id)
+    bus.veroeffentliche("chunks", aktion="eingebettet", video_id=c.video_id, dokument_id=c.dokument_id, chunk_id=c.id)
     return EinbettungErgebnis(chunk_id=c.id, modell=ergebnis.modell, dimension=ergebnis.dimension)

@@ -24,7 +24,27 @@
   const prozent = $derived(Math.max(0, Math.min(100, Math.round(stelle.wert * 100))));
 </script>
 
-{#if stelle.art === "werkzeug"}
+{#if stelle.art === "dokument"}
+  <div class="m-stelle dokument" class:abgewaehlt={!gewaehlt} class:hervor={hervorgehoben} id="stelle-{nummer}">
+    <div class="kopf">
+      <span class="nr">{nummer}</span>
+      <div class="flex-grow-1" style="min-width: 0">
+        <div class="titel"><i class="fa-solid fa-book text-secondary"></i> {stelle.titel}</div>
+        <div class="zeit">{#if stelle.abschnitt}Kapitel: {stelle.abschnitt}{:else}Dokument{/if}{#if stelle.seite_von} &middot; Seite {stelle.seite_von}{/if} &middot; Stück {stelle.reihenfolge}</div>
+      </div>
+    </div>
+    <div class="auszug">{stelle.text}</div>
+    <div class="aktionen">
+      <div class="m-wert" title="Ähnlichkeit zur Frage"><span style="width: {prozent}%"></span></div>
+      <span class="m-wert-zahl">{stelle.wert > 0 ? stelle.wert.toFixed(2).replace(".", ",") : "-"}</span>
+      <button class="btn btn-sm btn-outline-primary" title="Im Dokument an dieser Stelle lesen" onclick={() => ui.gehe("dokument", stelle.dokument_id, stelle.abschnitt_nr === null ? "" : String(stelle.abschnitt_nr))}><i class="fa-solid fa-book-open"></i></button>
+      <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen" onclick={() => ui.gehe("stelle", stelle.chunk_id)}><i class="fa-solid fa-up-right-from-square"></i></button>
+      {#if umschaltbar && onUmschalten}
+        <button class="btn btn-sm btn-outline-secondary" title={gewaehlt ? "Stelle abwählen" : "Stelle wieder aufnehmen"} onclick={onUmschalten}><i class="fa-regular {gewaehlt ? 'fa-square-check' : 'fa-square'}"></i></button>
+      {/if}
+    </div>
+  </div>
+{:else if stelle.art === "werkzeug"}
   <div class="m-stelle werkzeug" class:abgewaehlt={!gewaehlt} class:hervor={hervorgehoben} id="stelle-{nummer}">
     <div class="kopf">
       <span class="nr"><i class="fa-solid fa-plug"></i></span>
@@ -75,6 +95,9 @@
 <style>
   .m-stelle.werkzeug .nr {
     background: var(--m-stufe-korrigiert);
+  }
+  .m-stelle.dokument .nr {
+    background: var(--m-stufe-gestueckelt);
   }
   .m-stelle.hervor {
     border-color: var(--m-akzent);

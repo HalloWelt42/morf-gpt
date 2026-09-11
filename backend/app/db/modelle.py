@@ -167,15 +167,84 @@ class Korrektur(Basis):
     video: Mapped[Video] = relationship(back_populates="korrekturen")
 
 
-class Chunk(Basis):
-    __tablename__ = "chunks"
+class Dokument(Basis):
+    """Ein Dokument (EPUB, Markdown, Text; später PDF): die zweite Werkart der Bibliothek.
+
+    Dokumente brauchen weder Audio noch Transkription noch Korrektur. Sie werden in Abschnitte
+    (Kapitel) gelesen, gestückelt und eingebettet; ihre Stücke liegen im selben Vektorraum wie
+    die der Videos. Die Originaldatei liegt unter data/dokumente.
+    """
+
+    __tablename__ = "dokumente"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=neue_id)
+    titel: Mapped[str] = mapped_column(Text, default="")
+    autor: Mapped[str] = mapped_column(String(300), default="")
+    art: Mapped[str] = mapped_column(String(16))  # epub, markdown, text, pdf
+    sprache: Mapped[str] = mapped_column(String(16), default="de")
+    beschreibung: Mapped[str] = mapped_column(Text, default="")
+    veroeffentlicht: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    dateiname: Mapped[str] = mapped_column(String(300), default="")
+    datei_pfad: Mapped[str] = mapped_column(String(500), default="")
+    groesse_bytes: Mapped[int | None] = mapped_column(Integer)
+    zeichen: Mapped[int] = mapped_column(Integer, default=0)
+    metadaten_original: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    felder_manuell: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    notizen: Mapped[str] = mapped_column(Text, default="")
+    stufe: Mapped[str] = mapped_column(String(16), default="importiert")
+    fehler: Mapped[str] = mapped_column(Text, default="")
+    prioritaet: Mapped[int] = mapped_column(Integer, default=0)
+    erstellt: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt)
+    aktualisiert: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt, onupdate=jetzt)
+
+    abschnitte: Mapped[list[DokumentAbschnitt]] = relationship(
+        back_populates="dokument", cascade="all, delete-orphan", order_by="DokumentAbschnitt.reihenfolge"
+    )
+    chunks: Mapped[list[Chunk]] = relationship(back_populates="dokument", cascade="all, delete-orphan")
+    auftraege: Mapped[list[Auftrag]] = relationship(back_populates="dokument")
+
+
+class DokumentAbschnitt(Basis):
+    """Ein Kapitel oder Unterkapitel eines Dokuments in Lesereihenfolge; Text bereinigt."""
+
+    __tablename__ = "dokument_abschnitte"
     __table_args__ = (
-        UniqueConstraint("video_id", "reihenfolge", name="uq_chunk_video_reihenfolge"),
-        Index("ix_chunks_video", "video_id"),
+        UniqueConstraint("dokument_id", "reihenfolge", name="uq_abschnitt_dokument_reihenfolge"),
+        Index("ix_abschnitte_dokument", "dokument_id"),
     )
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=neue_id)
-    video_id: Mapped[str] = mapped_column(ForeignKey("videos.id", ondelete="CASCADE"))
+    dokument_id: Mapped[str] = mapped_column(ForeignKey("dokumente.id", ondelete="CASCADE"))
+    reihenfolge: Mapped[int] = mapped_column(Integer)
+    ebene: Mapped[int] = mapped_column(Integer, default=1)
+    titel: Mapped[str] = mapped_column(Text, default="")
+    text: Mapped[str] = mapped_column(Text, default="")
+    zeichen: Mapped[int] = mapped_column(Integer, default=0)
+    anker: Mapped[str] = mapped_column(String(500), default="")  # EPUB: Datei#Kennung
+    seite_von: Mapped[int | None] = mapped_column(Integer)  # PDF
+    seite_bis: Mapped[int | None] = mapped_column(Integer)
+    position_von: Mapped[int] = mapped_column(Integer, default=0)  # Zeichenoffset im Dokument
+    erstellt: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt)
+
+    dokument: Mapped[Dokument] = relationship(back_populates="abschnitte")
+
+
+class Chunk(Basis):
+    """Ein Stück eines Werks: entweder eines Videos (Zeitfenster) oder eines Dokuments
+    (Abschnitt und Zeichenposition). Genau eines von video_id und dokument_id ist gesetzt."""
+
+    __tablename__ = "chunks"
+    __table_args__ = (
+        UniqueConstraint("video_id", "reihenfolge", name="uq_chunk_video_reihenfolge"),
+        UniqueConstraint("dokument_id", "reihenfolge", name="uq_chunk_dokument_reihenfolge"),
+        Index("ix_chunks_video", "video_id"),
+        Index("ix_chunks_dokument", "dokument_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=neue_id)
+    video_id: Mapped[str | None] = mapped_column(ForeignKey("videos.id", ondelete="CASCADE"))
+    dokument_id: Mapped[str | None] = mapped_column(ForeignKey("dokumente.id", ondelete="CASCADE"))
+    abschnitt_id: Mapped[str | None] = mapped_column(ForeignKey("dokument_abschnitte.id", ondelete="SET NULL"))
     korrektur_id: Mapped[str | None] = mapped_column(ForeignKey("korrekturen.id", ondelete="SET NULL"))
     reihenfolge: Mapped[int] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(Text)
@@ -185,11 +254,14 @@ class Chunk(Basis):
     thema: Mapped[str] = mapped_column(Text, default="")
     ueberlappung_vor: Mapped[int] = mapped_column(Integer, default=0)
     ueberlappung_nach: Mapped[int] = mapped_column(Integer, default=0)
+    position_von: Mapped[int | None] = mapped_column(Integer)  # Dokumente: Zeichenoffset im Dokument
+    position_bis: Mapped[int | None] = mapped_column(Integer)
     manuell_bearbeitet: Mapped[bool] = mapped_column(Boolean, default=False)
     erstellt: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt)
     aktualisiert: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt, onupdate=jetzt)
 
-    video: Mapped[Video] = relationship(back_populates="chunks")
+    video: Mapped[Video | None] = relationship(back_populates="chunks")
+    dokument: Mapped[Dokument | None] = relationship(back_populates="chunks")
     einbettungen: Mapped[list[Einbettung]] = relationship(back_populates="chunk", cascade="all, delete-orphan")
 
 
@@ -228,6 +300,7 @@ class Auftrag(Basis):
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=neue_id)
     art: Mapped[str] = mapped_column(String(32))
     video_id: Mapped[str | None] = mapped_column(ForeignKey("videos.id", ondelete="CASCADE"))
+    dokument_id: Mapped[str | None] = mapped_column(ForeignKey("dokumente.id", ondelete="CASCADE"))
     status: Mapped[str] = mapped_column(String(16), default="wartend")
     prioritaet: Mapped[int] = mapped_column(Integer, default=0)
     versuche: Mapped[int] = mapped_column(Integer, default=0)
@@ -242,6 +315,7 @@ class Auftrag(Basis):
     erstellt: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt)
 
     video: Mapped[Video | None] = relationship(back_populates="auftraege")
+    dokument: Mapped[Dokument | None] = relationship(back_populates="auftraege")
     protokoll: Mapped[list[AuftragProtokoll]] = relationship(
         back_populates="auftrag", cascade="all, delete-orphan", order_by="AuftragProtokoll.zeit"
     )

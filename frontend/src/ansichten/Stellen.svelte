@@ -118,6 +118,11 @@
   async function neuStueckeln(): Promise<void> {
     if (!gewaehlt) return;
     try {
+      if (gewaehlt.werkart === "dokument") {
+        const r = await api.post<{ art_titel: string }>(`/dokumente/${gewaehlt.dokument_id}/auftrag/stueckelung`);
+        meldungen.gut(`Auftrag angelegt: ${r.art_titel}`);
+        return;
+      }
       const r = await api.post<{ hinweis: string }>(`/chunks/video/${gewaehlt.video_id}/neu`);
       meldungen.gut(r.hinweis);
     } catch (e) {
@@ -158,16 +163,20 @@
           <div class="kopf">
             {#if c.miniatur_url}<img class="m-mini" src={c.miniatur_url} alt="" loading="lazy" />{/if}
             <div class="flex-grow-1" style="min-width: 0">
-              <div class="titel">{c.video_titel}</div>
-              <div class="zeit">{#if c.serie}<Abzeichen serie={c.serie} folgeNr={c.folge_nr} /> &middot;{/if} Stück {c.reihenfolge} von {c.anzahl_im_video} &middot; {zeitmarke(c.start_s)} bis {zeitmarke(c.end_s)}{#if c.thema} &middot; {c.thema}{/if}</div>
+              <div class="titel">{#if c.werkart === "dokument"}<i class="fa-solid fa-book text-secondary"></i> {/if}{c.video_titel}</div>
+              <div class="zeit">{#if c.serie}<Abzeichen serie={c.serie} folgeNr={c.folge_nr} /> &middot;{/if} Stück {c.reihenfolge} von {c.anzahl_im_video} &middot; {#if c.werkart === "dokument"}{c.abschnitt ? `Kapitel: ${c.abschnitt}` : "Dokument"}{:else}{zeitmarke(c.start_s)} bis {zeitmarke(c.end_s)}{/if}{#if c.thema && c.thema !== c.abschnitt} &middot; {c.thema}{/if}</div>
             </div>
           </div>
           <div class="auszug">{c.text}</div>
           <div class="aktionen">
             <span class="small text-secondary">{zahl(c.zeichen)} Zeichen &middot; {c.einbettungen.length ? `eingebettet (${c.einbettungen.join(", ")})` : "Einbettung fehlt"}{c.manuell_bearbeitet ? " · von Hand bearbeitet" : ""}</span>
             <span class="ms-auto"></span>
-            <button class="btn btn-sm btn-outline-primary" title="Ab {zeitmarke(c.start_s)} abspielen" onclick={(e) => { e.stopPropagation(); void spieleVideo(c.video_id, c.start_s); }}><i class="fa-solid fa-play"></i></button>
-            <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href={youtubeMitZeit(c.original_url, c.start_s)} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}><i class="fa-brands fa-youtube"></i></a>
+            {#if c.werkart === "dokument"}
+              <button class="btn btn-sm btn-outline-primary" title="Im Dokument lesen" onclick={(e) => { e.stopPropagation(); ui.gehe("dokument", c.dokument_id, c.abschnitt_nr === null ? "" : String(c.abschnitt_nr)); }}><i class="fa-solid fa-book-open"></i></button>
+            {:else}
+              <button class="btn btn-sm btn-outline-primary" title="Ab {zeitmarke(c.start_s)} abspielen" onclick={(e) => { e.stopPropagation(); void spieleVideo(c.video_id, c.start_s); }}><i class="fa-solid fa-play"></i></button>
+              {#if c.original_url}<a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href={youtubeMitZeit(c.original_url, c.start_s)} target="_blank" rel="noreferrer" onclick={(e) => e.stopPropagation()}><i class="fa-brands fa-youtube"></i></a>{/if}
+            {/if}
             <button class="btn btn-sm btn-outline-secondary" title="Bearbeiten" onclick={(e) => { e.stopPropagation(); ui.gehe("stelle", c.id); }}><i class="fa-solid fa-pen"></i></button>
           </div>
         </div>
@@ -184,13 +193,17 @@
     {#if gewaehlt}
       {@const t = teile(gewaehlt)}
       <div class="fw-semibold">{gewaehlt.video_titel}</div>
-      <div class="text-secondary small mb-2">{zeitmarke(gewaehlt.start_s)} bis {zeitmarke(gewaehlt.end_s)}{#if gewaehlt.thema} &middot; {gewaehlt.thema}{/if} &middot; {zahl(gewaehlt.zeichen)} Zeichen</div>
+      <div class="text-secondary small mb-2">{#if gewaehlt.werkart === "dokument"}{gewaehlt.abschnitt ? `Kapitel: ${gewaehlt.abschnitt}` : "Dokument"}{:else}{zeitmarke(gewaehlt.start_s)} bis {zeitmarke(gewaehlt.end_s)}{/if}{#if gewaehlt.thema && gewaehlt.thema !== gewaehlt.abschnitt} &middot; {gewaehlt.thema}{/if} &middot; {zahl(gewaehlt.zeichen)} Zeichen</div>
       <div class="d-flex gap-1 flex-wrap mb-2">
-        <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(gewaehlt!.video_id, gewaehlt!.start_s)}><i class="fa-solid fa-play"></i> Abspielen</button>
+        {#if gewaehlt.werkart === "dokument"}
+          <button class="btn btn-sm btn-outline-primary" onclick={() => ui.gehe("dokument", gewaehlt!.dokument_id, gewaehlt!.abschnitt_nr === null ? "" : String(gewaehlt!.abschnitt_nr))}><i class="fa-solid fa-book-open"></i> Im Dokument lesen</button>
+        {:else}
+          <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(gewaehlt!.video_id, gewaehlt!.start_s)}><i class="fa-solid fa-play"></i> Abspielen</button>
+        {/if}
         <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("stelle", gewaehlt!.id)}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
         <button class="btn btn-sm btn-outline-secondary" onclick={() => (zusammenDialog = true)} disabled={!gewaehlt.naechster}><i class="fa-solid fa-object-group"></i> Mit nächstem zusammenlegen</button>
         <button class="btn btn-sm btn-outline-secondary" onclick={einbetten} disabled={beschaeftigt}><i class="fa-solid fa-cube"></i> Neu einbetten</button>
-        <button class="btn btn-sm btn-outline-secondary" onclick={neuStueckeln} title="Alle Stücke dieses Videos neu bilden"><i class="fa-solid fa-scissors"></i> Video neu stückeln</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={neuStueckeln} title="Alle Stücke dieses Werks neu bilden"><i class="fa-solid fa-scissors"></i> {gewaehlt.werkart === "dokument" ? "Dokument" : "Video"} neu stückeln</button>
         <button class="btn btn-sm btn-outline-danger" onclick={() => (loeschDialog = true)}><i class="fa-solid fa-trash"></i></button>
       </div>
       <div class="small text-secondary mb-2">

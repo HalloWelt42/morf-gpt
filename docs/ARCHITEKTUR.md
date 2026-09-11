@@ -200,6 +200,38 @@ Jede Textstelle muss zur Originalquelle zurückführen. Darum gilt:
   HTTP-Range, damit Sprünge sofort greifen.
 - Vorschaubilder und Metadaten sind Teil des Bibliothekspakets (Abschnitt 8).
 
+## 7b. Dokumente als zweite Werkart
+
+Neben Videos nimmt die Bibliothek Dokumente auf: E-Books (EPUB), Markdown und reinen Text,
+später PDF. Sie sind dieselbe Bibliothek, nicht eine zweite: ihre Stücke liegen in `chunks`
+und ihre Vektoren in `einbettungen` neben denen der Videos, die Suche findet beides in
+einem Durchgang, und eine Antwort kann ein Video mit Zeitfenster und ein Buchkapitel
+nebeneinander belegen.
+
+- **Datenmodell:** `dokumente` (Titel, Autor, Art, Sprache, Datum, Originaldatei unter
+  `data/dokumente/`, Metadaten roh, von Hand gepflegte Felder, Stufe) und
+  `dokument_abschnitte` (Kapitel und Unterkapitel in Lesereihenfolge, Ebene, Titel,
+  bereinigter Text, Anker, bei PDF Seitenbereich). `chunks.video_id` ist jetzt optional;
+  Dokumentstücke tragen `dokument_id`, `abschnitt_id` und Zeichenpositionen
+  (`position_von`, `position_bis`) statt Zeiten. Aufträge tragen `dokument_id`.
+- **Leser** (`dienste/dokumente/`): EPUB ohne Fremdpaket (Zip, OPF, Spine, Inhaltsverzeichnis
+  aus nav.xhtml oder toc.ncx, Überschriften h1 bis h3 als Abschnittsgrenzen), Markdown
+  (Überschriften mit #, Frontmatter, Auszeichnung wird zu Text), Text (Absätze). Jeder
+  Leser liefert einen `Dokumentinhalt`; der Import speichert ihn und legt die Datei ab.
+- **Fließband:** Dokumente kennen nur importiert, gestückelt, eingebettet
+  (`Dokumentstufe`); dieselben Auftragsarten Stückeln und Einbetten wie bei Videos. Die
+  Stückelung läuft je Kapitel (ein Stück überschreitet nie eine Kapitelgrenze, der
+  Kapiteltitel ist das Thema); die Einbettung setzt "Dokument: Titel" in den Kontextkopf.
+- **Suche:** `Suchparameter.werkart` (alles, video, dokument) und `dokument_ids`; Serie
+  ist eine Videoeigenschaft, der Zeitraum gilt für beide Werkarten. Die Vielfaltsgrenze
+  zählt je Werk. `Treffer.art = "dokument"` trägt Kapitel, Abschnittsnummer und Position;
+  der Beleg im Prompt lautet `[n] Dokument <Titel> (Kapitel <Titel>)`.
+- **Oberfläche:** eigener Bereich Dokumente (Hochladen, Eigener Text, Liste) und
+  Dokumentansicht (Metadaten mit Handpflege, Kapitelnavigation mit Stückzahl,
+  Leseansicht). Belege im Chat springen ins Kapitel. Textstellen zeigen beide Werkarten.
+- **Noch offen (nächste Schritte):** PDF mit wahlweiser Modellbereinigung; Dokumente im
+  Umzugspaket (zurzeit werden nur Videostücke exportiert).
+
 ## 8. Umzug der Bibliothek
 
 `POST /api/export/bibliothek` schreibt ein Paket (`morf-gpt-bibliothek-<datum>.tar.gz`)

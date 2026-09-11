@@ -11,3 +11,7 @@ Links stehen die Unterhaltungen, in der Mitte der Verlauf, rechts die Suchleiste
 Zahlen im Text wie [2] sind Belege. Ein Klick darauf hebt die Stelle rechts hervor; dort kannst du sie abspielen, bei YouTube öffnen oder in der Bibliothek ansehen.
 
 <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Mit Nur suchen siehst du die Stellen, bevor eine Antwort entsteht. Wähle ab, was nicht passt, und lass dann antworten.</div>
+
+## Videos und Dokumente
+
+Die Bibliothek enthält Videos und Dokumente (Bücher, eigene Texte). Beide liegen im selben Vektorraum; eine Antwort kann ein Video mit Zeitfenster und ein Buchkapitel nebeneinander belegen. Unter Filter schränkst du auf Videos, Dokumente oder ein bestimmtes Dokument ein.

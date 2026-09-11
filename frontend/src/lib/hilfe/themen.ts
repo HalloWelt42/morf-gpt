@@ -34,6 +34,7 @@ const REIHENFOLGE = [
   "spieler",
   "quellen",
   "pflege",
+  "dokumente",
   "stufe-abgleich",
   "stufe-audio",
   "stufe-transkription",

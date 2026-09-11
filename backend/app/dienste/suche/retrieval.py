@@ -16,14 +16,14 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Awaitable, Callable, Iterable, Mapping
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Select, select
+from sqlalchemy import Select, false, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ...db.modelle import Chunk, Einbettung, Video
+from ...db.modelle import Chunk, Dokument, DokumentAbschnitt, Einbettung, Video
 from ..einstellungen import register
 from .neubewertung import (
     NEUBEWERTUNG_AUS,
@@ -48,7 +48,12 @@ EINSTELLUNG_JE_FELD: dict[str, str] = {
     "kandidaten_faktor": "suche.kandidaten_faktor",
 }
 
-FILTER_FELDER: tuple[str, ...] = ("serie", "von", "bis", "video_ids")
+FILTER_FELDER: tuple[str, ...] = ("serie", "von", "bis", "video_ids", "werkart", "dokument_ids")
+
+# Werkart-Filter: alles, nur Videos oder nur Dokumente.
+WERKART_ALLE = ""
+WERKART_VIDEO = "video"
+WERKART_DOKUMENT = "dokument"
 
 
 def _vorgabe(feld: str) -> Any:
@@ -84,6 +89,8 @@ class Suchparameter:
     von: datetime | None = None
     bis: datetime | None = None
     video_ids: list[str] = field(default_factory=list)
+    werkart: str = WERKART_ALLE  # "", "video" oder "dokument"
+    dokument_ids: list[str] = field(default_factory=list)
 
     @classmethod
     def aus_einstellungen(cls, werte: Mapping[str, Any], *ueberschreibungen: Mapping[str, Any] | None) -> Suchparameter:
@@ -121,6 +128,8 @@ class Suchparameter:
         p.von = _als_zeitpunkt(roh.get("von"))
         p.bis = _als_zeitpunkt(roh.get("bis"))
         p.video_ids = [str(v) for v in (roh.get("video_ids") or [])]
+        p.werkart = str(roh.get("werkart") or WERKART_ALLE)
+        p.dokument_ids = [str(v) for v in (roh.get("dokument_ids") or [])]
         return p
 
     def als_dict(self) -> dict[str, Any]:
@@ -159,13 +168,26 @@ class Treffer:
     miniatur: str
     ueberlappung_vor: int = 0
     bewertung: float | None = None
-    # Herkunft: "bibliothek" (eigene Stücke) oder "werkzeug" (fremder Dienst)
+    # Herkunft: "bibliothek" (Videostück), "dokument" (Stück eines Dokuments) oder "werkzeug" (fremder Dienst)
     art: str = "bibliothek"
     werkzeug: str = ""
     quelle_url: str = ""
+    # Nur bei Dokumenten: Werk, Abschnitt (Kapitel) und Zeichenposition
+    dokument_id: str = ""
+    abschnitt: str = ""
+    abschnitt_nr: int | None = None
+    seite_von: int | None = None
+    position_von: int | None = None
+
+    @property
+    def werk_id(self) -> str:
+        """Das Werk, zu dem die Stelle gehört: Video oder Dokument."""
+        return self.dokument_id or self.video_id
 
     def als_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        daten = asdict(self)
+        daten["werk_id"] = self.werk_id
+        return daten
 
     @classmethod
     def aus_dict(cls, roh: Mapping[str, Any]) -> Treffer:
@@ -202,7 +224,35 @@ def miniatur_adresse(video: Video) -> str:
     return ""
 
 
-def treffer_aus_zeile(chunk: Chunk, video: Video, wert: float) -> Treffer:
+def treffer_aus_zeile(
+    chunk: Chunk, video: Video | None, wert: float, dokument: Dokument | None = None, abschnitt: DokumentAbschnitt | None = None
+) -> Treffer:
+    """Eine Datenbankzeile als Stelle; Videostück oder Dokumentstück je nach Werk."""
+    if dokument is not None:
+        return Treffer(
+            chunk_id=chunk.id,
+            video_id="",
+            titel=dokument.titel,
+            serie="",
+            folge_nr=None,
+            start_s=0.0,
+            end_s=0.0,
+            text=chunk.text,
+            wert=wert,
+            reihenfolge=int(chunk.reihenfolge),
+            thema=chunk.thema or (abschnitt.titel if abschnitt else ""),
+            original_url="",
+            miniatur="",
+            ueberlappung_vor=int(chunk.ueberlappung_vor or 0),
+            art="dokument",
+            dokument_id=dokument.id,
+            abschnitt=abschnitt.titel if abschnitt else "",
+            abschnitt_nr=abschnitt.reihenfolge if abschnitt else None,
+            seite_von=abschnitt.seite_von if abschnitt else None,
+            position_von=chunk.position_von,
+        )
+    if video is None:
+        raise ValueError(f"Stück {chunk.id} gehört weder zu einem Video noch zu einem Dokument")
     return Treffer(
         chunk_id=chunk.id,
         video_id=video.id,
@@ -235,15 +285,34 @@ async def frage_einbetten_standard(session: AsyncSession, text: str) -> tuple[li
     return await frage_einbetten(session, text)
 
 
-def _mit_videofiltern(q: Select[Any], p: Suchparameter) -> Select[Any]:
+def _mit_werken(q: Select[Any]) -> Select[Any]:
+    """Stücke mit ihrem Werk: Video oder Dokument samt Abschnitt (äußere Verbünde)."""
+    return (
+        q.outerjoin(Video, Video.id == Chunk.video_id)
+        .outerjoin(Dokument, Dokument.id == Chunk.dokument_id)
+        .outerjoin(DokumentAbschnitt, DokumentAbschnitt.id == Chunk.abschnitt_id)
+    )
+
+
+def _mit_filtern(q: Select[Any], p: Suchparameter) -> Select[Any]:
+    """Werkart, Serie (nur Videos), Zeitraum (Videos und Dokumente), einzelne Werke."""
+    if p.werkart == WERKART_VIDEO:
+        q = q.where(Chunk.video_id.is_not(None))
+    elif p.werkart == WERKART_DOKUMENT:
+        q = q.where(Chunk.dokument_id.is_not(None))
     if p.serie:
         q = q.where(Video.serie == p.serie)
     if p.von is not None:
-        q = q.where(Video.veroeffentlicht >= p.von)
+        q = q.where(or_(Video.veroeffentlicht >= p.von, Dokument.veroeffentlicht >= p.von))
     if p.bis is not None:
-        q = q.where(Video.veroeffentlicht <= p.bis)
-    if p.video_ids:
-        q = q.where(Video.id.in_(p.video_ids))
+        q = q.where(or_(Video.veroeffentlicht <= p.bis, Dokument.veroeffentlicht <= p.bis))
+    if p.video_ids or p.dokument_ids:
+        q = q.where(
+            or_(
+                Video.id.in_(p.video_ids) if p.video_ids else false(),
+                Dokument.id.in_(p.dokument_ids) if p.dokument_ids else false(),
+            )
+        )
     return q
 
 
@@ -251,37 +320,36 @@ async def kandidaten_aus_datenbank(session: AsyncSession, vektor: list[float], m
     """Cosinus-Suche in pgvector: die `grenze` nächsten Stücke desselben Einbettungsmodells."""
     abstand = Einbettung.vektor.cosine_distance(vektor)
     aehnlichkeit = (1 - abstand).label("aehnlichkeit")
-    q: Select[Any] = (
-        select(Chunk, Video, aehnlichkeit)
-        .join(Einbettung, Einbettung.chunk_id == Chunk.id)
-        .join(Video, Video.id == Chunk.video_id)
-        .where(Einbettung.modell == modell)
-    )
-    q = _mit_videofiltern(q, p).order_by(abstand).limit(grenze)
+    q: Select[Any] = _mit_werken(
+        select(Chunk, Video, Dokument, DokumentAbschnitt, aehnlichkeit).join(Einbettung, Einbettung.chunk_id == Chunk.id)
+    ).where(Einbettung.modell == modell)
+    q = _mit_filtern(q, p).order_by(abstand).limit(grenze)
     zeilen = (await session.execute(q)).all()
-    return [treffer_aus_zeile(chunk, video, float(wert)) for chunk, video, wert in zeilen]
+    return [treffer_aus_zeile(chunk, video, float(wert), dokument, abschnitt) for chunk, video, dokument, abschnitt, wert in zeilen]
 
 
-async def nachbarn_aus_datenbank(session: AsyncSession, video_id: str, reihenfolgen: set[int]) -> list[Treffer]:
-    """Stücke eines Videos mit den genannten Reihenfolge-Nummern (ohne Ähnlichkeitswert)."""
+async def nachbarn_aus_datenbank(session: AsyncSession, werk_id: str, reihenfolgen: set[int]) -> list[Treffer]:
+    """Stücke eines Werks (Video oder Dokument) mit den genannten Reihenfolge-Nummern (ohne Ähnlichkeitswert)."""
     if not reihenfolgen:
         return []
     q = (
-        select(Chunk, Video)
-        .join(Video, Video.id == Chunk.video_id)
-        .where(Chunk.video_id == video_id, Chunk.reihenfolge.in_(sorted(reihenfolgen)))
+        _mit_werken(select(Chunk, Video, Dokument, DokumentAbschnitt))
+        .where(or_(Chunk.video_id == werk_id, Chunk.dokument_id == werk_id), Chunk.reihenfolge.in_(sorted(reihenfolgen)))
         .order_by(Chunk.reihenfolge)
     )
     zeilen = (await session.execute(q)).all()
-    return [treffer_aus_zeile(chunk, video, 0.0) for chunk, video in zeilen]
+    return [treffer_aus_zeile(chunk, video, 0.0, dokument, abschnitt) for chunk, video, dokument, abschnitt in zeilen]
 
 
 async def chunks_aus_datenbank(session: AsyncSession, chunk_ids: list[str]) -> list[Treffer]:
     """Stücke nach Kennung, in der Reihenfolge der übergebenen Liste (fehlende werden übergangen)."""
     if not chunk_ids:
         return []
-    q = select(Chunk, Video).join(Video, Video.id == Chunk.video_id).where(Chunk.id.in_(chunk_ids))
-    je_id = {chunk.id: treffer_aus_zeile(chunk, video, 0.0) for chunk, video in (await session.execute(q)).all()}
+    q = _mit_werken(select(Chunk, Video, Dokument, DokumentAbschnitt)).where(Chunk.id.in_(chunk_ids))
+    je_id = {
+        chunk.id: treffer_aus_zeile(chunk, video, 0.0, dokument, abschnitt)
+        for chunk, video, dokument, abschnitt in (await session.execute(q)).all()
+    }
     return [je_id[k] for k in chunk_ids if k in je_id]
 
 
@@ -294,15 +362,15 @@ def filtere_mindest_aehnlichkeit(kandidaten: Iterable[Treffer], mindest: float) 
 
 
 def begrenze_je_video(kandidaten: Iterable[Treffer], max_je_video: int) -> list[Treffer]:
-    """Vielfalt: höchstens `max_je_video` Stellen je Video, Reihenfolge bleibt (0 = keine Grenze)."""
+    """Vielfalt: höchstens `max_je_video` Stellen je Werk (Video oder Dokument), Reihenfolge bleibt (0 = keine Grenze)."""
     if max_je_video <= 0:
         return list(kandidaten)
     zaehler: dict[str, int] = {}
     aus: list[Treffer] = []
     for k in kandidaten:
-        if zaehler.get(k.video_id, 0) >= max_je_video:
+        if zaehler.get(k.werk_id, 0) >= max_je_video:
             continue
-        zaehler[k.video_id] = zaehler.get(k.video_id, 0) + 1
+        zaehler[k.werk_id] = zaehler.get(k.werk_id, 0) + 1
         aus.append(k)
     return aus
 
@@ -336,38 +404,29 @@ def _verschmelze_lauf(lauf: list[Treffer], anker_ids: set[str]) -> Treffer | Non
     if not anker:
         return None
     bester = max(anker, key=lambda s: s.wert)
-    return Treffer(
-        chunk_id=bester.chunk_id,
-        video_id=bester.video_id,
-        titel=bester.titel,
-        serie=bester.serie,
-        folge_nr=bester.folge_nr,
+    return replace(
+        bester,
         start_s=lauf[0].start_s,
         end_s=lauf[-1].end_s,
         text=verbinde_texte(lauf),
-        wert=bester.wert,
-        reihenfolge=bester.reihenfolge,
-        thema=bester.thema,
-        original_url=bester.original_url,
-        miniatur=bester.miniatur,
         ueberlappung_vor=lauf[0].ueberlappung_vor,
-        bewertung=bester.bewertung,
+        position_von=lauf[0].position_von,
     )
 
 
 def fuege_nachbarn_zusammen(anker: list[Treffer], nachbarn: Iterable[Treffer]) -> list[Treffer]:
     """Baut aus Ankern und ihren Nachbarn zusammenhängende Abschnitte, entdoppelt an den Überlappungen.
 
-    Anker desselben Videos, deren Fenster sich berühren, verschmelzen zu einem Abschnitt. Die
+    Anker desselben Werks, deren Fenster sich berühren, verschmelzen zu einem Abschnitt. Die
     Rangfolge der Anker bleibt erhalten: ein Abschnitt steht dort, wo sein bester Anker stand.
     """
     anker_ids = {a.chunk_id for a in anker}
     rang = {a.chunk_id: i for i, a in enumerate(anker)}
     je_video: dict[str, dict[int, Treffer]] = {}
     for n in nachbarn:
-        je_video.setdefault(n.video_id, {})[n.reihenfolge] = n
+        je_video.setdefault(n.werk_id, {})[n.reihenfolge] = n
     for a in anker:  # Anker gewinnen gegen Nachbarn mit gleicher Nummer (sie tragen den Wert)
-        je_video.setdefault(a.video_id, {})[a.reihenfolge] = a
+        je_video.setdefault(a.werk_id, {})[a.reihenfolge] = a
     abschnitte: list[Treffer] = []
     for stuecke in je_video.values():
         sortiert = [stuecke[r] for r in sorted(stuecke)]
@@ -380,13 +439,13 @@ def fuege_nachbarn_zusammen(anker: list[Treffer], nachbarn: Iterable[Treffer]) -
 
 
 def nachbar_nummern(anker: list[Treffer], nachbarn: int) -> dict[str, set[int]]:
-    """Je Video die Reihenfolge-Nummern, die als Nachbarn geladen werden müssen (ohne die Anker selbst)."""
+    """Je Werk die Reihenfolge-Nummern, die als Nachbarn geladen werden müssen (ohne die Anker selbst)."""
     gewuenscht: dict[str, set[int]] = {}
-    vorhanden = {(a.video_id, a.reihenfolge) for a in anker}
+    vorhanden = {(a.werk_id, a.reihenfolge) for a in anker}
     for a in anker:
         for r in range(a.reihenfolge - nachbarn, a.reihenfolge + nachbarn + 1):
-            if r >= 0 and (a.video_id, r) not in vorhanden:
-                gewuenscht.setdefault(a.video_id, set()).add(r)
+            if r >= 0 and (a.werk_id, r) not in vorhanden:
+                gewuenscht.setdefault(a.werk_id, set()).add(r)
     return gewuenscht
 
 
@@ -480,7 +539,7 @@ class Suche:
 
 def kontexttext(t: Treffer) -> str:
     """Text mit Kontextkopf, wie ihn auch die Einbettung sieht (Architektur, Abschnitt 6)."""
-    kopf = f"Video: {t.titel}"
+    kopf = f"{'Dokument' if t.art == 'dokument' else 'Video'}: {t.titel}"
     if t.thema:
         kopf = f"{kopf} | Thema: {t.thema}"
     return f"{kopf}\n{t.text}"

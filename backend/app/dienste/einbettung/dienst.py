@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...config import einstellungen
 from ...db.engine import sitzung
-from ...db.modelle import Chunk, Einbettung, Video
+from ...db.modelle import Chunk, Dokument, Einbettung, Video
 from ..anbieter import dienst as anbieter_dienst
 from ..anbieter.basis import AnbieterFehler, EinbettungsAnbieter
 from ..einstellungen import dienst as einstellungen_dienst
@@ -32,11 +32,11 @@ class Einbettungsergebnis:
     dimension: int
 
 
-def einbettungstext(titel: str, thema: str, text: str, kontextkopf: bool) -> str:
-    """Der Text, der eingebettet wird: bei Kontextkopf mit Videotitel und Thema davor."""
+def einbettungstext(titel: str, thema: str, text: str, kontextkopf: bool, werk: str = "Video") -> str:
+    """Der Text, der eingebettet wird: bei Kontextkopf mit Werk (Video oder Dokument), Titel und Thema davor."""
     if not kontextkopf:
         return text
-    kopf = f"Video: {titel.strip()}" if titel.strip() else "Video"
+    kopf = f"{werk}: {titel.strip()}" if titel.strip() else werk
     if thema.strip():
         kopf = f"{kopf} | Thema: {thema.strip()}"
     return f"{kopf}\n{text}"
@@ -74,9 +74,10 @@ def _stapel(liste: list[Chunk], groesse: int) -> list[list[Chunk]]:
 
 
 async def chunks_einbetten(
-    video_id: str,
+    video_id: str | None,
     werte: dict[str, Any],
     *,
+    dokument_id: str | None = None,
     nur_chunk_ids: list[str] | None = None,
     fortschritt: Fortschrittsmelder | None = None,
     abbruch: asyncio.Event | None = None,
@@ -88,9 +89,16 @@ async def chunks_einbetten(
     """
     async with sitzung() as s:
         anbieter, anbieter_name = await aktiver_einbetter(s)
-        video = await s.get(Video, video_id)
-        titel = video.titel if video else ""
-        q = select(Chunk).where(Chunk.video_id == video_id).order_by(Chunk.reihenfolge)
+        if dokument_id:
+            dokument = await s.get(Dokument, dokument_id)
+            titel = dokument.titel if dokument else ""
+            werk = "Dokument"
+            q = select(Chunk).where(Chunk.dokument_id == dokument_id).order_by(Chunk.reihenfolge)
+        else:
+            video = await s.get(Video, video_id) if video_id else None
+            titel = video.titel if video else ""
+            werk = "Video"
+            q = select(Chunk).where(Chunk.video_id == video_id).order_by(Chunk.reihenfolge)
         if nur_chunk_ids:
             q = q.where(Chunk.id.in_(nur_chunk_ids))
         chunks = list((await s.execute(q)).scalars().all())
@@ -107,7 +115,7 @@ async def chunks_einbetten(
     for nr, gruppe in enumerate(stapel, start=1):
         if abbruch is not None and abbruch.is_set():
             raise asyncio.CancelledError()
-        texte = [einbettungstext(titel, c.thema, c.text, kontextkopf) for c in gruppe]
+        texte = [einbettungstext(titel, c.thema, c.text, kontextkopf, werk) for c in gruppe]
         vektoren = await anbieter.einbetten(texte, zeitgrenze_s=zeitgrenze)
         if len(vektoren) != len(gruppe):
             raise AnbieterFehler(f"{anbieter_name}: {len(vektoren)} Vektoren für {len(gruppe)} Stücke")

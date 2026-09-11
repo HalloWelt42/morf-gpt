@@ -962,8 +962,10 @@ class DatenbankQuelle:
                 videos=await _anzahl(s, select(func.count(Video.id))),
                 transkripte=await _anzahl(s, select(func.count(Transkript.id)).where(Transkript.aktuell.is_(True))),
                 korrekturen=await _anzahl(s, select(func.count(Korrektur.id)).where(Korrektur.aktuell.is_(True))),
-                chunks=await _anzahl(s, select(func.count(Chunk.id))),
-                einbettungen=await _anzahl(s, select(func.count(Einbettung.id))),
+                chunks=await _anzahl(s, select(func.count(Chunk.id)).where(Chunk.video_id.is_not(None))),
+                einbettungen=await _anzahl(
+                    s, select(func.count(Einbettung.id)).join(Chunk, Chunk.id == Einbettung.chunk_id).where(Chunk.video_id.is_not(None))
+                ),
             )
 
     def _miniatur_datei(self, video: Video) -> Path | None:
@@ -1027,26 +1029,33 @@ class DatenbankQuelle:
         return _streame(stmt, _aus_spalten(KorrekturZeile))
 
     def chunks(self) -> AsyncIterator[ChunkZeile]:
-        stmt = select(
-            Chunk.id,
-            Chunk.video_id,
-            Chunk.korrektur_id,
-            Chunk.reihenfolge,
-            Chunk.text,
-            Chunk.start_s,
-            Chunk.end_s,
-            Chunk.zeichen,
-            Chunk.thema,
-            Chunk.ueberlappung_vor,
-            Chunk.ueberlappung_nach,
-            Chunk.manuell_bearbeitet,
-            Chunk.erstellt,
-        ).order_by(Chunk.video_id, Chunk.reihenfolge)
+        stmt = (
+            select(
+                Chunk.id,
+                Chunk.video_id,
+                Chunk.korrektur_id,
+                Chunk.reihenfolge,
+                Chunk.text,
+                Chunk.start_s,
+                Chunk.end_s,
+                Chunk.zeichen,
+                Chunk.thema,
+                Chunk.ueberlappung_vor,
+                Chunk.ueberlappung_nach,
+                Chunk.manuell_bearbeitet,
+                Chunk.erstellt,
+            )
+            .where(Chunk.video_id.is_not(None))
+            .order_by(Chunk.video_id, Chunk.reihenfolge)
+        )
         return _streame(stmt, _aus_spalten(ChunkZeile))
 
     def einbettungen(self) -> AsyncIterator[EinbettungZeile]:
-        stmt = select(Einbettung.chunk_id, Einbettung.modell, Einbettung.anbieter, Einbettung.dimension, Einbettung.vektor).order_by(
-            Einbettung.chunk_id, Einbettung.modell
+        stmt = (
+            select(Einbettung.chunk_id, Einbettung.modell, Einbettung.anbieter, Einbettung.dimension, Einbettung.vektor)
+            .join(Chunk, Chunk.id == Einbettung.chunk_id)
+            .where(Chunk.video_id.is_not(None))
+            .order_by(Einbettung.chunk_id, Einbettung.modell)
         )
         return _streame(stmt, _einbettung_zeile)
 

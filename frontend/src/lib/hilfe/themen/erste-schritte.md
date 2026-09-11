@@ -12,3 +12,4 @@ morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein
 2. Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.
 3. Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.
 4. Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.
+5. Unter Dokumente lädst du E-Books (EPUB), Markdown und Text hoch oder legst eigene Texte an; sie laufen ohne Audio direkt über Stückeln und Einbetten und stehen dem Chat neben den Videos zur Verfügung.

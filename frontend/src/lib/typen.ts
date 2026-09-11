@@ -18,6 +18,7 @@ export interface Uebersicht {
   version_voll: string;
   videos_gesamt: number;
   videos_ausgewaehlt: number;
+  dokumente: number;
   chunks: number;
   einbettungen: number;
   auftraege_wartend: number;
@@ -353,12 +354,17 @@ export interface Vergleich {
 // --- Chunks -------------------------------------------------------------------
 export interface ChunkEintrag {
   id: string;
+  werkart: "video" | "dokument";
   video_id: string;
   video_titel: string;
   serie: string;
   folge_nr: number | null;
   original_url: string;
   miniatur_url: string | null;
+  dokument_id: string;
+  abschnitt: string;
+  abschnitt_nr: number | null;
+  position_von: number | null;
   reihenfolge: number;
   anzahl_im_video: number;
   text: string;
@@ -478,6 +484,8 @@ export interface Suchparameter {
   von: string | null;
   bis: string | null;
   video_ids: string[];
+  werkart?: "" | "video" | "dokument";
+  dokument_ids?: string[];
 }
 
 export interface Stelle {
@@ -496,9 +504,15 @@ export interface Stelle {
   miniatur: string;
   ueberlappung_vor: number;
   bewertung: number | null;
-  art: "bibliothek" | "werkzeug";
+  art: "bibliothek" | "dokument" | "werkzeug";
   werkzeug: string;
   quelle_url: string;
+  dokument_id: string;
+  abschnitt: string;
+  abschnitt_nr: number | null;
+  seite_von: number | null;
+  position_von: number | null;
+  werk_id: string;
   benutzt?: boolean;
 }
 
@@ -692,4 +706,82 @@ export interface WerkzeugProbe {
   stellen: number;
   text: string;
   fehler: string;
+}
+
+// --- Dokumente ---------------------------------------------------------------
+export interface AbschnittEintrag {
+  id: string;
+  reihenfolge: number;
+  ebene: number;
+  titel: string;
+  zeichen: number;
+  anker: string;
+  seite_von: number | null;
+  seite_bis: number | null;
+  chunks_anzahl: number;
+}
+
+export interface AbschnittText extends AbschnittEintrag {
+  text: string;
+}
+
+export interface DokumentEintrag {
+  id: string;
+  titel: string;
+  autor: string;
+  art: string;
+  art_titel: string;
+  sprache: string;
+  veroeffentlicht: string | null;
+  dateiname: string;
+  groesse_bytes: number | null;
+  zeichen: number;
+  abschnitte_anzahl: number;
+  chunks_anzahl: number;
+  stufe: string;
+  stufe_titel: string;
+  fehler: string;
+  offener_auftrag: OffenerAuftrag | null;
+  erstellt: string;
+  aktualisiert: string;
+}
+
+export interface DokumentDetail extends DokumentEintrag {
+  beschreibung: string;
+  notizen: string;
+  prioritaet: number;
+  felder_manuell: string[];
+  metadaten_original: Record<string, unknown>;
+  abschnitte: AbschnittEintrag[];
+  auftraege: AuftragKurz[];
+}
+
+export interface DokumentInhalt {
+  id: string;
+  titel: string;
+  abschnitte: AbschnittText[];
+}
+
+export interface DokumentAenderung {
+  titel?: string;
+  autor?: string;
+  sprache?: string;
+  beschreibung?: string;
+  veroeffentlicht?: string | null;
+  notizen?: string;
+  prioritaet?: number;
+  handpflege_aufheben?: boolean;
+}
+
+export interface EigenerText {
+  titel: string;
+  text: string;
+  autor: string;
+  art: "markdown" | "text";
+}
+
+export interface DokumentArt {
+  kennung: string;
+  titel: string;
+  endungen: string[];
 }

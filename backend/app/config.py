@@ -68,6 +68,10 @@ class Einstellungen(BaseSettings):
         return self.daten_verzeichnis / "miniaturen"
 
     @property
+    def dokumente_verzeichnis(self) -> Path:
+        return self.daten_verzeichnis / "dokumente"
+
+    @property
     def export_verzeichnis(self) -> Path:
         return self.daten_verzeichnis / "export"
 
@@ -80,6 +84,7 @@ class Einstellungen(BaseSettings):
         for p in (
             self.daten_verzeichnis,
             self.audio_verzeichnis,
+            self.dokumente_verzeichnis,
             self.miniaturen_verzeichnis,
             self.export_verzeichnis,
             self.modelle_verzeichnis,

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Dokument</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      .m-kapitel { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--m-rand); background: var(--m-flaeche); }
+      .m-kapitel .m-seite-koerper { overflow-y: auto; min-height: 0; }
+      .m-kapitel-eintrag { display: flex; align-items: center; gap: 6px; width: 100%; border: 0; background: transparent; color: var(--m-text-2); text-align: left; padding: 6px 12px; font-size: 0.9rem; }
+      .m-kapitel-eintrag.ebene-2 { padding-left: 24px; }
+      .m-kapitel-eintrag.aktiv, .m-kapitel-eintrag:hover { background: var(--m-akzent-hell); color: var(--m-akzent); }
+      .m-lesen { min-height: 0; overflow-y: auto; border: 1px solid var(--m-rand); background: var(--m-flaeche); padding: 18px 28px; font-size: 1.08rem; line-height: 1.65; }
+      .m-lesen-abschnitt { max-width: 78ch; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--m-rand); }
+      .m-lesen-abschnitt.aktiv h2, .m-lesen-abschnitt.aktiv h3 { color: var(--m-akzent); }
+      .m-lesen h2 { font-size: 1.4rem; margin: 8px 0 4px; }
+      .m-lesen h3 { font-size: 1.15rem; margin: 8px 0 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+<a class="aktiv" href="dokumente.html"><i class="fa-solid fa-book"></i> Dokumente <span class="zaehler">3</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <a class="btn btn-sm btn-outline-secondary" href="dokumente.html" title="Zurück zu den Dokumenten"><i class="fa-solid fa-arrow-left"></i></a>
+            <h1 class="text-truncate" style="max-width: 640px"><i class="fa-solid fa-book text-secondary"></i> Der Systembegriff</h1>
+            <span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span>
+            <button class="m-info" data-hilfe title="Hilfe zu Dokumenten">i</button>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Originaldatei herunterladen"><i class="fa-solid fa-download"></i> E-Book (EPUB)</button>
+            <button class="btn btn-sm btn-outline-secondary" title="Titel, Autor, Datum und Beschreibung von Hand pflegen"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
+            <button class="btn btn-sm btn-outline-danger" title="Dokument löschen"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div class="m-ansicht-koerper d-flex flex-column gap-3" style="overflow: hidden">
+            <div class="row g-3">
+              <div class="col-xl-8">
+                <div class="card h-100"><div class="card-body">
+                  <dl class="row mb-0">
+                    <dt class="col-sm-3 fw-normal text-secondary">Autor</dt><dd class="col-sm-9">morf</dd>
+                    <dt class="col-sm-3 fw-normal text-secondary">Art</dt><dd class="col-sm-9">E-Book (EPUB) &middot; Sprache de</dd>
+                    <dt class="col-sm-3 fw-normal text-secondary">Datum</dt><dd class="col-sm-9">1. Mai 2024</dd>
+                    <dt class="col-sm-3 fw-normal text-secondary">Datei</dt><dd class="col-sm-9"><code>systembegriff.epub</code> &middot; 1,2 MB &middot; importiert heute, 16:02</dd>
+                    <dt class="col-sm-3 fw-normal text-secondary">Umfang</dt><dd class="col-sm-9">38 Abschnitte, 412.310 Zeichen, 189 Stücke</dd>
+                    <dt class="col-sm-3 fw-normal text-secondary">Von Hand gepflegt</dt><dd class="col-sm-9">Datum <a href="#" class="ms-1">aufheben</a></dd>
+                  </dl>
+                  <h6 class="mt-3 mb-1 small text-uppercase text-secondary">Notizen</h6>
+                  <textarea class="form-control" rows="2" placeholder="Eigene Notizen zu diesem Dokument ...">Gehört zu mmM#362 bis mmM#366.</textarea>
+                </div></div>
+              </div>
+              <div class="col-xl-4">
+                <div class="m-kennzahlen">
+                  <div class="m-kennzahl"><div class="wert">38</div><div class="titel">Abschnitte</div></div>
+                  <div class="m-kennzahl"><div class="wert">412.310</div><div class="titel">Zeichen</div></div>
+                  <div class="m-kennzahl"><div class="wert">189</div><div class="titel">Stücke</div></div>
+                  <div class="m-kennzahl"><div class="wert">Eingebettet</div><div class="titel">Stufe</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex gap-3 flex-grow-1" style="min-height: 0">
+              <nav class="m-kapitel">
+                <div class="m-seite-kopf"><i class="fa-solid fa-list"></i> Kapitel <button class="m-info" title="Je Kapitel die Zahl der Stücke; Klick springt in die Leseansicht.">i</button></div>
+                <div class="m-seite-koerper p-0"><button class="m-kapitel-eintrag ebene-1"><span class="text-truncate">Vorwort</span><span class="badge text-bg-light ms-auto">3</span></button><button class="m-kapitel-eintrag ebene-1"><span class="text-truncate">Der Systembegriff</span><span class="badge text-bg-light ms-auto">14</span></button><button class="m-kapitel-eintrag ebene-2 aktiv"><span class="text-truncate">Grenzen sind Entscheidungen</span><span class="badge text-bg-light ms-auto">6</span></button><button class="m-kapitel-eintrag ebene-2"><span class="text-truncate">Elemente und Relationen</span><span class="badge text-bg-light ms-auto">8</span></button><button class="m-kapitel-eintrag ebene-1"><span class="text-truncate">Herrschaft als System</span><span class="badge text-bg-light ms-auto">22</span></button><button class="m-kapitel-eintrag ebene-2"><span class="text-truncate">Skalierbarkeit</span><span class="badge text-bg-light ms-auto">9</span></button><button class="m-kapitel-eintrag ebene-2"><span class="text-truncate">Doppelstandards</span><span class="badge text-bg-light ms-auto">13</span></button><button class="m-kapitel-eintrag ebene-1"><span class="text-truncate">Nachwort</span><span class="badge text-bg-light ms-auto">2</span></button></div>
+              </nav>
+              <div class="m-lesen flex-grow-1">
+                <article class="m-lesen-abschnitt">
+                  <h2>Der Systembegriff</h2>
+                  <div class="small text-secondary mb-2">9.420 Zeichen &middot; 14 Stücke</div>
+                  <p>Ein System ist keine Sache, die man findet, sondern eine Entscheidung, die man trifft: Welche Elemente gehören dazu, welche Beziehungen zählen, und wo hört es auf? Wer das vergisst, hält seine eigene Grenzziehung für eine Eigenschaft der Welt.</p>
+                  <p>Der Begriff hilft, weil er zwingt, die Beziehungen zu benennen statt nur die Dinge. Ein Markt, ein Staat, eine Familie: nichts davon ist eine Ansammlung von Teilen, alles davon ist ein Muster von Verhältnissen.</p>
+                </article>
+                <article class="m-lesen-abschnitt aktiv">
+                  <h3>Grenzen sind Entscheidungen</h3>
+                  <div class="small text-secondary mb-2">4.110 Zeichen &middot; 6 Stücke</div>
+                  <p>Jede Systemgrenze schneidet Beziehungen durch. Was außerhalb liegt, wird zur Umwelt erklärt, und die Umwelt bekommt keine Stimme. Darum lohnt die Frage, wer die Grenze gezogen hat und wem sie nützt.</p>
+                  <p>Das ist der Punkt, an dem der Systembegriff politisch wird, ohne es zu wollen.</p>
+                </article>
+                <article class="m-lesen-abschnitt">
+                  <h3>Elemente und Relationen</h3>
+                  <div class="small text-secondary mb-2">6.030 Zeichen &middot; 8 Stücke</div>
+                  <p>Elemente sind austauschbar, Relationen nicht. Wer ein System verstehen will, zählt darum nicht die Teile, sondern beschreibt die Verhältnisse zwischen ihnen.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
+    </div>
+  </body>
+</html>

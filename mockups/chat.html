@@ -22,6 +22,7 @@
         <nav class="m-nav">
           <a class="aktiv" href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
           <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+<a href="dokumente.html"><i class="fa-solid fa-book"></i> Dokumente <span class="zaehler">3</span></a>
           <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
           <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
           <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
@@ -181,6 +182,10 @@
             </div>
             <div class="m-parameter">
               <h6>Filter</h6>
+              <div class="mb-2">
+                <label class="form-label small mb-1" for="p-werke">Werke <button class="m-info" title="Alles, nur Videos, nur Dokumente oder ein bestimmtes Dokument">i</button></label>
+                <select id="p-werke" class="form-select form-select-sm"><option selected>Videos und Dokumente</option><option>Nur Videos</option><option>Nur Dokumente</option><option>Nur: Der Systembegriff</option></select>
+              </div>
               <div class="row g-2">
                 <div class="col-6">
                   <label class="form-label small mb-1">Serie</label>
@@ -311,6 +316,23 @@
                 </div>
               </div>
 
+              <div class="m-stelle dokument" id="stelle-8" style="--nr-farbe: var(--m-stufe-gestueckelt)">
+                <div class="kopf">
+                  <span class="nr" style="background: var(--m-stufe-gestueckelt)">8</span>
+                  <div>
+                    <div class="titel"><i class="fa-solid fa-book text-secondary"></i> Der Systembegriff</div>
+                    <div class="zeit">Kapitel: Grenzen sind Entscheidungen &middot; Stück 23</div>
+                  </div>
+                </div>
+                <div class="auszug">Jede Systemgrenze schneidet Beziehungen durch. Was außerhalb liegt, wird zur Umwelt erklärt, und die Umwelt bekommt keine Stimme. Darum lohnt die Frage, wer die Grenze gezogen hat und wem sie nützt.</div>
+                <div class="aktionen">
+                  <div class="m-wert" title="Ähnlichkeit zur Frage"><span style="width: 71%"></span></div>
+                  <span class="m-wert-zahl">0,71</span>
+                  <a class="btn btn-sm btn-outline-primary" href="dokument.html" title="Im Dokument an dieser Stelle lesen"><i class="fa-solid fa-book-open"></i></a>
+                  <a class="btn btn-sm btn-outline-secondary" href="stelle.html" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
               <div class="m-stelle werkzeug" id="stelle-7">
                 <div class="kopf">
                   <span class="nr" style="background: var(--m-stufe-korrigiert)"><i class="fa-solid fa-plug"></i></span>

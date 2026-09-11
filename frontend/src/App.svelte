@@ -12,6 +12,8 @@
   import Chat from "./ansichten/Chat.svelte";
   import Bibliothek from "./ansichten/Bibliothek.svelte";
   import Video from "./ansichten/Video.svelte";
+  import Dokumente from "./ansichten/Dokumente.svelte";
+  import Dokument from "./ansichten/Dokument.svelte";
   import Stellen from "./ansichten/Stellen.svelte";
   import Stelle from "./ansichten/Stelle.svelte";
   import Fliessband from "./ansichten/Fliessband.svelte";
@@ -49,6 +51,10 @@
       <Bibliothek />
     {:else if ui.route.ansicht === "video"}
       {#key ui.route.id}<Video id={ui.route.id} reiter={ui.route.unter} />{/key}
+    {:else if ui.route.ansicht === "dokumente"}
+      <Dokumente />
+    {:else if ui.route.ansicht === "dokument"}
+      {#key ui.route.id}<Dokument id={ui.route.id} abschnitt={ui.route.unter} />{/key}
     {:else if ui.route.ansicht === "stellen"}
       <Stellen />
     {:else if ui.route.ansicht === "stelle"}

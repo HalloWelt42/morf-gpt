@@ -82,11 +82,15 @@
     {#if c}
       <h1>Stück {c.reihenfolge} von {c.anzahl_im_video} - {c.video_titel}</h1>
       {#if c.serie}<Abzeichen serie={c.serie} folgeNr={c.folge_nr} />{/if}
-      <span class="m-unter">{zeitmarke(c.start_s)} bis {zeitmarke(c.end_s)}{#if c.thema} &middot; {c.thema}{/if}</span>
+      <span class="m-unter">{#if c.werkart === "dokument"}{c.abschnitt ? `Kapitel: ${c.abschnitt}` : "Dokument"}{:else}{zeitmarke(c.start_s)} bis {zeitmarke(c.end_s)}{/if}{#if c.thema && c.thema !== c.abschnitt} &middot; {c.thema}{/if}</span>
       <InfoKnopf anker="stellen" />
       <span class="m-luecke"></span>
-      <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(c!.video_id, c!.start_s)}><i class="fa-solid fa-play"></i> Abspielen</button>
-      <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("video", c!.video_id, "stuecke")}><i class="fa-solid fa-film"></i> Video</button>
+      {#if c.werkart === "dokument"}
+        <button class="btn btn-sm btn-outline-primary" onclick={() => ui.gehe("dokument", c!.dokument_id, c!.abschnitt_nr === null ? "" : String(c!.abschnitt_nr))}><i class="fa-solid fa-book-open"></i> Im Dokument lesen</button>
+      {:else}
+        <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(c!.video_id, c!.start_s)}><i class="fa-solid fa-play"></i> Abspielen</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("video", c!.video_id, "stuecke")}><i class="fa-solid fa-film"></i> Video</button>
+      {/if}
     {:else}
       <h1>Stück</h1>
     {/if}
@@ -111,8 +115,13 @@
             {:else}<span class="text-warning">Keine Einbettung - dieses Stück wird bei der Suche nicht gefunden.</span>{/if}
           </div></div>
           <div class="card mb-3"><div class="card-header fw-semibold">Herkunft</div><div class="card-body">
-            <div>Video: <button class="btn btn-sm btn-link p-0" onclick={() => ui.gehe("video", c!.video_id)}>{c.video_titel}</button></div>
-            <div class="text-secondary small">Angelegt {datumZeit(c.erstellt)}{c.manuell_bearbeitet ? ", von Hand bearbeitet" : ""}{c.korrektur_id ? ", aus der Korrektur" : ", aus dem Rohtranskript"}</div>
+            {#if c.werkart === "dokument"}
+              <div>Dokument: <button class="btn btn-sm btn-link p-0" onclick={() => ui.gehe("dokument", c!.dokument_id)}>{c.video_titel}</button></div>
+              <div class="text-secondary small">Angelegt {datumZeit(c.erstellt)}{c.manuell_bearbeitet ? ", von Hand bearbeitet" : ""}, aus den Abschnitten des Dokuments</div>
+            {:else}
+              <div>Video: <button class="btn btn-sm btn-link p-0" onclick={() => ui.gehe("video", c!.video_id)}>{c.video_titel}</button></div>
+              <div class="text-secondary small">Angelegt {datumZeit(c.erstellt)}{c.manuell_bearbeitet ? ", von Hand bearbeitet" : ""}{c.korrektur_id ? ", aus der Korrektur" : ", aus dem Rohtranskript"}</div>
+            {/if}
           </div></div>
           {#if c.vorheriger}
             <div class="card mb-3"><div class="card-header fw-semibold">Vorheriges Stück ({zeitmarke(c.vorheriger.start_s)})</div><div class="card-body small">{c.vorheriger.text.slice(-400)} <button class="btn btn-sm btn-link p-0" onclick={() => ui.gehe("stelle", c!.vorheriger!.id)}>öffnen</button></div></div>

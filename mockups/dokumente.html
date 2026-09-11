@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Dokumente</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+<a class="aktiv" href="dokumente.html"><i class="fa-solid fa-book"></i> Dokumente <span class="zaehler">3</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Dokumente</h1>
+            <span class="m-unter">3 Dokumente: Bücher, Texte und eigene Notizen neben den Videos</span>
+            <button class="m-info" data-hilfe title="Hilfe zu Dokumenten">i</button>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-primary" title="EPUB, Markdown oder Text hochladen, auch mehrere Dateien"><i class="fa-solid fa-upload"></i> Hochladen</button>
+            <button class="btn btn-sm btn-outline-secondary active" title="Eigenen Text anlegen"><i class="fa-solid fa-pen-to-square"></i> Eigener Text</button>
+          </div>
+          <div class="m-ansicht-koerper d-flex flex-column gap-2" style="overflow: hidden">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex align-items-center gap-2 mb-2"><h6 class="m-0 small text-uppercase text-secondary">Eigenen Text anlegen</h6><button class="m-info" title="Überschriften mit # eröffnen Kapitel; der Text wird wie ein hochgeladenes Dokument gestückelt und eingebettet.">i</button></div>
+                <div class="row g-2">
+                  <div class="col-md-6"><label class="form-label mb-1" for="et-titel">Titel</label><input class="form-control" id="et-titel" value="Notizen zur Kasualisierung" /></div>
+                  <div class="col-md-4"><label class="form-label mb-1" for="et-autor">Autor</label><input class="form-control" id="et-autor" value="Ich" /></div>
+                  <div class="col-md-2"><label class="form-label mb-1" for="et-art">Art</label><select class="form-select" id="et-art"><option>Markdown</option><option>Text</option></select></div>
+                  <div class="col-12"><label class="form-label mb-1" for="et-text">Text (Überschriften mit # eröffnen Kapitel)</label><textarea class="form-control" id="et-text" rows="6"># Begriff
+
+Kasualisierung meint bei morf die nachträgliche Erfindung von Ursachen ...
+
+# Beispiele
+
+Erfolgsgeschichten und der Überlebendenfehler ...</textarea></div>
+                  <div class="col-12 d-flex gap-2 align-items-center">
+                    <span class="small text-secondary">Der Text wird wie ein hochgeladenes Dokument gestückelt und eingebettet.</span>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-outline-secondary">Abbrechen</button>
+                    <button class="btn btn-primary">Anlegen</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+              <input class="form-control form-control-sm" style="width: 280px" placeholder="Titel, Autor oder Beschreibung suchen ..." />
+              <select class="form-select form-select-sm" style="width: 190px"><option>Alle Arten</option><option>E-Book (EPUB)</option><option>Markdown</option><option>Text</option></select>
+              <select class="form-select form-select-sm" style="width: 170px"><option>Alle Stufen</option><option>Importiert</option><option>Gestückelt</option><option>Eingebettet</option></select>
+            </div>
+            <div class="m-tabelle-feld flex-grow-1">
+              <table class="table table-hover table-sm align-middle">
+                <thead><tr><th>Titel</th><th style="width: 160px">Autor</th><th style="width: 130px">Art</th><th style="width: 130px">Datum</th><th style="width: 150px" class="text-end">Umfang</th><th style="width: 80px" class="text-end">Stücke</th><th style="width: 140px">Stufe</th><th style="width: 220px">Offener Auftrag</th><th style="width: 60px"></th></tr></thead>
+                <tbody>
+            <tr>
+              <td><div class="text-truncate" style="max-width: 520px"><i class="fa-solid fa-book text-secondary me-1"></i>Der Systembegriff</div></td>
+              <td>morf</td><td>E-Book (EPUB)</td><td class="text-secondary text-nowrap">1. Mai 2024</td>
+              <td class="text-end text-nowrap">38 Abschnitte<br /><small class="text-secondary">412.310 Zeichen</small></td>
+              <td class="text-end">189</td>
+              <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+              <td></td>
+              <td><button class="btn btn-sm btn-outline-danger" title="Dokument löschen"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+            <tr>
+              <td><div class="text-truncate" style="max-width: 520px"><i class="fa-solid fa-book text-secondary me-1"></i>Notizen zur Kasualisierung</div></td>
+              <td>Ich</td><td>Markdown</td><td class="text-secondary text-nowrap">11. September 2026</td>
+              <td class="text-end text-nowrap">5 Abschnitte<br /><small class="text-secondary">9.840 Zeichen</small></td>
+              <td class="text-end">6</td>
+              <td><span class="m-stufe gestueckelt"><i class="fa-solid fa-scissors"></i> Gestueckelt</span></td>
+              <td><div class="m-fortschritt mb-1 laeuft"><span style="width: 60%"></span></div><small class="text-secondary">Einbetten</small></td>
+              <td><button class="btn btn-sm btn-outline-danger" title="Dokument löschen"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+            <tr>
+              <td><div class="text-truncate" style="max-width: 520px"><i class="fa-solid fa-book text-secondary me-1"></i>Vortragsmanuskript Herrschaft</div></td>
+              <td>morf</td><td>Text</td><td class="text-secondary text-nowrap">3. März 2025</td>
+              <td class="text-end text-nowrap">1 Abschnitte<br /><small class="text-secondary">21.400 Zeichen</small></td>
+              <td class="text-end">0</td>
+              <td><span class="m-stufe importiert"><i class="fa-solid fa-file-import"></i> Importiert</span></td>
+              <td><small class="text-secondary">Stückeln (wartet)</small></td>
+              <td><button class="btn btn-sm btn-outline-danger" title="Dokument löschen"><i class="fa-solid fa-trash"></i></button></td>
+            </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
+    </div>
+  </body>
+</html>

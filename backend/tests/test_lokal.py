@@ -27,7 +27,15 @@ def ordner() -> Iterator[Path]:
     (pfad / "unterordner" / "notizen.txt").write_bytes(b"x")
     (pfad / ".versteckt" / "geheim.mp4").write_bytes(b"x")
     (pfad / "Vortrag_ueber_Zeit.info.json").write_text(
-        json.dumps({"title": "Über die Zeit | mmM#12", "upload_date": "20240301", "webpage_url": "https://youtu.be/abc", "tags": ["zeit", " "], "duration": 900}),
+        json.dumps(
+            {
+                "title": "Über die Zeit | mmM#12",
+                "upload_date": "20240301",
+                "webpage_url": "https://youtu.be/abc",
+                "tags": ["zeit", " "],
+                "duration": 900,
+            }
+        ),
         encoding="utf-8",
     )
     try:
@@ -100,7 +108,10 @@ async def test_fehlendes_verzeichnis_und_kennung(ordner: Path) -> None:
         await lokal.LokaleDateien(str(ordner / "gibt-es-nicht"), lokal.endungen_parsen("")).kanal()
     with pytest.raises(QuellenFehler):
         lokal.datei_finden(str(ordner), "datei-unbekannt", lokal.endungen_parsen(""))
-    assert lokal.datei_finden(str(ordner), lokal.kennung_aus_pfad("Vortrag_ueber_Zeit.mp4"), lokal.endungen_parsen("")).name == "Vortrag_ueber_Zeit.mp4"
+    assert (
+        lokal.datei_finden(str(ordner), lokal.kennung_aus_pfad("Vortrag_ueber_Zeit.mp4"), lokal.endungen_parsen("")).name
+        == "Vortrag_ueber_Zeit.mp4"
+    )
 
 
 def test_baue_quelle_kennt_beide_typen() -> None:

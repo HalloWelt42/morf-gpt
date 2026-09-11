@@ -4,6 +4,8 @@ export type Ansicht =
   | "chat"
   | "bibliothek"
   | "video"
+  | "dokumente"
+  | "dokument"
   | "stellen"
   | "stelle"
   | "fliessband"
@@ -16,7 +18,7 @@ export interface Route {
   unter: string;
 }
 
-const GUELTIG: Ansicht[] = ["chat", "bibliothek", "video", "stellen", "stelle", "fliessband", "auftrag", "einstellungen"];
+const GUELTIG: Ansicht[] = ["chat", "bibliothek", "video", "dokumente", "dokument", "stellen", "stelle", "fliessband", "auftrag", "einstellungen"];
 
 function lese(schluessel: string): string | null {
   try {

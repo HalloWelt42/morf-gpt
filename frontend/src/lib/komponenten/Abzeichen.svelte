@@ -4,6 +4,7 @@
 
   const STUFEN_TITEL: Record<string, string> = {
     entdeckt: "Entdeckt",
+    importiert: "Importiert",
     audio: "Audio bereit",
     transkribiert: "Transkribiert",
     korrigiert: "Korrigiert",
@@ -12,6 +13,7 @@
   };
   const STUFEN_ICON: Record<string, string> = {
     entdeckt: "fa-satellite-dish",
+    importiert: "fa-file-import",
     audio: "fa-headphones",
     transkribiert: "fa-closed-captioning",
     korrigiert: "fa-spell-check",

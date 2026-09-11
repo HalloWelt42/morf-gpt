@@ -11,7 +11,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db.engine import sitzung_abhaengigkeit
-from ..db.modelle import Auftrag, Chunk, Einbettung, Video
+from ..db.modelle import Auftrag, Chunk, Dokument, Einbettung, Video
 from ..dienste.auftraege.laeufer import laeufer
 from ..dienste.einstellungen import dienst as einstellungen_dienst
 from ..domaene.fliessband import STUFEN_REIHENFOLGE, STUFEN_TITEL
@@ -38,6 +38,7 @@ class Uebersicht(BaseModel):
     version_voll: str
     videos_gesamt: int
     videos_ausgewaehlt: int
+    dokumente: int
     chunks: int
     einbettungen: int
     auftraege_wartend: int
@@ -75,6 +76,7 @@ async def uebersicht(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> 
         version_voll=v["voll"],
         videos_gesamt=int(await session.scalar(select(func.count(Video.id))) or 0),
         videos_ausgewaehlt=int(await session.scalar(select(func.count(Video.id)).where(Video.ausgewaehlt.is_(True))) or 0),
+        dokumente=int(await session.scalar(select(func.count(Dokument.id))) or 0),
         chunks=int(await session.scalar(select(func.count(Chunk.id))) or 0),
         einbettungen=int(await session.scalar(select(func.count(Einbettung.id))) or 0),
         auftraege_wartend=int(je_status.get("wartend", 0)),

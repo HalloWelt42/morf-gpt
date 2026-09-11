@@ -3,7 +3,7 @@
   // Fundstellen rechts. Die Antwort entsteht nur aus den rechts ausgewählten Stellen.
   import { onMount, tick } from "svelte";
   import { api, postStrom } from "../lib/api";
-  import type { EinsetzbaresWerkzeug, Nachricht, Stelle, SucheAusgabe, Suchparameter, Unterhaltung, UnterhaltungDetail, SerieEintrag, Werkzeugaufruf } from "../lib/typen";
+  import type { DokumentEintrag, EinsetzbaresWerkzeug, Nachricht, Seite, SerieEintrag, Stelle, SucheAusgabe, Suchparameter, Unterhaltung, UnterhaltungDetail, Werkzeugaufruf } from "../lib/typen";
   import { ui } from "../lib/stores/ui.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
   import { rendereMarkdown } from "../lib/markdown";
@@ -51,9 +51,29 @@
     von: null,
     bis: null,
     video_ids: [],
+    werkart: "",
+    dokument_ids: [],
   };
   let parameter = $state<Suchparameter>({ ...VORGABEN });
   let jahr = $state("");
+  // Werke-Filter: "" (alles), "video", "dokument" oder "dok:<kennung>" für ein einzelnes Dokument.
+  let werkwahl = $state("");
+  let dokumente = $state<DokumentEintrag[]>([]);
+
+  function werkwahlAnwenden(): void {
+    if (werkwahl.startsWith("dok:")) {
+      parameter.werkart = "dokument";
+      parameter.dokument_ids = [werkwahl.slice(4)];
+    } else {
+      parameter.werkart = werkwahl as "" | "video" | "dokument";
+      parameter.dokument_ids = [];
+    }
+  }
+
+  function werkwahlAusParametern(): void {
+    const ids = parameter.dokument_ids ?? [];
+    werkwahl = ids.length === 1 ? `dok:${ids[0]}` : (parameter.werkart ?? "");
+  }
   const jahre = $derived.by(() => {
     const aus: number[] = [];
     const jetzt = new Date().getFullYear();
@@ -98,6 +118,7 @@
     }
     try {
       serien = await api.get<SerieEintrag[]>("/videos/serien");
+      dokumente = (await api.get<Seite<DokumentEintrag>>("/dokumente?je_seite=200")).eintraege;
       const u = await api.get<{ videos_ausgewaehlt: number; chunks: number; stufen: { stufe: string; anzahl: number }[] }>("/system/uebersicht");
       bibliothekStand = { eingebettet: u.stufen.find((s) => s.stufe === "eingebettet")?.anzahl ?? 0, ausgewaehlt: u.videos_ausgewaehlt, chunks: u.chunks };
     } catch {
@@ -112,6 +133,7 @@
       verlauf = aktiv.verlauf;
       parameter = { ...VORGABEN, ...(aktiv.suchparameter as Partial<Suchparameter>) };
       jahr = parameter.von ? parameter.von.slice(0, 4) : "";
+      werkwahlAusParametern();
       const gespeichert = aktiv.suchparameter.werkzeuge;
       gewaehlteWerkzeuge = new Set(Array.isArray(gespeichert) ? gespeichert : werkzeuge.filter((w) => w.vorausgewaehlt).map((w) => w.kennung));
       werkzeugwahl = (aktiv.suchparameter.werkzeugwahl ?? werkzeugwahlVorgabe) as "nutzer" | "modell";
@@ -340,7 +362,13 @@
       zeilen.push(n.rolle === "nutzer" ? `**Frage:** ${n.inhalt}` : n.inhalt, "");
       if (n.rolle === "assistent" && n.stellen.length) {
         zeilen.push("Stellen:");
-        n.stellen.forEach((s, i) => zeilen.push(`${i + 1}. ${s.titel} (${s.serie ? `${s.serie}#${s.folge_nr} ` : ""}${Math.floor(s.start_s / 60)}:${String(Math.floor(s.start_s % 60)).padStart(2, "0")})`));
+        n.stellen.forEach((s, i) =>
+          zeilen.push(
+            s.art === "dokument"
+              ? `${i + 1}. ${s.titel}${s.abschnitt ? ` (Kapitel ${s.abschnitt})` : ""}`
+              : `${i + 1}. ${s.titel} (${s.serie ? `${s.serie}#${s.folge_nr} ` : ""}${Math.floor(s.start_s / 60)}:${String(Math.floor(s.start_s % 60)).padStart(2, "0")})`,
+          ),
+        );
         zeilen.push("");
       }
     }
@@ -491,7 +519,7 @@
         <input id="p-nachbarn" type="range" class="form-range" min="0" max="3" bind:value={parameter.nachbarn} />
       </div>
       <div class="m-regler">
-        <label for="p-jevideo">Höchstens je Video</label><span class="wert">{parameter.max_je_video === 0 ? "keine Grenze" : parameter.max_je_video}</span>
+        <label for="p-jevideo">Höchstens je Werk</label><span class="wert">{parameter.max_je_video === 0 ? "keine Grenze" : parameter.max_je_video}</span>
         <input id="p-jevideo" type="range" class="form-range" min="0" max="10" bind:value={parameter.max_je_video} />
       </div>
     </div>
@@ -538,6 +566,15 @@
     <div class="m-parameter">
       <h6>Filter</h6>
       <div class="row g-2">
+        <div class="col-12">
+          <label class="form-label small mb-1" for="p-werke">Werke <InfoKnopf anker="dokumente" finde="Im Chat" /></label>
+          <select id="p-werke" class="form-select form-select-sm" bind:value={werkwahl} onchange={werkwahlAnwenden}>
+            <option value="">Videos und Dokumente</option>
+            <option value="video">Nur Videos</option>
+            <option value="dokument">Nur Dokumente</option>
+            {#each dokumente as d (d.id)}<option value={"dok:" + d.id}>Nur: {d.titel}</option>{/each}
+          </select>
+        </div>
         <div class="col-6">
           <label class="form-label small mb-1" for="p-serie">Serie</label>
           <select id="p-serie" class="form-select form-select-sm" bind:value={parameter.serie}>

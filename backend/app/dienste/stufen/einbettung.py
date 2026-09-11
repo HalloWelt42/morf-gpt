@@ -17,17 +17,21 @@ if TYPE_CHECKING:
 @stufen.registriere(Auftragsart.EINBETTUNG)
 async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, Any]:
     """Ergebnis: anzahl, modell, anbieter, dimension, dauer_verarbeitung_s."""
-    if not k.video_id:
-        raise RuntimeError("Die Stufe Einbettung braucht ein Video")
+    if not k.video_id and not k.dokument_id:
+        raise RuntimeError("Die Stufe Einbettung braucht ein Video oder ein Dokument")
     await k.fortschritt(0.02, "Einbettung beginnt")
     start = time.monotonic()
-    ergebnis = await einbettung_dienst.chunks_einbetten(k.video_id, k.werte, fortschritt=k.fortschritt, abbruch=k.abbruch)
+    ergebnis = await einbettung_dienst.chunks_einbetten(
+        k.video_id, k.werte, dokument_id=k.dokument_id, fortschritt=k.fortschritt, abbruch=k.abbruch
+    )
     dauer = time.monotonic() - start
     await k.protokoll(
         f"{ergebnis.anzahl} Stücke eingebettet mit {ergebnis.anbieter} ({ergebnis.modell}, {ergebnis.dimension} Dimensionen) "
         f"in {dauer:.1f} Sekunden"
     )
-    bus.veroeffentliche("einbettung", aktion="fertig", video_id=k.video_id, anzahl=ergebnis.anzahl, modell=ergebnis.modell)
+    bus.veroeffentliche(
+        "einbettung", aktion="fertig", video_id=k.video_id, dokument_id=k.dokument_id, anzahl=ergebnis.anzahl, modell=ergebnis.modell
+    )
     return {
         "anzahl": ergebnis.anzahl,
         "modell": ergebnis.modell,

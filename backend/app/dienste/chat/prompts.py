@@ -13,8 +13,9 @@ from ..anbieter.basis import Nachricht
 from ..suche.retrieval import Treffer
 
 SYSTEM_PROMPT = (
-    "Du beantwortest Fragen zu Erklärvideos. Du bekommst nummerierte Textstellen aus den Videos "
-    "und gegebenenfalls Ergebnisse fremder Werkzeuge (mit 'Werkzeug' gekennzeichnet).\n"
+    "Du beantwortest Fragen zu einer Bibliothek aus Erklärvideos und Dokumenten (Bücher, Texte). Du bekommst "
+    "nummerierte Textstellen aus Videos (mit Folge und Zeitfenster) und aus Dokumenten (mit 'Dokument' und Kapitel "
+    "gekennzeichnet) und gegebenenfalls Ergebnisse fremder Werkzeuge (mit 'Werkzeug' gekennzeichnet).\n"
     "Regeln:\n"
     "- Antworte ausschließlich aus diesen Stellen. Steht die Antwort nicht darin, sage das in einem Satz "
     "und erfinde nichts dazu.\n"
@@ -29,13 +30,13 @@ SYSTEM_PROMPT = (
 # Betriebsart "Das Modell wählt": die Werkzeugregel steht vor der Belegregel, sonst verweigert das
 # Modell Aufrufe, weil es "nur aus den Stellen" antworten soll.
 SYSTEM_WERKZEUGWAHL = (
-    "Du beantwortest Fragen zu Erklärvideos und hast dafür Werkzeuge (Funktionen).\n"
+    "Du beantwortest Fragen zu einer Bibliothek aus Erklärvideos und Dokumenten und hast dafür Werkzeuge (Funktionen).\n"
     "Vorgehen:\n"
     "1. Prüfe, ob Teile der Frage von den mitgelieferten Textstellen nicht abgedeckt werden oder nach "
     "Aktuellem, Wetter, Datum und Uhrzeit, Nachschlagewerken, dem Web oder einer Rechnung verlangen. "
     "Dann rufe die passenden Werkzeuge auf - auch mehrere, auch nacheinander. Frage nicht nach Erlaubnis.\n"
     "2. Erst wenn alle nötigen Ergebnisse vorliegen (oder kein Werkzeug helfen kann), antworte.\n"
-    "Für die Antwort gilt: nur aus den nummerierten Stellen (Videos und Werkzeugergebnisse), jede Aussage mit "
+    "Für die Antwort gilt: nur aus den nummerierten Stellen (Videos, Dokumente und Werkzeugergebnisse), jede Aussage mit "
     "[n] belegt, auf Deutsch in lateinischer Schrift, sachlich, ohne Quellenliste am Ende, nur gerade "
     "Anführungszeichen und der einfache Bindestrich."
 )
@@ -78,7 +79,13 @@ def folgenkennung(serie: str, folge_nr: int | None) -> str:
 
 
 def stellenkopf(nummer: int, t: Treffer) -> str:
-    """'[n] <Titel> (mmM#123, 12:34-15:02)'; bei Werkzeugen '[n] Werkzeug <Name>: <Titel>'."""
+    """'[n] <Titel> (mmM#123, 12:34-15:02)'; bei Dokumenten '[n] Dokument <Titel> (Kapitel <Titel>)';
+    bei Werkzeugen '[n] Werkzeug <Name>: <Titel>'."""
+    if t.art == "dokument":
+        teile = [f"Kapitel {t.abschnitt}" if t.abschnitt else "ohne Kapitel"]
+        if t.seite_von:
+            teile.append(f"Seite {t.seite_von}")
+        return f"[{nummer}] Dokument {t.titel} ({', '.join(teile)})"
     if t.art == "werkzeug":
         kopf = f"[{nummer}] Werkzeug {t.werkzeug}"
         if t.titel:
