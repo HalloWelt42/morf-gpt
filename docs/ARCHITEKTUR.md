@@ -115,6 +115,11 @@ Das Sprachmodell darf Form verbessern, nicht Inhalt. Darum:
 
 Die Blöcke behalten ihre Zeitfenster; so bleibt jede Textstelle zum Audio springbar.
 
+Alles, was aus einem Sprachmodell kommt (Korrektur, Themen, Chat-Antworten), läuft durch
+`dienste/text.py`: typografische Sonderzeichen werden gerade gesetzt, und Zeichen fremder
+Schriften (chinesisch, kyrillisch, arabisch ...) werden entfernt. Niedrig quantisierte
+Modelle streuen solche Zeichen gelegentlich ein; die Bibliothek ist deutsch.
+
 ## 6. Stückelung
 
 - Eingabe: die korrigierten Absätze mit Zeitfenstern (Fallback: Rohsegmente).
@@ -163,11 +168,12 @@ Jede Textstelle muss zur Originalquelle zurückführen. Darum gilt:
   Bibliothek zeigt Vorschaubild, Titel, Folge und Zeitfenster und bietet zwei Sprünge:
   **Abspielen im eigenen Spieler** ab der Sekunde und **Öffnen bei YouTube** mit Zeitmarke
   (`?t=<sekunden>`).
-- Der **Audiospieler** ist ein fester Bestandteil der Oberfläche (Leiste am unteren
-  Rand, bleibt über Ansichtswechsel bestehen): Abspielen ab Zeitmarke, Vor- und
-  Zurückspringen um 5 und 30 Sekunden, Tempo (0,8 bis 2,0), Zeitleiste mit den Themen
-  als Abschnitte, aktuell gesprochener Absatz wird hervorgehoben und mitgerollt. Das
-  Backend liefert Audio mit HTTP-Range, damit Sprünge sofort greifen.
+- Der **Audiospieler** ist ein fester Bestandteil der Oberfläche (zweizeilige Leiste am
+  unteren Rand, bleibt über Ansichtswechsel bestehen): oben Titel, aktuelles Thema,
+  Knöpfe (5 und 30 Sekunden vor und zurück), Zeit und Tempo (0,8 bis 2,0); unten die
+  Zeitleiste in voller Breite mit den Themen als Abschnitte. Der aktuell gesprochene
+  Absatz wird in Transkript und Themenliste hervorgehoben. Das Backend liefert Audio mit
+  HTTP-Range, damit Sprünge sofort greifen.
 - Vorschaubilder und Metadaten sind Teil des Bibliothekspakets (Abschnitt 8).
 
 ## 8. Umzug der Bibliothek
