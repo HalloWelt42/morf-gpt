@@ -18,6 +18,9 @@ from .basis import Kanalinfo, QuellenFehler, QuellVideo, Videodetail, Videoseite
 TYP_KENNUNG = "tubevault"
 TYP_TITEL = "TubeVault"
 
+# Adresse des Originals bei YouTube, aus der Kennung gebildet (docs/ARCHITEKTUR.md, 7a).
+ORIGINAL_URL_MUSTER = "https://youtu.be/{extern_id}"
+
 # Vorgabe, solange die Einstellung 'quelle.zeitgrenze_s' im Register fehlt
 # (siehe Bericht, register_ergaenzungen).
 ZEITGRENZE_S_VORGABE: float = 60.0
@@ -99,6 +102,7 @@ def video_aus_eintrag(eintrag: dict[str, Any]) -> QuellVideo:
         schlagworte=schlagworte_parsen(eintrag.get("tags")),
         kanal_name=str(eintrag.get("channel_name") or ""),
         miniatur_url=str(eintrag.get("thumbnail_url") or ""),
+        original_url=ORIGINAL_URL_MUSTER.format(extern_id=extern_id),
         heruntergeladen=bool(_ganzzahl(eintrag.get("is_downloaded")) or 0),
         roh=dict(eintrag),
     )

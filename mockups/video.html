@@ -50,6 +50,7 @@
             <span class="m-luecke"></span>
             <button class="btn btn-sm btn-primary" title="Im eigenen Spieler ab Anfang abspielen"><i class="fa-solid fa-play"></i> Abspielen</button>
             <a class="btn btn-sm btn-outline-secondary" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Originalvideo bei YouTube öffnen"><i class="fa-brands fa-youtube"></i> Bei YouTube öffnen</a>
+            <button class="btn btn-sm btn-outline-secondary" title="Titel, Datum, Serie, Adresse und weitere Metadaten von Hand pflegen"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
             <div class="dropdown">
               <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Aufträge für dieses Video anlegen oder Stufen zurücksetzen"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
               <ul class="dropdown-menu dropdown-menu-end">
@@ -80,6 +81,7 @@
                   <div class="flex-shrink-0">
                     <img class="m-mini gross" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='135'%3E%3Crect width='240' height='135' fill='%239aa5b3'/%3E%3Ctext x='120' y='75' text-anchor='middle' font-family='sans-serif' font-size='24' font-weight='700' fill='%231b2735'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" />
                     <div class="small text-secondary mt-2">Vorschaubild, lokal gespeichert</div>
+                    <button class="btn btn-sm btn-outline-secondary mt-2 w-100" title="Eigenes Vorschaubild setzen (JPEG, PNG oder WebP)"><i class="fa-solid fa-image"></i> Bild wählen</button>
                   </div>
                   <dl class="row mb-0 flex-grow-1" style="min-width: 0">
                     <dt class="col-sm-3 fw-semibold">Veröffentlicht</dt>
@@ -104,7 +106,9 @@
                     <dt class="col-sm-3 fw-semibold">Quelle</dt>
                     <dd class="col-sm-9">TubeVault <span class="text-secondary">(Kennung 7f3c2a9e, zuletzt abgeglichen vor 12 Minuten)</span></dd>
                     <dt class="col-sm-3 fw-semibold">Heruntergeladen</dt>
-                    <dd class="col-sm-9 mb-0"><i class="fa-solid fa-circle-check text-success"></i> ja, in der Quelle als Datei vorhanden</dd>
+                    <dd class="col-sm-9"><i class="fa-solid fa-circle-check text-success"></i> ja, in der Quelle als Datei vorhanden</dd>
+                    <dt class="col-sm-3 fw-semibold">Von Hand gepflegt</dt>
+                    <dd class="col-sm-9 mb-0">Serie, Folge, Originaladresse <a href="#" class="ms-1">aufheben</a> <button class="m-info" title="Diese Felder hat der Nutzer gesetzt; der Abgleich mit der Quelle lässt sie stehen. Aufheben gibt sie wieder frei.">i</button></dd>
                   </dl>
                 </div>
                 <div class="card-body border-top">
@@ -357,44 +361,46 @@
     </div>
 
     <!-- Hilfe: freischwebendes Fenster -->
-    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
       <div class="m-hilfe-kopf">
-        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
-        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
-        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Zurücksetzen" /></div>
-      <div class="m-hilfe-koerper">
-        <nav class="m-hilfe-inhalt">
-          <a href="#">Erste Schritte</a>
-          <a href="#">Chat</a>
-          <a href="#">Suche: Breite und Genauigkeit</a>
-          <a href="#">Fundstellen</a>
-          <a href="#">Audiospieler</a>
-          <a class="aktiv" href="#">Bibliothek</a>
-          <a href="#">Textstellen</a>
-          <a href="#">Fließband</a>
-          <a href="#">Anbieter</a>
-          <a href="#">Einstellungen</a>
-          <a href="#">Umzug der Bibliothek</a>
-        </nav>
-        <div class="m-hilfe-text">
-          <h2>Bibliothek: ein Video im Detail</h2>
-          <p>Die Videoansicht zeigt alles, was morf-gpt zu einem Video weiß: die Originaldaten der Quelle, den Stand auf dem Fließband, den Text in Absätzen mit Zeitmarken und die Themen. Von hier springst du in den eigenen Spieler oder zum Original bei YouTube.</p>
-          <h2>Kopfzeile</h2>
-          <p><b>Serie und Stufe</b>: Das Abzeichen mmM#377 nennt Serie und Folge, das farbige Abzeichen die höchste fertige Stufe des Fließbands.</p>
-          <p><b>Fließband</b>: Legt für dieses Video gezielt einen Auftrag einer Stufe an, etwa eine neue Korrektur mit einem anderen Anbieter. <b><mark>Zurücksetzen</mark> auf Stufe</b> verwirft alles oberhalb der gewählten Stufe; die Stücke und Vektoren werden dann beim nächsten Durchlauf neu gebildet. Beides fragt vorher nach.</p>
-          <p><b>Löschen</b> entfernt das Video mit Audio, Transkript, Korrektur, Stücken und Vektoren aus der Bibliothek. Beim nächsten Abgleich mit der Quelle taucht es wieder als entdeckt auf, ist aber nicht mehr im Umfang.</p>
-          <h2>Karte und Kennzahlen</h2>
-          <p>Die Originaldaten kommen unverändert von der Quelle und werden beim Abgleich aufgefrischt. Die Kurzzusammenfassung stammt aus der Korrektur und geht als Videoebene in den Chat ein. Notizen sind nur für dich; sie werden nicht eingebettet und nicht durchsucht, wandern aber mit dem Bibliothekspaket um.</p>
-          <p>Die Kennzahlen zeigen je Stufe das Ergebnis: Größe des Audios, Segmente und Zeichen des Transkripts, Ähnlichkeit der Korrektur zum Rohtext und verworfene Blöcke, Anzahl der Stücke und Vektoren.</p>
-          <h2>Reiter</h2>
-          <p><b>Transkript</b>: Die korrigierten Absätze mit Zeitfenstern. Ein Klick auf die Zeitmarke spielt ab dieser Stelle; mit "Mitrollen" folgt die Ansicht dem Spieler. Lange Texte werden in Teilen geladen.</p>
-          <p><b>Korrektur</b>, <b>Stücke</b> und <b>Aufträge</b> haben eigene Ansichten; der Reiter zeigt den Stand und führt hin.</p>
-          <h2>Themen</h2>
-          <p>Die Themenaufschlüsselung teilt das Video in Abschnitte mit Zeitfenster und Kurzfassung. Sie erscheint rechts, als Abschnitte in der Zeitleiste des Spielers und als Themenkontext an jedem Stück.</p>
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
     </div>
   </body>
 </html>

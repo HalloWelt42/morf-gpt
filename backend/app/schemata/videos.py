@@ -127,7 +127,10 @@ class VideoDetail(VideoEintrag):
     schlagworte: list[str]
     kanal_name: str
     quelle_id: str | None
+    quelle_typ: str  # tubevault, lokal oder leer (ohne Quelle)
     quelle_heruntergeladen: bool
+    datei_pfad: str  # bei lokalen Quellen der Pfad relativ zum Verzeichnis, sonst leer
+    felder_manuell: list[str]  # von Hand gepflegte Felder, die der Abgleich nicht mehr überschreibt
     prioritaet: int
     notizen: str
     metadaten_original: dict[str, Any]
@@ -140,12 +143,28 @@ class VideoDetail(VideoEintrag):
 
 
 class VideoAenderung(BaseModel):
-    """Felder, die der Nutzer an einem Video ändert. Nicht gesetzte Felder bleiben unverändert."""
+    """Felder, die der Nutzer an einem Video ändert. Nicht gesetzte Felder bleiben unverändert.
+
+    Metadatenfelder (Titel, Beschreibung, Datum, Dauer, Art, Originaladresse, Kanal, Serie,
+    Folge, Schlagworte) gelten danach als von Hand gepflegt: der Abgleich mit der Quelle
+    lässt sie stehen, bis `handpflege_aufheben` gesetzt wird.
+    """
 
     ausgewaehlt: bool | None = None
     prioritaet: int | None = Field(default=None, ge=-1000, le=1000)
     notizen: str | None = None
     titel: str | None = Field(default=None, min_length=1)
+    beschreibung: str | None = None
+    veroeffentlicht: datetime | None = None
+    dauer_s: int | None = Field(default=None, ge=0)
+    typ: str | None = Field(default=None, min_length=1, max_length=16)
+    original_url: str | None = Field(default=None, max_length=500)
+    kanal_name: str | None = Field(default=None, max_length=200)
+    serie: str | None = Field(default=None, max_length=32)
+    folge_nr: int | None = Field(default=None, ge=0)
+    folge_nr_loeschen: bool = False
+    schlagworte: list[str] | None = None
+    handpflege_aufheben: bool = False
 
 
 class AuswahlregelAusgabe(BaseModel):

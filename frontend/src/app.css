@@ -804,36 +804,98 @@ body {
 .m-hilfe {
   position: fixed;
   z-index: 1080;
-  width: 560px;
-  height: 640px;
-  min-width: 360px;
-  min-height: 300px;
+  min-width: 380px;
   background: var(--m-flaeche);
+  color: var(--m-text);
   border: 1px solid var(--m-rand-stark);
   box-shadow: var(--m-schatten);
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  resize: both;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+}
+.m-hilfe.maximiert {
+  inset: 64px 16px 16px 16px;
+  width: auto;
+  height: auto;
 }
 .m-hilfe-kopf {
   background: var(--m-akzent-dunkel);
   color: #ffffff;
-  padding: 8px 12px;
+  padding: 6px 12px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: move;
   user-select: none;
+  touch-action: none;
 }
-.m-hilfe-suche {
+.m-hilfe.maximiert .m-hilfe-kopf {
+  cursor: default;
+}
+.m-hilfe-titel {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.2;
+}
+.m-hilfe-titel b,
+.m-hilfe-titel span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-hilfe-titel span {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+.m-hilfe-aktionen {
+  display: flex;
+  gap: 4px;
+}
+.m-hilfe-leiste {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
   padding: 8px 12px;
   border-bottom: 1px solid var(--m-rand);
 }
+.m-hilfe-suchfeld {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--m-rand-stark);
+  background: var(--m-flaeche);
+  padding: 0 8px;
+}
+.m-hilfe-suchfeld input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  padding: 6px 0;
+}
+.m-hilfe-suchfeld .zaehler {
+  font-size: 0.85rem;
+  color: var(--m-text-2);
+  white-space: nowrap;
+}
+.m-hilfe-hinweis {
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  color: var(--m-text-2);
+  border-bottom: 1px solid var(--m-rand);
+}
 .m-hilfe-koerper {
+  flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 220px 1fr;
 }
 .m-hilfe-inhalt {
   min-height: 0;
@@ -842,11 +904,16 @@ body {
   padding: 8px 0;
 }
 .m-hilfe-inhalt a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 6px 12px;
   color: var(--m-text-2);
   text-decoration: none;
   font-size: 0.9rem;
+}
+.m-hilfe-inhalt a .badge {
+  margin-left: auto;
 }
 .m-hilfe-inhalt a.aktiv,
 .m-hilfe-inhalt a:hover {
@@ -860,13 +927,71 @@ body {
   font-size: 1.05rem; /* Hilfetext größer als Beschriftungen */
   line-height: 1.6;
 }
-.m-hilfe-text h2 {
+.m-hilfe-artikel h1,
+.m-hilfe-artikel h2,
+.m-hilfe-artikel h3 {
   font-size: 1.2rem;
-  margin-top: 18px;
+  margin: 18px 0 6px;
 }
-.m-hilfe-text mark {
+.m-hilfe-artikel > :first-child {
+  margin-top: 0;
+}
+.m-hilfe-artikel p,
+.m-hilfe-artikel ul,
+.m-hilfe-artikel ol {
+  margin: 0 0 12px;
+}
+.m-hilfe-artikel li {
+  margin: 3px 0;
+}
+.m-hilfe-artikel code {
+  background: var(--m-flaeche-2);
+  padding: 1px 5px;
+  font-size: 0.9em;
+}
+.m-hilfe-artikel table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 12px;
+  font-size: 0.95rem;
+}
+.m-hilfe-artikel th,
+.m-hilfe-artikel td {
+  border: 1px solid var(--m-rand);
+  padding: 5px 8px;
+  text-align: left;
+}
+.m-hilfe-artikel mark.tref {
   background: #ffe58a;
+  color: #1b2735;
   padding: 0 2px;
+}
+.m-hilfe-artikel mark.tref.aktiv {
+  background: #f59e0b;
+  outline: 2px solid #f59e0b;
+}
+.m-hinweis {
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  border-left: 4px solid var(--m-akzent);
+  background: var(--m-akzent-hell);
+}
+.m-hinweis.tipp {
+  border-left-color: var(--m-gut, #2e7d32);
+  background: color-mix(in srgb, var(--m-gut, #2e7d32) 12%, var(--m-flaeche));
+}
+.m-hinweis.warnung {
+  border-left-color: var(--m-warn, #b26a00);
+  background: color-mix(in srgb, var(--m-warn, #b26a00) 12%, var(--m-flaeche));
+}
+.m-hilfe-griff {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 50%, var(--m-rand-stark) 50%);
 }
 
 /* ----- Leerzustand ----- */

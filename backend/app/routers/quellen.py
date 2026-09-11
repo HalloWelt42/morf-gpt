@@ -23,10 +23,12 @@ router = APIRouter(prefix="/quellen", tags=["quellen"])
 
 
 class QuelleEingabe(BaseModel):
+    """`basis_url`: Adresse des Dienstes oder, bei lokalen Dateien, das Verzeichnis. `kanal_id` nur bei TubeVault."""
+
     typ: str = "tubevault"
     name: str = Field(min_length=1, max_length=200)
     basis_url: str = Field(min_length=1)
-    kanal_id: str = Field(min_length=1)
+    kanal_id: str = ""
     regeln: dict[str, Any] = Field(default_factory=dict)
     aktiv: bool = True
 
@@ -42,7 +44,7 @@ class QuelleAenderung(BaseModel):
 class KanalPruefung(BaseModel):
     typ: str = "tubevault"
     basis_url: str
-    kanal_id: str
+    kanal_id: str = ""
 
 
 class KanalAusgabe(BaseModel):
@@ -123,7 +125,7 @@ async def _laden(s: AsyncSession, quelle_id: str) -> Quelle:
 
 async def _kanal_pruefen(typ: str, basis_url: str, kanal_id: str, werte: dict[str, Any]) -> KanalAusgabe:
     try:
-        videoquelle = abgleich.baue_quelle(typ, basis_url, kanal_id, abgleich.zeitgrenze_aus(werte))
+        videoquelle = abgleich.baue_quelle(typ, basis_url, kanal_id, werte)
     except QuellenFehler as e:
         raise HTTPException(422, str(e)) from e
     try:
@@ -239,7 +241,7 @@ async def vorschau(
     werte = await einstellungen_dienst.alle(session)
     regeln = abgleich.Auswahlregeln.aus_werten(werte, q.regeln)
     try:
-        videoquelle = abgleich.baue_quelle(q.typ, q.basis_url, q.kanal_id, abgleich.zeitgrenze_aus(werte))
+        videoquelle = abgleich.baue_quelle(q.typ, q.basis_url, q.kanal_id, werte)
     except QuellenFehler as e:
         raise HTTPException(422, str(e)) from e
     try:

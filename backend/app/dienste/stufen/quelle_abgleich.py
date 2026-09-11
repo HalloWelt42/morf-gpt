@@ -36,7 +36,7 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
             raise RuntimeError("Die Quelle existiert nicht mehr")
         if not quelle.aktiv:
             raise RuntimeError(f"Die Quelle '{quelle.name}' ist deaktiviert")
-        videoquelle = abgleich.baue_quelle(quelle.typ, quelle.basis_url, quelle.kanal_id, abgleich.zeitgrenze_aus(k.werte))
+        videoquelle = abgleich.baue_quelle(quelle.typ, quelle.basis_url, quelle.kanal_id, k.werte)
         try:
             zaehler = await abgleich.abgleichen(
                 quelle,

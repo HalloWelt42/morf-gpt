@@ -86,6 +86,7 @@ class Video(Basis):
     miniatur_url: Mapped[str] = mapped_column(String(600), default="")
     miniatur_pfad: Mapped[str] = mapped_column(String(500), default="")
     metadaten_original: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    felder_manuell: Mapped[list[str]] = mapped_column(JSONB, default=list)  # von Hand gepflegt, Abgleich lässt sie stehen
     quelle_heruntergeladen: Mapped[bool] = mapped_column(Boolean, default=False)
     ausgewaehlt: Mapped[bool] = mapped_column(Boolean, default=False)
     auswahl_manuell: Mapped[bool] = mapped_column(Boolean, default=False)  # Nutzer hat entschieden

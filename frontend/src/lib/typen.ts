@@ -224,7 +224,10 @@ export interface VideoDetail extends VideoEintrag {
   schlagworte: string[];
   kanal_name: string;
   quelle_id: string | null;
+  quelle_typ: string;
   quelle_heruntergeladen: boolean;
+  datei_pfad: string;
+  felder_manuell: string[];
   prioritaet: number;
   notizen: string;
   metadaten_original: Record<string, unknown>;
@@ -565,6 +568,22 @@ export interface Quelle {
   erstellt: string;
   videos: number;
   videos_ausgewaehlt: number;
+}
+
+/** Von Hand gepflegte Metadaten eines Videos (PUT /videos/{id}). */
+export interface VideoPflege {
+  titel?: string;
+  beschreibung?: string;
+  veroeffentlicht?: string | null;
+  dauer_s?: number;
+  typ?: string;
+  original_url?: string;
+  kanal_name?: string;
+  serie?: string;
+  folge_nr?: number;
+  folge_nr_loeschen?: boolean;
+  schlagworte?: string[];
+  handpflege_aufheben?: boolean;
 }
 
 export interface KanalAusgabe {

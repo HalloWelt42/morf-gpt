@@ -50,14 +50,14 @@
             <!-- Stufen -->
             <div class="m-band">
               <div class="m-band-stufe">
-                <div class="titel"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</div>
+                <div class="titel"><i class="fa-solid fa-satellite-dish"></i> Entdeckt <button class="m-info" title="Schritt 0: Der Abgleich liest die Quelle, legt Videos mit Originaldaten an und wendet die Aufnahmeregel an. Alles Weitere baut auf diesen Daten auf.">i</button></div>
                 <div class="zahl">664</div>
                 <div class="klein">im Umfang, 1.491 gesamt</div>
                 <div class="zeile"><span>Quelle</span><span>TubeVault</span></div>
                 <div class="zeile"><span>Zuletzt abgeglichen</span><span>vor 12 Minuten</span></div>
               </div>
               <div class="m-band-stufe audio">
-                <div class="titel"><i class="fa-solid fa-headphones"></i> Audio</div>
+                <div class="titel"><i class="fa-solid fa-headphones"></i> Audio <button class="m-info" title="Schritt 1: Die Tonspur wird geholt oder aus der lokalen Datei gelesen und zu Mono-AAC gewandelt. Ohne Audio gibt es weder Transkript noch Abspielknopf.">i</button></div>
                 <div class="zahl">641</div>
                 <div class="klein">fertig &middot; 2 laufen &middot; 21 warten</div>
                 <div class="m-fortschritt"><span style="width: 96%"></span></div>
@@ -66,7 +66,7 @@
                 <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-audio" checked /><label class="form-check-label small" for="p-audio">läuft (2 parallel)</label></div>
               </div>
               <div class="m-band-stufe transkribiert">
-                <div class="titel"><i class="fa-solid fa-closed-captioning"></i> Transkribiert</div>
+                <div class="titel"><i class="fa-solid fa-closed-captioning"></i> Transkribiert <button class="m-info" title="Schritt 2: Whisper macht aus der Tonspur Text mit Zeitmarken je Segment. Die Zeitmarken sind der Anker jeder Fundstelle.">i</button></div>
                 <div class="zahl">212</div>
                 <div class="klein">fertig &middot; 1 läuft &middot; 429 warten</div>
                 <div class="m-fortschritt laeuft"><span style="width: 32%"></span></div>
@@ -75,7 +75,7 @@
                 <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-trans" checked /><label class="form-check-label small" for="p-trans">läuft (1 parallel)</label></div>
               </div>
               <div class="m-band-stufe korrigiert">
-                <div class="titel"><i class="fa-solid fa-spell-check"></i> Korrigiert</div>
+                <div class="titel"><i class="fa-solid fa-spell-check"></i> Korrigiert <button class="m-info" title="Schritt 3: Das Sprachmodell glättet Form und Absätze, der Abweichungswächter verhindert Erfindungen; danach Themen und Kurzfassung.">i</button></div>
                 <div class="zahl">180</div>
                 <div class="klein">fertig &middot; 0 laufen &middot; 32 warten</div>
                 <div class="m-fortschritt"><span style="width: 27%"></span></div>
@@ -84,7 +84,7 @@
                 <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-korr" /><label class="form-check-label small" for="p-korr">angehalten</label></div>
               </div>
               <div class="m-band-stufe gestueckelt">
-                <div class="titel"><i class="fa-solid fa-scissors"></i> Gestückelt</div>
+                <div class="titel"><i class="fa-solid fa-scissors"></i> Gestückelt <button class="m-info" title="Schritt 4: Der Text wird an Satzgrenzen in große, überlappende Stücke zerlegt. Die Suche findet Stücke, nicht Videos.">i</button></div>
                 <div class="zahl">180</div>
                 <div class="klein">fertig &middot; 0 laufen &middot; 0 warten</div>
                 <div class="m-fortschritt"><span style="width: 27%"></span></div>
@@ -93,7 +93,7 @@
                 <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-stk" checked /><label class="form-check-label small" for="p-stk">läuft (4 parallel)</label></div>
               </div>
               <div class="m-band-stufe eingebettet">
-                <div class="titel"><i class="fa-solid fa-cube"></i> Eingebettet</div>
+                <div class="titel"><i class="fa-solid fa-cube"></i> Eingebettet <button class="m-info" title="Schritt 5: Jedes Stück bekommt einen Bedeutungsvektor. Erst jetzt kann der Chat das Video finden.">i</button></div>
                 <div class="zahl">178</div>
                 <div class="klein">fertig &middot; 0 laufen &middot; 2 warten</div>
                 <div class="m-fortschritt"><span style="width: 27%"></span></div>

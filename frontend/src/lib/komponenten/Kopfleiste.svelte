@@ -1,5 +1,6 @@
 <script lang="ts">
   import { ui, type Ansicht } from "../stores/ui.svelte";
+  import { hilfe } from "../stores/hilfe.svelte";
   import { ereignisse } from "../stores/ereignisse.svelte";
   import { zahl } from "../format";
   import type { Uebersicht } from "../typen";
@@ -35,7 +36,7 @@
       <span class="m-status-punkt" class:aus={!laeuferAktiv || !ereignisse.verbunden}></span>{laeuferAktiv ? "Läufer aktiv" : "Läufer aus"}
     </span>
     <button class="m-kopf-knopf" title="Helles oder dunkles Thema" onclick={() => ui.themaWechseln()}><i class="fa-solid fa-circle-half-stroke"></i></button>
-    <button class="m-kopf-knopf" title="Hilfe öffnen" onclick={() => ui.hilfe("")}><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+    <button class="m-kopf-knopf" title="Hilfe öffnen oder schließen" onclick={() => hilfe.umschalten("erste-schritte")}><i class="fa-solid fa-circle-question"></i> Hilfe</button>
     <span class="version" title="Version aus version.json">{uebersicht?.version_voll ?? __APP_VERSION_VOLL__}</span>
   </div>
 </header>

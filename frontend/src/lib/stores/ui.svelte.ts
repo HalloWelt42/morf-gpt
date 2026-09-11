@@ -44,8 +44,6 @@ function routeAusHash(): Route {
 class UiZustand {
   route = $state<Route>({ ansicht: "chat", id: "", unter: "" });
   thema = $state<"light" | "dark">("light");
-  hilfeOffen = $state(false);
-  hilfeAnker = $state("");
 
   constructor() {
     const t = lese("m-thema");
@@ -75,15 +73,6 @@ class UiZustand {
 
   private themaAnwenden(): void {
     document.documentElement.setAttribute("data-bs-theme", this.thema);
-  }
-
-  hilfe(anker = ""): void {
-    this.hilfeAnker = anker;
-    this.hilfeOffen = true;
-  }
-
-  hilfeSchliessen(): void {
-    this.hilfeOffen = false;
   }
 }
 

@@ -25,12 +25,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...db.modelle import Quelle, Video, neue_id
 from ...domaene.fliessband import Stufe
-from . import tubevault
+from . import lokal, tubevault
 from .basis import QuellenFehler, QuellVideo, VideoQuelle, alle_seiten
-
-# Adresse des Originals bei YouTube, aus der externen Kennung gebildet (siehe
-# docs/ARCHITEKTUR.md, Abschnitt 7a).
-ORIGINAL_URL_MUSTER = "https://youtu.be/{extern_id}"
 
 # Vorgabe, solange die Einstellung 'quelle.seitengroesse' im Register fehlt
 # (siehe Bericht, register_ergaenzungen).
@@ -42,7 +38,22 @@ _MINIATUR_FEHLER_BEISPIELE = 5
 # Serie und Folge am Titelende: "... | mmM#377", "... | gmM#51".
 SERIEN_MUSTER = re.compile(r"\|\s*([A-Za-z]+)#(\d+)\s*$")
 
-TYPEN: dict[str, str] = {tubevault.TYP_KENNUNG: tubevault.TYP_TITEL}
+TYPEN: dict[str, str] = {tubevault.TYP_KENNUNG: tubevault.TYP_TITEL, lokal.TYP_KENNUNG: lokal.TYP_TITEL}
+
+# Felder, die der Abgleich aus der Quelle überträgt und die der Nutzer von Hand
+# festhalten kann (Spalte videos.felder_manuell): festgehaltene Felder rührt er nicht an.
+PFLEGBARE_FELDER: tuple[str, ...] = (
+    "titel",
+    "beschreibung",
+    "veroeffentlicht",
+    "dauer_s",
+    "typ",
+    "original_url",
+    "kanal_name",
+    "serie",
+    "folge_nr",
+    "schlagworte",
+)
 
 Fortschrittsmelder = Callable[[float, str], Awaitable[None]]
 Protokollant = Callable[[str, str], Awaitable[None]]
@@ -112,10 +123,22 @@ def seitengroesse_aus(werte: Mapping[str, Any]) -> int:
     return int(werte.get("quelle.seitengroesse", SEITENGROESSE_VORGABE))
 
 
-def baue_quelle(typ: str, basis_url: str, kanal_id: str, zeitgrenze_s: float) -> VideoQuelle:
-    """Die Umsetzung zum Quellentyp. Unbekannte Typen sind ein sprechender Fehler."""
+def dateiendungen_aus(werte: Mapping[str, Any]) -> frozenset[str]:
+    return lokal.endungen_parsen(werte.get("quelle.dateiendungen", lokal.ENDUNGEN_VORGABE))
+
+
+def baue_quelle(typ: str, basis_url: str, kanal_id: str, werte: Mapping[str, Any]) -> VideoQuelle:
+    """Die Umsetzung zum Quellentyp. Unbekannte Typen sind ein sprechender Fehler.
+
+    `basis_url` ist bei TubeVault die Adresse des Dienstes, bei lokalen Dateien das
+    Verzeichnis; `kanal_id` braucht nur TubeVault.
+    """
     if typ == tubevault.TYP_KENNUNG:
-        return tubevault.TubeVault(basis_url, kanal_id, zeitgrenze_s=zeitgrenze_s)
+        if not kanal_id.strip():
+            raise QuellenFehler("TubeVault braucht eine Kanalkennung")
+        return tubevault.TubeVault(basis_url, kanal_id, zeitgrenze_s=zeitgrenze_aus(werte))
+    if typ == lokal.TYP_KENNUNG:
+        return lokal.LokaleDateien(basis_url, dateiendungen_aus(werte))
     raise QuellenFehler(f"Unbekannter Quellentyp '{typ}' (bekannt: {', '.join(TYPEN)})")
 
 
@@ -192,6 +215,7 @@ def _neues_video(quelle: Quelle, extern_id: str) -> Video:
         miniatur_url="",
         miniatur_pfad="",
         metadaten_original={},
+        felder_manuell=[],
         quelle_heruntergeladen=False,
         ausgewaehlt=False,
         auswahl_manuell=False,
@@ -218,11 +242,16 @@ def _metadaten_zusammenfuehren(alt: Mapping[str, Any] | None, neu: Mapping[str, 
 
 
 def felder_uebernehmen(video: Video, qv: QuellVideo, quelle: Quelle) -> bool:
-    """Überträgt die Quellfelder auf das Video. True, wenn sich etwas geändert hat."""
+    """Überträgt die Quellfelder auf das Video. True, wenn sich etwas geändert hat.
+
+    Von Hand gepflegte Felder (videos.felder_manuell) bleiben unangetastet, bis der
+    Nutzer die Handpflege aufhebt.
+    """
     serie, folge_nr = serie_aus_titel(qv.titel)
+    festgehalten = set(video.felder_manuell or [])
     werte: list[tuple[str, Any]] = [
         ("quelle_id", quelle.id),
-        ("original_url", ORIGINAL_URL_MUSTER.format(extern_id=qv.extern_id)),
+        ("original_url", qv.original_url),
         ("titel", qv.titel),
         ("beschreibung", qv.beschreibung),
         ("veroeffentlicht", qv.veroeffentlicht),
@@ -240,6 +269,8 @@ def felder_uebernehmen(video: Video, qv: QuellVideo, quelle: Quelle) -> bool:
         werte.append(("schlagworte", list(qv.schlagworte)))
     geaendert = False
     for attribut, wert in werte:
+        if attribut in festgehalten:
+            continue
         if _setze_wenn_anders(video, attribut, wert):
             geaendert = True
     return geaendert

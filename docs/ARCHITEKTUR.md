@@ -9,7 +9,7 @@ Zwischenstand ist in der Oberfläche sichtbar und vom Nutzer bearbeitbar.
 
 | Hälfte | Braucht | Zweck |
 |---|---|---|
-| **Werkstatt** | Videoquelle (TubeVault auf dem Pi), Transkriptionsdienst (txt2voice-Worker mit Whisper), Sprachmodell für die Korrektur | Rohdaten beschaffen und zu Bausteinen verarbeiten |
+| **Werkstatt** | Videoquelle (TubeVault-Kanal oder ein Verzeichnis mit eigenen Dateien, beides nebeneinander), Transkriptionsdienst (txt2voice-Worker mit Whisper), Sprachmodell für die Korrektur | Rohdaten beschaffen und zu Bausteinen verarbeiten |
 | **Bibliothek** | Datenbank (Bausteine + Vektoren), Einbettungsanbieter, Sprachmodell für die Antwort | Suchen, auswählen, antworten |
 
 Die Trennung ist bewusst: **sind die Daten einmal aggregiert, läuft die Bibliothek
@@ -32,6 +32,11 @@ gepflegt. Alles darüber hinaus (Transkription, Korrektur, fremde Werkzeuge) ist
 der zuschaltbar ist und nie Voraussetzung.
 
 ## 2. Das Fließband (Stufen je Video)
+
+Jede Stufe trägt in der Oberfläche einen Info-Knopf, der in der Hilfe erklärt, was in
+dem Schritt genau passiert und warum er wichtig ist (Anker `stufe-abgleich`,
+`stufe-audio`, `stufe-transkription`, `stufe-korrektur`, `stufe-stueckelung`,
+`stufe-einbettung`); dieselben Anker hängen an den Reitern der Videoansicht.
 
 ```
 entdeckt -> audio -> transkribiert -> korrigiert -> gestueckelt -> eingebettet
@@ -172,7 +177,17 @@ Jede Textstelle muss zur Originalquelle zurückführen. Darum gilt:
 - Beim Abgleich werden die **originalen Metadaten** der Quelle vollständig übernommen
   (Titel, Beschreibung, Datum, Dauer, Aufrufe, Schlagworte, Kanal) und zusätzlich roh
   als JSON abgelegt; das **Vorschaubild** wird lokal gespeichert (`data/miniaturen/`),
-  die **YouTube-Adresse** (`https://youtu.be/<kennung>`) ist ein Feld des Videos.
+  die **Originaladresse** (bei TubeVault `https://youtu.be/<kennung>`, bei lokalen
+  Dateien aus dem Beiblatt oder von Hand) ist ein Feld des Videos.
+- **Zwei Quellenarten** hinter einer Schnittstelle (`dienste/quellen/basis.VideoQuelle`):
+  `tubevault` (Kanal eines Dienstes) und `lokal` (Verzeichnis auf dem Rechner; Kennung
+  aus dem relativen Pfad, Metadaten aus Beiblatt `name.json`, ffprobe und Dateiname,
+  Bild `name.jpg` oder Einzelbild aus dem Film). Die Audiostufe wandelt lokale Dateien
+  direkt mit ffmpeg (Bezugsweg `lokale_datei`), alles andere bleibt gleich.
+- **Handpflege**: Titel, Beschreibung, Datum, Dauer, Art, Originaladresse, Kanal, Serie,
+  Folge, Schlagworte und Vorschaubild lassen sich am Video von Hand setzen. Gepflegte
+  Felder stehen in `videos.felder_manuell`; der Abgleich überschreibt sie nicht, bis der
+  Nutzer die Handpflege aufhebt. So bleibt die Bibliothek auch ohne Quelle pflegbar.
 - Chunks, Absätze und Segmente tragen Zeitfenster. Jede Fundstelle im Chat und in der
   Bibliothek zeigt Vorschaubild, Titel, Folge und Zeitfenster und bietet zwei Sprünge:
   **Abspielen im eigenen Spieler** ab der Sekunde und **Öffnen bei YouTube** mit Zeitmarke
@@ -240,6 +255,27 @@ In beiden Fällen werden Werkzeugergebnisse zu **Stellen** wie die Bibliothekstr
 Modell sie mit `[n]` belegt. Jeder Aufruf steht mit Argumenten, Dauer und Ergebnis in der
 Nachricht (`Nachricht.parameter.werkzeugaufrufe`) und ist in der Oberfläche einsehbar.
 Geheimnisse (Kopfzeilen) sind im Verwaltungsbereich lesbar, im Protokoll maskiert.
+
+## 9a. Hilfe: freischwebendes Fenster mit Themen als Markdown
+
+Die Hilfe folgt dem Muster der Demo `HalloWelt42/hilfe-fenster-demo`: ein Fenster, das frei
+über der Seite liegt und sich ziehen, in der Größe ändern, minimieren und maximieren lässt.
+Lage, Größe, Zustand und zuletzt gezeigtes Thema werden im Browser gemerkt; geraten die
+Bedienelemente aus dem Bild (Sichtschutz), schaltet das Fenster von selbst auf Vollbild.
+
+- **Themen** sind Markdown-Dateien unter `frontend/src/lib/hilfe/themen/<anker>.md` mit
+  Kopf (titel, unterzeile, kategorie, symbol, stichworte); `hilfe/themen.ts` liest sie beim
+  Bauen ein (Vite `import.meta.glob`), rendert mit marked und führt das HTML durch
+  DOMPurify. Ein neues Thema ist eine neue Datei; der Dateiname ist der Anker.
+- **Zustand** lebt in `stores/hilfe.svelte.ts` (eine Instanz): offen, Thema, Suche, Bereich,
+  Trefferliste, Lage und Größe.
+- **Volltextsuche** über alle Themen oder nur im gezeigten, mit Trefferzähler (etwa 3/12),
+  Vor und Zurück per Pfeilen, Eingabe und Umschalt + Eingabe; in der Suche über alle Themen
+  führt der nächste Treffer ins nächste Thema, die Themenliste zeigt die Trefferzahl je Thema.
+  Fundstellen werden im Text markiert, die aktive in die Mitte geholt.
+- **Hilfepunkte** (`InfoKnopf`, der Mini-i-Knopf) öffnen genau das passende Thema; mit
+  `finde` wird dort gleich ein Begriff gesucht und markiert (Auffinden). Jede Fließbandstufe
+  und jeder Reiter der Videoansicht trägt einen solchen Punkt.
 
 ## 10. Technik
 

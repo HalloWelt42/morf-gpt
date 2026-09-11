@@ -37,6 +37,7 @@ log = logging.getLogger(__name__)
 
 BEZUGSWEG_VIDEOSTROM = "videostrom_ffmpeg"
 BEZUGSWEG_QUELLE = "quelle_extraktion"
+BEZUGSWEG_DATEI = "lokale_datei"  # nicht wählbar: gilt immer für Quellen vom Typ lokal
 BEZUGSWEGE: tuple[str, ...] = (BEZUGSWEG_VIDEOSTROM, BEZUGSWEG_QUELLE)
 AUDIO_FORMAT = "m4a"
 
@@ -591,6 +592,56 @@ class QuellExtraktion:
             raise AudioBezugFehler(f"Extraktion in der Quelle fehlgeschlagen ({e.__class__.__name__}: {e})") from e
         if antwort.status_code != 200:
             raise AudioBezugFehler(f"Quelle antwortet mit HTTP {antwort.status_code} auf die Extraktion ({url})")
+
+
+Dateifinder = Callable[[str, str], Path]
+
+
+class LokaleDatei:
+    """Eine Datei vom eigenen Rechner mit ffmpeg zu Mono-AAC wandeln (Quellentyp lokal).
+
+    `basis_url` ist hier das Verzeichnis der Quelle, `extern_id` die Kennung der Datei;
+    der übergebene Finder löst beides zur Datei auf (er gehört zur Quelle, nicht hierher).
+    """
+
+    kennung = BEZUGSWEG_DATEI
+
+    def __init__(self, wandlung: Wandlung, finder: Dateifinder, ffmpeg: str | None = None, sonde: Sonde | None = None) -> None:
+        self._wandlung = wandlung
+        self._finder = finder
+        self._ffmpeg = ffmpeg or ffmpeg_pfad()
+        self._sonde: Sonde = sonde or ffprobe_eigenschaften
+
+    async def beschaffe(
+        self,
+        basis_url: str,
+        extern_id: str,
+        ziel: Path,
+        fortschritt: Fortschrittsmelder,
+        abbruch: asyncio.Event,
+        erwartete_dauer_s: float | None = None,
+    ) -> AudioErgebnis:
+        try:
+            quelle = self._finder(basis_url, extern_id)
+        except Exception as e:  # der Finder meldet mit eigenem Fehlertyp; hier zählt nur der Text
+            raise AudioBezugFehler(str(e)) from e
+        await fortschritt(0.02, f"Wandle '{quelle.name}' in Audio")
+        teil = teil_pfad(ziel)
+        ziel.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            await ffmpeg_ausfuehren(
+                ffmpeg_kommandozeile(self._ffmpeg, quelle, teil, self._wandlung),
+                abbruch,
+                fortschritt,
+                erwartete_dauer_s,
+                von=0.02,
+                bis=0.95,
+            )
+            os.replace(teil, ziel)
+        except BaseException:
+            loesche_leise(teil)
+            raise
+        return AudioErgebnis(pfad=ziel, bezugsweg=self.kennung, eigenschaften=await self._sonde(ziel))
 
 
 def waehle_bezug(

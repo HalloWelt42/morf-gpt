@@ -436,40 +436,46 @@ Man kann sich das an einem Strategiespiel klarmachen, dessen Nachfolger Regeln a
     </div>
 
     <!-- Hilfe: freischwebendes Fenster -->
-    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
       <div class="m-hilfe-kopf">
-        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
-        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
-        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Zurücksetzen" /></div>
-      <div class="m-hilfe-koerper">
-        <nav class="m-hilfe-inhalt">
-          <a href="#">Erste Schritte</a>
-          <a href="#">Chat</a>
-          <a href="#">Suche: Breite und Genauigkeit</a>
-          <a href="#">Fundstellen</a>
-          <a href="#">Audiospieler</a>
-          <a class="aktiv" href="#">Bibliothek</a>
-          <a href="#">Textstellen</a>
-          <a href="#">Fließband</a>
-          <a href="#">Anbieter</a>
-          <a href="#">Einstellungen</a>
-          <a href="#">Umzug der Bibliothek</a>
-        </nav>
-        <div class="m-hilfe-text">
-          <h2>Auf Stufe <mark>zurücksetzen</mark></h2>
-          <p>Jedes Video steht auf einer Stufe des Fließbands: entdeckt, audio, transkribiert, korrigiert, gestückelt, eingebettet. Beim <mark>Zurücksetzen</mark> wählst du die Zielstufe; alles, was danach entstanden ist, wird gelöscht und vom Band neu erzeugt.</p>
-          <p><b>Zielstufe</b>: Je früher die Stufe, desto mehr wird neu gemacht. Für ein neues Einbettungsmodell reicht "Gestückelt", für eine bessere Korrektur brauchst du "Transkribiert".</p>
-          <p><b>Folgen</b>: Die rechte Spalte zeigt vorab, was gelöscht wird, was bleibt und welche Aufträge angelegt werden. Unterhaltungen, die auf Stellen dieses Videos verweisen, verlieren ihre Verweise; der Dialog nennt sie.</p>
-          <p><b>Danach automatisch weiterreichen</b>: Legt sofort den Auftrag der nächsten Stufe an; das Video läuft bis zur Einbettung durch. Ohne den Schalter bleibt es auf der Zielstufe stehen.</p>
-          <h2>Stück bearbeiten</h2>
-          <p>Du änderst den Text eines Stücks. Das Zeitfenster ergibt sich aus den Absätzen, die im Text stehen, und wird nach dem Speichern neu berechnet. Die Überlappung mit den Nachbarstücken bleibt Teil des Stücks. Nach dem Speichern wird das Stück neu eingebettet, sonst würde die Suche den alten Text finden.</p>
-          <p><b>Teilen</b> schneidet am Cursor, aber nur an einer Satzgrenze. <b>Zusammenlegen</b> verbindet das Stück mit dem nächsten und entfernt die doppelte Überlappung.</p>
-          <h2>Meldungen</h2>
-          <p>Meldungen erscheinen unten rechts. Bestätigungen und Hinweise verschwinden nach einigen Sekunden von selbst, Fehler bleiben stehen, bis du sie schließt, und führen mit einem Link zur betroffenen Stelle.</p>
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
     </div>
 
     <script>

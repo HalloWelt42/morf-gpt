@@ -2,7 +2,7 @@
   // Ein Video: Originaldaten, Kennzahlen, Reiter Transkript / Korrektur / Themen / Stücke / Aufträge.
   import { onDestroy, onMount } from "svelte";
   import { api, mitParametern } from "../lib/api";
-  import type { ChunkEintrag, Korrektur, Seite, Transkript, Vergleich, VideoDetail, ZuruecksetzErgebnis } from "../lib/typen";
+  import type { ChunkEintrag, Korrektur, Seite, Transkript, Vergleich, VideoDetail, VideoPflege, ZuruecksetzErgebnis } from "../lib/typen";
   import { ereignisse } from "../lib/stores/ereignisse.svelte";
   import { spieler } from "../lib/stores/spieler.svelte";
   import { ui } from "../lib/stores/ui.svelte";
@@ -19,6 +19,22 @@
   const STUFEN_TITEL: Record<string, string> = { entdeckt: "Entdeckt", audio: "Audio bereit", transkribiert: "Transkribiert", korrigiert: "Korrigiert", gestueckelt: "Gestückelt", eingebettet: "Eingebettet" };
   const AUFTRAGSARTEN: [string, string][] = [["audio", "Audio beschaffen"], ["transkription", "Transkribieren"], ["korrektur", "Korrigieren"], ["stueckelung", "Stückeln"], ["einbettung", "Einbetten"]];
   const REITER: [string, string][] = [["transkript", "Transkript"], ["korrektur", "Korrektur"], ["themen", "Themen"], ["stuecke", "Stücke"], ["auftraege", "Aufträge"]];
+  // Welcher Hilfeabschnitt den Schritt hinter einem Reiter erklärt.
+  const REITER_HILFE: Record<string, string> = { transkript: "stufe-transkription", korrektur: "stufe-korrektur", themen: "stufe-korrektur", stuecke: "stufe-stueckelung", auftraege: "fliessband" };
+  const FELD_TITEL: Record<string, string> = { titel: "Titel", beschreibung: "Beschreibung", veroeffentlicht: "Datum", dauer_s: "Dauer", typ: "Art", original_url: "Originaladresse", kanal_name: "Kanal", serie: "Serie", folge_nr: "Folge", schlagworte: "Schlagworte" };
+
+  interface Pflegeformular {
+    titel: string;
+    beschreibung: string;
+    veroeffentlicht: string;
+    dauer_s: string;
+    typ: string;
+    original_url: string;
+    kanal_name: string;
+    serie: string;
+    folge_nr: string;
+    schlagworte: string;
+  }
 
   let v = $state<VideoDetail | null>(null);
   let transkript = $state<Transkript | null>(null);
@@ -29,6 +45,10 @@
   let stuecke = $state<Seite<ChunkEintrag> | null>(null);
   let notizen = $state("");
   let notizTimer: number | null = null;
+  let bearbeiten = $state(false);
+  let pflege = $state<Pflegeformular>({ titel: "", beschreibung: "", veroeffentlicht: "", dauer_s: "", typ: "video", original_url: "", kanal_name: "", serie: "", folge_nr: "", schlagworte: "" });
+  let bildStand = $state(0);
+  let bildEingabe = $state<HTMLInputElement | null>(null);
   let loeschDialog = $state(false);
   let zuruecksetzDialog = $state(false);
   let zielStufe = $state("entdeckt");
@@ -81,6 +101,83 @@
         meldeFehler(e, "Notiz speichern");
       }
     }, 800);
+  }
+
+  function pflegeStarten(): void {
+    if (!v) return;
+    pflege = {
+      titel: v.titel,
+      beschreibung: v.beschreibung,
+      veroeffentlicht: v.veroeffentlicht ? v.veroeffentlicht.slice(0, 10) : "",
+      dauer_s: v.dauer_s === null ? "" : String(v.dauer_s),
+      typ: v.typ || "video",
+      original_url: v.original_url,
+      kanal_name: v.kanal_name,
+      serie: v.serie,
+      folge_nr: v.folge_nr === null ? "" : String(v.folge_nr),
+      schlagworte: v.schlagworte.join(", "),
+    };
+    bearbeiten = true;
+  }
+
+  function pflegeAlsAenderung(): VideoPflege {
+    const a: VideoPflege = {
+      titel: pflege.titel.trim() || undefined,
+      beschreibung: pflege.beschreibung,
+      typ: pflege.typ.trim() || "video",
+      original_url: pflege.original_url.trim(),
+      kanal_name: pflege.kanal_name.trim(),
+      serie: pflege.serie.trim(),
+      schlagworte: pflege.schlagworte.split(",").map((w) => w.trim()).filter(Boolean),
+    };
+    if (pflege.veroeffentlicht) a.veroeffentlicht = `${pflege.veroeffentlicht}T00:00:00`;
+    const dauer = Number(pflege.dauer_s);
+    if (pflege.dauer_s.trim() !== "" && Number.isFinite(dauer) && dauer >= 0) a.dauer_s = Math.round(dauer);
+    const folge = Number(pflege.folge_nr);
+    if (pflege.folge_nr.trim() === "") a.folge_nr_loeschen = true;
+    else if (Number.isFinite(folge) && folge >= 0) a.folge_nr = Math.round(folge);
+    return a;
+  }
+
+  async function pflegeSpeichern(): Promise<void> {
+    beschaeftigt = true;
+    try {
+      v = await api.put<VideoDetail>(`/videos/${id}`, pflegeAlsAenderung());
+      bearbeiten = false;
+      meldungen.gut("Metadaten gespeichert; der Abgleich lässt diese Felder jetzt stehen");
+    } catch (e) {
+      meldeFehler(e, "Metadaten speichern");
+    } finally {
+      beschaeftigt = false;
+    }
+  }
+
+  async function handpflegeAufheben(): Promise<void> {
+    try {
+      v = await api.put<VideoDetail>(`/videos/${id}`, { handpflege_aufheben: true });
+      meldungen.gut("Handpflege aufgehoben; der nächste Abgleich übernimmt wieder die Werte der Quelle");
+    } catch (e) {
+      meldeFehler(e, "Handpflege aufheben");
+    }
+  }
+
+  async function bildHochladen(ereignis: Event): Promise<void> {
+    const eingabe = ereignis.target as HTMLInputElement;
+    const datei = eingabe.files?.[0];
+    if (!datei) return;
+    const formular = new FormData();
+    formular.append("datei", datei);
+    beschaeftigt = true;
+    try {
+      v = await api.hochladen<VideoDetail>(`/videos/${id}/miniatur`, formular);
+      bildStand = Date.now();
+      meldungen.gut("Vorschaubild gesetzt");
+    } catch (e) {
+      meldeFehler(e, "Vorschaubild");
+    } finally {
+      beschaeftigt = false;
+      eingabe.value = "";
+    }
   }
 
   async function auswahl(an: boolean): Promise<void> {
@@ -176,7 +273,10 @@
       <InfoKnopf anker="video" />
       <span class="m-luecke"></span>
       {#if v.hat_audio}<button class="btn btn-sm btn-primary" onclick={() => spieleVideo(id)}><i class="fa-solid fa-play"></i> Abspielen</button>{/if}
-      <a class="btn btn-sm btn-outline-secondary" href={v.original_url} target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i> Bei YouTube öffnen</a>
+      {#if v.original_url}
+        <a class="btn btn-sm btn-outline-secondary" href={v.original_url} target="_blank" rel="noreferrer">{#if v.original_url.includes("youtu")}<i class="fa-brands fa-youtube"></i> Bei YouTube öffnen{:else}<i class="fa-solid fa-up-right-from-square"></i> Original öffnen{/if}</a>
+      {/if}
+      <button class="btn btn-sm btn-outline-secondary" class:active={bearbeiten} title="Titel, Datum, Serie, Adresse und weitere Metadaten von Hand pflegen" onclick={() => (bearbeiten ? (bearbeiten = false) : pflegeStarten())}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
       <div class="dropdown">
         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -207,16 +307,46 @@
         <div class="col-xl-8">
           <div class="card h-100"><div class="card-body">
             <div class="d-flex gap-3 flex-wrap">
-              {#if v.miniatur_url}<img class="m-mini gross" src={v.miniatur_url} alt="" />{:else}<div class="m-mini gross"></div>{/if}
+              <div class="flex-shrink-0">
+                {#if v.miniatur_url}<img class="m-mini gross" src={bildStand ? `${v.miniatur_url}?v=${bildStand}` : v.miniatur_url} alt="" />{:else}<div class="m-mini gross"></div>{/if}
+                <input class="d-none" type="file" accept="image/jpeg,image/png,image/webp" bind:this={bildEingabe} onchange={bildHochladen} />
+                <button class="btn btn-sm btn-outline-secondary mt-2 w-100" title="Eigenes Vorschaubild setzen (JPEG, PNG oder WebP)" disabled={beschaeftigt} onclick={() => bildEingabe?.click()}><i class="fa-solid fa-image"></i> Bild wählen</button>
+              </div>
+              {#if bearbeiten}
+                <div class="flex-grow-1" style="min-width: 260px">
+                  <div class="d-flex align-items-center gap-2 mb-2"><h6 class="m-0 small text-uppercase text-secondary">Metadaten von Hand pflegen</h6><InfoKnopf anker="pflege" /></div>
+                  <div class="row g-2">
+                    <div class="col-12"><label class="form-label mb-1" for="pf-titel">Titel</label><input class="form-control" id="pf-titel" bind:value={pflege.titel} /></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-datum">Datum</label><input class="form-control" id="pf-datum" type="date" bind:value={pflege.veroeffentlicht} /></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-dauer">Dauer</label><div class="input-group"><input class="form-control" id="pf-dauer" type="number" min="0" bind:value={pflege.dauer_s} /><span class="input-group-text">s</span></div></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-serie">Serie</label><input class="form-control" id="pf-serie" placeholder="z. B. mmM" bind:value={pflege.serie} /></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-folge">Folge</label><input class="form-control" id="pf-folge" type="number" min="0" placeholder="leer = keine" bind:value={pflege.folge_nr} /></div>
+                    <div class="col-md-8"><label class="form-label mb-1" for="pf-url">Originaladresse (YouTube oder andere)</label><input class="form-control" id="pf-url" placeholder="https://youtu.be/..." bind:value={pflege.original_url} /></div>
+                    <div class="col-md-4"><label class="form-label mb-1" for="pf-typ">Art</label><select class="form-select" id="pf-typ" bind:value={pflege.typ}><option value="video">Video</option><option value="live">Livestream</option><option value="short">Short</option><option value="audio">Audio</option></select></div>
+                    <div class="col-md-4"><label class="form-label mb-1" for="pf-kanal">Kanal</label><input class="form-control" id="pf-kanal" bind:value={pflege.kanal_name} /></div>
+                    <div class="col-md-8"><label class="form-label mb-1" for="pf-schlag">Schlagworte (durch Komma getrennt)</label><input class="form-control" id="pf-schlag" bind:value={pflege.schlagworte} /></div>
+                    <div class="col-12"><label class="form-label mb-1" for="pf-besch">Beschreibung</label><textarea class="form-control" id="pf-besch" rows="3" bind:value={pflege.beschreibung}></textarea></div>
+                    <div class="col-12 d-flex gap-2 align-items-center flex-wrap">
+                      <span class="small text-secondary">Gespeicherte Felder gelten als von Hand gepflegt; der Abgleich mit der Quelle überschreibt sie nicht mehr.</span>
+                      <span class="ms-auto"></span>
+                      <button class="btn btn-outline-secondary" onclick={() => (bearbeiten = false)}>Abbrechen</button>
+                      <button class="btn btn-primary" onclick={pflegeSpeichern} disabled={beschaeftigt || !pflege.titel.trim()}>Speichern</button>
+                    </div>
+                  </div>
+                </div>
+              {:else}
               <dl class="row mb-0 flex-grow-1" style="min-width: 260px">
                 <dt class="col-sm-4 fw-normal text-secondary">Veröffentlicht</dt><dd class="col-sm-8">{datum(v.veroeffentlicht)}</dd>
                 <dt class="col-sm-4 fw-normal text-secondary">Dauer</dt><dd class="col-sm-8">{zeitmarke(v.dauer_s)} ({dauerWorte(v.dauer_s)})</dd>
-                <dt class="col-sm-4 fw-normal text-secondary">Aufrufe</dt><dd class="col-sm-8">{zahl(v.aufrufe)}</dd>
+                {#if v.aufrufe !== null}<dt class="col-sm-4 fw-normal text-secondary">Aufrufe</dt><dd class="col-sm-8">{zahl(v.aufrufe)}</dd>{/if}
                 <dt class="col-sm-4 fw-normal text-secondary">Kanal</dt><dd class="col-sm-8">{v.kanal_name || "-"}</dd>
-                <dt class="col-sm-4 fw-normal text-secondary">Originaladresse</dt><dd class="col-sm-8"><a href={v.original_url} target="_blank" rel="noreferrer">{v.original_url}</a></dd>
-                <dt class="col-sm-4 fw-normal text-secondary">Quelle</dt><dd class="col-sm-8">{v.quelle_heruntergeladen ? "in der Quelle als Datei vorhanden" : "in der Quelle nicht heruntergeladen"} &middot; {v.ausgewaehlt ? "im Umfang" : "nicht im Umfang"}{v.auswahl_manuell ? " (von Hand entschieden)" : ""}</dd>
+                <dt class="col-sm-4 fw-normal text-secondary">Originaladresse</dt><dd class="col-sm-8">{#if v.original_url}<a href={v.original_url} target="_blank" rel="noreferrer">{v.original_url}</a>{:else}<span class="text-secondary">keine (über Bearbeiten nachtragen)</span>{/if}</dd>
+                {#if v.datei_pfad}<dt class="col-sm-4 fw-normal text-secondary">Datei</dt><dd class="col-sm-8"><code>{v.datei_pfad}</code></dd>{/if}
+                <dt class="col-sm-4 fw-normal text-secondary">Quelle</dt><dd class="col-sm-8">{#if v.quelle_typ === "lokal"}lokale Datei aus dem Verzeichnis der Quelle{:else if !v.quelle_id}ohne Quelle{:else}{v.quelle_heruntergeladen ? "in der Quelle als Datei vorhanden" : "in der Quelle nicht heruntergeladen"}{/if} &middot; {v.ausgewaehlt ? "im Umfang" : "nicht im Umfang"}{v.auswahl_manuell ? " (von Hand entschieden)" : ""}</dd>
+                {#if v.felder_manuell.length}<dt class="col-sm-4 fw-normal text-secondary">Von Hand gepflegt</dt><dd class="col-sm-8">{v.felder_manuell.map((f) => FELD_TITEL[f] ?? f).join(", ")} <button class="btn btn-sm btn-link p-0 align-baseline" title="Der nächste Abgleich übernimmt wieder die Werte der Quelle" onclick={handpflegeAufheben}>aufheben</button> <InfoKnopf anker="pflege" /></dd>{/if}
                 {#if v.schlagworte.length}<dt class="col-sm-4 fw-normal text-secondary">Schlagworte</dt><dd class="col-sm-8">{#each v.schlagworte as s}<span class="badge text-bg-light me-1">{s}</span>{/each}</dd>{/if}
               </dl>
+              {/if}
             </div>
             {#if v.korrektur?.zusammenfassung}
               <h6 class="mt-3 mb-1 small text-uppercase text-secondary">Kurzzusammenfassung</h6>
@@ -248,7 +378,7 @@
 
       <ul class="nav nav-tabs">
         {#each REITER as [k, titel]}
-          <li class="nav-item"><a class="nav-link" class:active={aktiverReiter === k} href="#/video/{id}/{k}" onclick={(e) => { e.preventDefault(); reiterWechsel(k); }}>{titel}</a></li>
+          <li class="nav-item"><a class="nav-link d-flex align-items-center gap-1" class:active={aktiverReiter === k} href="#/video/{id}/{k}" onclick={(e) => { e.preventDefault(); reiterWechsel(k); }}>{titel} <InfoKnopf anker={REITER_HILFE[k]} titel="Was in diesem Schritt passiert" /></a></li>
         {/each}
         {#if aktiverReiter === "korrektur" && vergleich}
           <li class="nav-item ms-auto d-flex align-items-center gap-2 pe-1">

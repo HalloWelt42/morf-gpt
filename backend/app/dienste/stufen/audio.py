@@ -25,6 +25,7 @@ from ...domaene.fliessband import Auftragsart
 from ..audio import bezug
 from ..auftraege import stufen
 from ..ereignisse import bus
+from ..quellen import abgleich, lokal
 
 if TYPE_CHECKING:
     from ..auftraege.laeufer import AuftragKontext
@@ -37,6 +38,7 @@ class VideoAngaben:
     video_id: str
     extern_id: str
     titel: str
+    quelle_typ: str
     basis_url: str
     dauer_s: float | None
 
@@ -93,6 +95,7 @@ async def _video_angaben(video_id: str) -> VideoAngaben:
             video_id=video.id,
             extern_id=video.extern_id,
             titel=video.titel,
+            quelle_typ=quelle.typ,
             basis_url=quelle.basis_url,
             dauer_s=float(video.dauer_s) if video.dauer_s else None,
         )
@@ -117,16 +120,23 @@ async def _vorhandene_datei(ziel: Path, k: AuftragKontext) -> bezug.AudioEigensc
     return eigenschaften
 
 
-async def _beschaffen(k: AuftragKontext, angaben: VideoAngaben, ziel: Path) -> bezug.AudioErgebnis:
-    weg = bezug.waehle_bezug(
+def _bezugsweg(k: AuftragKontext, angaben: VideoAngaben) -> bezug.AudioBezug:
+    """Lokale Quellen wandeln ihre Datei direkt; alle anderen folgen der Einstellung audio.bezugsweg."""
+    wandlung = bezug.Wandlung(abtastrate=int(k.wert("audio.abtastrate")), bitrate_kbit=int(k.wert("audio.bitrate_kbit")))
+    ffmpeg = _wert_oder_vorgabe(k, "audio.ffmpeg_pfad", None) or None
+    if angaben.quelle_typ == lokal.TYP_KENNUNG:
+        endungen = abgleich.dateiendungen_aus(k.werte)
+        return bezug.LokaleDatei(wandlung, lambda wurzel, kennung: lokal.datei_finden(wurzel, kennung, endungen), ffmpeg=ffmpeg)
+    return bezug.waehle_bezug(
         str(k.wert("audio.bezugsweg")),
-        bezug.Wandlung(
-            abtastrate=int(k.wert("audio.abtastrate")),
-            bitrate_kbit=int(k.wert("audio.bitrate_kbit")),
-        ),
+        wandlung,
         zeitgrenze_s=float(_wert_oder_vorgabe(k, "audio.zeitgrenze_s", bezug.ZEITGRENZE_S_VORGABE)),
-        ffmpeg=_wert_oder_vorgabe(k, "audio.ffmpeg_pfad", None) or None,
+        ffmpeg=ffmpeg,
     )
+
+
+async def _beschaffen(k: AuftragKontext, angaben: VideoAngaben, ziel: Path) -> bezug.AudioErgebnis:
+    weg = _bezugsweg(k, angaben)
     await k.protokoll(f"Bezug über '{weg.kennung}' von {angaben.basis_url} ({angaben.extern_id})")
     _abbruch_pruefen(k)
     return await weg.beschaffe(angaben.basis_url, angaben.extern_id, ziel, k.fortschritt, k.abbruch, angaben.dauer_s)

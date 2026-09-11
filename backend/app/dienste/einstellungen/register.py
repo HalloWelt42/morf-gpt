@@ -62,6 +62,14 @@ DEFINITIONEN: tuple[Definition, ...] = (
         "quelle",
     ),
     Definition(
+        "quelle.dateiendungen",
+        "Dateiendungen lokaler Quellen",
+        "Welche Dateien ein Verzeichnis als Videoquelle liefert (Video und Audio), durch Komma getrennt.",
+        "text",
+        "mp4,mkv,webm,mov,m4v,avi,m4a,mp3,wav,flac,ogg,opus,aac",
+        "quelle",
+    ),
+    Definition(
         "quelle.serie_zuerst",
         "Serie zuerst",
         "Aufträge für die Erklärserie (mmM) werden vor allen anderen Videos abgearbeitet.",

@@ -468,40 +468,46 @@
     </div>
 
     <!-- Hilfe: freischwebendes Fenster -->
-    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
       <div class="m-hilfe-kopf">
-        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
-        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
-        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Nur suchen" /></div>
-      <div class="m-hilfe-koerper">
-        <nav class="m-hilfe-inhalt">
-          <a href="#">Erste Schritte</a>
-          <a href="#">Chat</a>
-          <a href="#">Suche: Breite und Genauigkeit</a>
-          <a class="aktiv" href="#">Fundstellen</a>
-          <a href="#">Audiospieler</a>
-          <a href="#">Bibliothek</a>
-          <a href="#">Textstellen</a>
-          <a href="#">Fließband</a>
-          <a href="#">Anbieter</a>
-          <a href="#">Einstellungen</a>
-          <a href="#">Umzug der Bibliothek</a>
-        </nav>
-        <div class="m-hilfe-text">
-          <h2>Fundstellen</h2>
-          <p>Jede Antwort im Chat stützt sich ausschließlich auf Textstellen aus der Bibliothek. Die Fundstellen stehen rechts, sortiert nach Ähnlichkeit zur Frage, jede mit Wert, Video, Folge, Zeitfenster und Sprung ins Audio.</p>
-          <h2>Nur suchen</h2>
-          <p>Der Knopf "<mark>Nur suchen</mark>" neben "Senden" findet die Stellen, ohne das Sprachmodell zu befragen. So siehst du zuerst, worauf eine Antwort gestützt würde, und kannst Stellen abwählen, die nicht zur Frage passen. Erst der Knopf "Aus n ausgewählten Stellen antworten" ruft das Sprachmodell.</p>
-          <h2>Stellen abwählen</h2>
-          <p>Das Häkchen an jeder Stelle schaltet sie ab oder wieder an. Abgewählte Stellen bleiben sichtbar, werden aber blass dargestellt und gehen nicht in die Antwort ein. Die beiden Knöpfe neben der Überschrift wählen alle Stellen auf einmal an oder ab.</p>
-          <h2>Suche verfeinern</h2>
-          <p>Passen die Stellen nicht, ändere Breite, Genauigkeit oder Filter in der Leiste rechts und lass mit "Erneut suchen" dieselbe Frage noch einmal suchen. Mehr Treffer und niedrigere Mindestähnlichkeit machen die Suche breiter, ein höherer Wert und die Neu-Bewertung machen sie strenger.</p>
-          <h2>Kandidaten</h2>
-          <p>Für Neu-Bewertung und Vielfalt holt die Suche mehr Kandidaten, als Treffer gewünscht sind (Einstellung "Kandidaten je Treffer"). Was unter der Mindestähnlichkeit liegt oder die Grenze je Video überschreitet, wird verworfen; die Zahl steht unter der Liste.</p>
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
     </div>
   </body>
 </html>

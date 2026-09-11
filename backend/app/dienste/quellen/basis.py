@@ -45,6 +45,7 @@ class QuellVideo:
     schlagworte: list[str] = field(default_factory=list)
     kanal_name: str = ""
     miniatur_url: str = ""
+    original_url: str = ""  # Adresse des Originals, wenn die Quelle eine kennt
     heruntergeladen: bool = False
     roh: dict[str, Any] = field(default_factory=dict)
 

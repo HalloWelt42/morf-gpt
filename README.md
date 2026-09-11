@@ -15,15 +15,22 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   höchstens je Video) und **Genauigkeit** (Mindestähnlichkeit, Neu-Bewertung mit lokalem
   Cross-Encoder oder Sprachmodell). Mit der Lupe nur suchen, Stellen abwählen, dann
   antworten lassen. Alles in großer Schrift.
-- **Bibliothek**: alle Videos der Quelle mit Originaldaten, Vorschaubild, Serie und Folge,
+- **Quellen**: ein Kanal aus TubeVault oder ein Verzeichnis mit eigenen Video- und
+  Audiodateien auf diesem Rechner, beides nebeneinander. Lokale Dateien bringen Titel,
+  Datum und Dauer mit; ein Beiblatt `name.json` und ein Bild `name.jpg` daneben werden
+  übernommen.
+- **Bibliothek**: alle Videos der Quellen mit Originaldaten, Vorschaubild, Serie und Folge,
   Stufe auf dem Fließband, Auswahl im Umfang, Stapelaktionen, Zurücksetzen auf eine Stufe.
+  Metadaten und Vorschaubild lassen sich von Hand pflegen; gepflegte Felder bleiben beim
+  Abgleich stehen.
 - **Video im Detail**: Transkript mit Zeitmarken, Korrektur im Vergleich (roh und
   korrigiert Block für Block, verworfene Blöcke mit Begründung und Übernahme), Themen mit
   Zeitfenstern, Stücke, Aufträge, eigene Notizen.
 - **Textstellen**: alle Stücke durchblättern, suchen, Überlappungen sehen, bearbeiten,
   teilen, zusammenlegen, neu einbetten oder ein Video neu stückeln.
 - **Fließband**: sechs Stufen mit Zählern, Durchsatz und Restzeit, Pause je Stufe,
-  laufende und fehlgeschlagene Aufträge, Protokoll live.
+  laufende und fehlgeschlagene Aufträge, Protokoll live. Jede Stufe hat einen Info-Knopf,
+  der erklärt, was in dem Schritt passiert und warum er wichtig ist.
 - **Audiospieler** als feste Leiste: Abspielen ab Zeitmarke, Sprünge, Tempo, Zeitleiste
   mit den Themen, YouTube an derselben Stelle.
 - **Einstellungen**: jede Grenze mit Beschreibung, Bereich und Vorgabe; Anbieter für
@@ -34,8 +41,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   sich aus aktiv. Entweder wählt der Nutzer die Werkzeuge je Frage, oder das Modell
   entscheidet selbst per Werkzeugaufruf. Ergebnisse werden wie Videostellen belegt, jeder
   Aufruf ist mit Argumenten und Dauer einsehbar.
-- **Hilfe** als freischwebendes, durchsuchbares Fenster; Mini-i-Knöpfe springen direkt
-  zum passenden Abschnitt.
+- **Hilfe** als freischwebendes Fenster: ziehen, Größe ändern, minimieren, maximieren, Lage
+  wird gemerkt. Themen sind Markdown-Dateien; die Volltextsuche läuft über alle Themen oder
+  nur im gezeigten, mit Trefferzähler und Sprung von Treffer zu Treffer. Mini-i-Knöpfe
+  öffnen genau das passende Thema, auf Wunsch gleich beim gesuchten Begriff.
 
 ## Werkstatt und Bibliothek
 
@@ -54,8 +63,8 @@ OpenAI-kompatibler Dienst, als Einbettung das lokale bge-m3 über fastembed.
 - ffmpeg und ffprobe
 - LM Studio mit `qwen3-next-80b-a3b-instruct-mlx` und `text-embedding-bge-m3` (oder ein
   anderer Anbieter, in der Oberfläche einstellbar)
-- für die Werkstatt: TubeVault als Videoquelle und der txt2voice-Worker als
-  Transkriptionsdienst
+- für die Werkstatt: eine Videoquelle (TubeVault oder ein Verzeichnis mit eigenen
+  Dateien) und der txt2voice-Worker als Transkriptionsdienst
 
 ## Start
 
@@ -72,8 +81,9 @@ Weitere Befehle: `./start.sh stop`, `restart`, `status`, `logs`, `migrate`, `db`
 
 ## Erste Schritte
 
-1. Einstellungen, Quellen: Kanal anlegen (Basisadresse der Quelle und Kanalkennung),
-   Kanal prüfen, Quelle anlegen, Jetzt abgleichen.
+1. Einstellungen, Quellen: Quelle anlegen, entweder einen Kanal (Basisadresse und
+   Kanalkennung, Kanal prüfen) oder ein Verzeichnis mit eigenen Dateien (Verzeichnis
+   prüfen). Dann Jetzt abgleichen.
 2. Einstellungen, Anbieter: Sprachmodell und Einbettung prüfen, Rollen zuweisen.
 3. Fließband: Band auffüllen. Ab dann laufen die Stufen von selbst weiter; die
    Erklärserie kommt zuerst.

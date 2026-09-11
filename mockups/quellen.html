@@ -64,7 +64,7 @@
         <section class="m-ansicht">
           <div class="m-ansicht-kopf">
             <h1>Quellen</h1>
-            <span class="m-unter">1 Quelle &middot; 1.491 Videos im Kanal &middot; 664 im Umfang &middot; zuletzt abgeglichen vor 12 Minuten</span>
+            <span class="m-unter">2 Quellen &middot; 1.505 Videos &middot; 676 im Umfang &middot; zuletzt abgeglichen vor 3 Minuten</span>
             <span class="m-luecke"></span>
             <a class="btn btn-sm btn-primary" href="#neue-quelle" title="Zum Formular für eine neue Quelle springen"><i class="fa-solid fa-plus"></i> Neue Quelle</a>
             <button class="m-info" title="Hilfe zu Quellen: Woher die Videos kommen und welche aufgenommen werden">i</button>
@@ -144,6 +144,48 @@
                 </div>
               </div>
 
+              <!-- Lokale Dateien -->
+              <div class="card">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-folder-open"></i>
+                  <b>Meine Aufnahmen (Lokale Dateien)</b>
+                  <span class="badge text-bg-success" title="Das Verzeichnis ist erreichbar">erreichbar</span>
+                  <span class="ms-auto small text-secondary">Kennung der Quelle: 9b21d4e0a7c34f18</span>
+                </div>
+                <div class="card-body">
+                  <div class="row g-4">
+                    <div class="col-lg-5">
+                      <dl class="row mb-0">
+                        <dt class="col-sm-5 fw-semibold">Typ</dt>
+                        <dd class="col-sm-7">Lokale Dateien <button class="m-info" title="Ein Verzeichnis auf diesem Rechner. Jede Video- oder Audiodatei darunter wird ein Video; Beiblatt name.json und Bild name.jpg daneben werden übernommen.">i</button></dd>
+                        <dt class="col-sm-5 fw-semibold">Verzeichnis</dt>
+                        <dd class="col-sm-7"><span class="font-monospace">/Users/alpha/Videos/morf</span></dd>
+                        <dt class="col-sm-5 fw-semibold">Dateiendungen</dt>
+                        <dd class="col-sm-7">mp4, mkv, webm, mov, m4a, mp3, wav <span class="text-secondary">(Einstellungen, Quelle)</span></dd>
+                        <dt class="col-sm-5 fw-semibold">Zuletzt abgeglichen</dt>
+                        <dd class="col-sm-7 mb-0">vor 3 Minuten <span class="text-secondary">(14 Dateien, 1 neu, 12 im Umfang)</span></dd>
+                      </dl>
+                    </div>
+                    <div class="col-lg-7">
+                      <div class="m-kennzahlen">
+                        <div class="m-kennzahl"><div class="wert">14</div><div class="titel">Dateien im Verzeichnis</div></div>
+                        <div class="m-kennzahl"><div class="wert">9</div><div class="titel">mit Beiblatt</div></div>
+                        <div class="m-kennzahl"><div class="wert">12</div><div class="titel">im Umfang der Bibliothek</div></div>
+                        <div class="m-kennzahl"><div class="wert">5</div><div class="titel">von Hand gepflegt</div></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="alert alert-secondary mt-3 mb-0 small">Titel aus dem Dateinamen, Datum aus dem Änderungsdatum, Dauer aus der Datei. Was fehlt (Serie, Folge, Originaladresse), wird am Video von Hand nachgetragen und bleibt beim Abgleich stehen.</div>
+                </div>
+                <div class="card-footer d-flex align-items-center gap-2">
+                  <button class="btn btn-sm btn-primary" title="Verzeichnis jetzt einlesen und neue Dateien nach den Regeln aufnehmen"><i class="fa-solid fa-rotate"></i> Jetzt abgleichen</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Zeigt, welche Dateien nach den Regeln aufgenommen würden, ohne etwas zu ändern"><i class="fa-solid fa-eye"></i> Vorschau</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Name, Verzeichnis und Regeln ändern"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                  <span class="ms-auto"></span>
+                  <button class="btn btn-sm btn-outline-danger" title="Quelle entfernen. Videos, Texte und Vektoren bleiben in der Bibliothek."><i class="fa-solid fa-trash"></i> Entfernen</button>
+                </div>
+              </div>
+
               <!-- Neue Quelle -->
               <div class="card" id="neue-quelle">
                 <div class="card-header d-flex align-items-center gap-2">
@@ -156,9 +198,9 @@
                     <div class="col-md-3">
                       <div class="d-flex align-items-center gap-2 mb-1">
                         <label class="form-label m-0" for="q-typ">Typ</label>
-                        <button class="m-info" title="Art der Videoquelle. Zurzeit gibt es TubeVault; weitere Typen erscheinen hier, sobald sie umgesetzt sind.">i</button>
+                        <button class="m-info" title="Art der Videoquelle: ein Kanal in TubeVault oder ein Verzeichnis mit eigenen Dateien auf diesem Rechner. Beide Arten dürfen nebeneinander bestehen.">i</button>
                       </div>
-                      <select class="form-select" id="q-typ"><option selected>TubeVault</option></select>
+                      <select class="form-select" id="q-typ"><option selected>TubeVault</option><option>Lokale Dateien</option></select>
                     </div>
                     <div class="col-md-3">
                       <label class="form-label mb-1" for="q-name">Name</label>
@@ -352,45 +394,46 @@
     </div>
 
     <!-- Hilfe: freischwebendes Fenster -->
-    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
       <div class="m-hilfe-kopf">
-        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
-        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
-        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Mindestdauer" /></div>
-      <div class="m-hilfe-koerper">
-        <nav class="m-hilfe-inhalt">
-          <a href="#">Erste Schritte</a>
-          <a href="#">Chat</a>
-          <a href="#">Suche: Breite und Genauigkeit</a>
-          <a href="#">Fundstellen</a>
-          <a href="#">Audiospieler</a>
-          <a href="#">Bibliothek</a>
-          <a href="#">Textstellen</a>
-          <a href="#">Fließband</a>
-          <a class="aktiv" href="#">Quellen</a>
-          <a href="#">Anbieter</a>
-          <a href="#">Einstellungen</a>
-          <a href="#">Umzug der Bibliothek</a>
-        </nav>
-        <div class="m-hilfe-text">
-          <h2>Quellen</h2>
-          <p>Eine Quelle ist der Dienst, aus dem morf-gpt die Videos eines Kanals bezieht: Titel, Beschreibung, Datum, Dauer, Vorschaubild und die Datei selbst. Zurzeit ist das TubeVault auf dem Pi. Die Bibliothek merkt sich zu jedem Video die Originaladresse bei YouTube, damit jede Textstelle zurückführbar bleibt.</p>
-          <h2>Kanal prüfen</h2>
-          <p>Bevor eine Quelle angelegt wird, fragt "Kanal prüfen" den Dienst nach dem Kanal. Die Antwort zeigt den Kanalnamen, die Zahl der Videos und wie viele davon schon heruntergeladen sind. Es wird nichts gespeichert.</p>
-          <h2>Regeln für die Aufnahme</h2>
-          <p><b><mark>Mindestdauer</mark> eines Videos</b>: Nur Videos, die länger sind als dieser Wert, werden automatisch in den Umfang aufgenommen. Kürzere lassen sich in der Videoliste von Hand aufnehmen. Bereich 0 bis 36.000 Sekunden, Vorgabe 300.</p>
-          <p><b>Videoarten im Umfang</b>: Welche Arten die Quelle liefert und automatisch aufgenommen werden. Shorts sind ohnehin kurz und fallen meist schon an der Mindestdauer.</p>
-          <p><b>Nur bereits heruntergeladene Videos</b>: Wenn an, werden nur Videos aufgenommen, die in der Quelle schon als Datei vorliegen. Ohne Datei kann das Fließband kein Audio beschaffen.</p>
-          <h2>Vorschau</h2>
-          <p>Die Vorschau zeigt jedes Video des Kanals mit dem Stand in der Quelle und ob es nach den Regeln aufgenommen würde. So siehst du vor dem Anlegen, was in die Bibliothek käme. Erst "Quelle anlegen und Videos übernehmen" ändert etwas.</p>
-          <h2>Abgleich</h2>
-          <p>"Jetzt abgleichen" holt den aktuellen Stand des Kanals und nimmt neue Videos nach den Regeln auf. Der Abgleich läuft als Auftrag im Fließband und erscheint dort im Protokoll.</p>
-          <h2>Entfernen</h2>
-          <p>Wird eine Quelle entfernt, endet nur der Abgleich. Videos, Texte und Vektoren bleiben in der Bibliothek erhalten.</p>
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
     </div>
   </body>
 </html>

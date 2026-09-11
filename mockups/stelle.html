@@ -205,45 +205,46 @@ Das ist übrigens auch der Grund, warum sich zwei Leute über dasselbe Ereignis 
     </div>
 
     <!-- Hilfe: freischwebendes Fenster -->
-    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+    <div class="m-hilfe" hidden style="right: 24px; top: 64px; width: 640px; height: 640px">
       <div class="m-hilfe-kopf">
-        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
-        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
-        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Überlappung" /></div>
-      <div class="m-hilfe-koerper">
-        <nav class="m-hilfe-inhalt">
-          <a href="#">Erste Schritte</a>
-          <a href="#">Chat</a>
-          <a href="#">Suche: Breite und Genauigkeit</a>
-          <a href="#">Fundstellen</a>
-          <a href="#">Audiospieler</a>
-          <a href="#">Bibliothek</a>
-          <a class="aktiv" href="#">Textstellen</a>
-          <a href="#">Fließband</a>
-          <a href="#">Anbieter</a>
-          <a href="#">Einstellungen</a>
-          <a href="#">Umzug der Bibliothek</a>
-        </nav>
-        <div class="m-hilfe-text">
-          <h2>Textstelle bearbeiten</h2>
-          <p>Ein Stück ist ein Ausschnitt aus dem korrigierten Transkript eines Videos. Die Suche findet Stücke, und das Sprachmodell bekommt sie als Belege. Diese Seite zeigt ein einzelnes Stück mit allem, was dazugehört, und lässt dich seinen Text ändern.</p>
-          <h2>Text ändern</h2>
-          <p>Ändere nur Wortlaut und Form, etwa einen Hörfehler, den die Korrektur übersehen hat. Leere Zeilen trennen Absätze. Zeitfenster und Thema stammen aus der Korrektur und bleiben stehen; ein anderer Schnitt gehört in das Video (neu stückeln) oder in die Knöpfe Teilen und Zusammenlegen.</p>
-          <h2>Zähler unter dem Text</h2>
-          <p><b>Zeichen und Ziel</b>: Die Zielgröße eines Stücks ist eine Einstellung (Vorgabe 3.000, erlaubt 800 bis 8.000 Zeichen). Ein Stück darf davon abweichen; das Einbettungsmodell verträgt bis etwa 8.000 Zeichen.</p>
-          <p><b><mark>Überlappung</mark> vor und nach</b>: Damit kein Gedanke am Schnitt verloren geht, wiederholt jedes Stück ganze Sätze vom Ende des Vorgängers, und sein eigenes Ende steht auch am Anfang des Nachfolgers. Die Zahlen sagen, wie viele Zeichen das jeweils sind. Änderst du den überlappenden Text nur hier, unterscheiden sich die Kopien; die Suche entdoppelt Nachbarn an den Überlappungen trotzdem.</p>
-          <h2>Speichern und neu einbetten</h2>
-          <p>Speichern schreibt den Text und berechnet sofort den Vektor dieses einen Stücks neu, mit demselben Modell, das den Index gebaut hat. Nachbarn werden nicht angefasst. <b>Verwerfen</b> stellt den gespeicherten Text wieder her.</p>
-          <h2>Vorgänger und Nachfolger</h2>
-          <p>Rechts stehen das Stück davor und das Stück danach im selben Video, jeweils mit Zeitfenster, Thema und einem gekürzten Auszug. Von dort springst du zum Nachbarn, spielst ihn ab oder legst ihn mit diesem Stück zusammen.</p>
-          <h2>Einbettungsstand</h2>
-          <p>Zeigt Anbieter, Modell, Dimension und Zeitpunkt des Vektors. <b>Neu einbetten</b> berechnet ihn ohne Textänderung neu, zum Beispiel nach einem Modellwechsel. Die Suche fragt immer mit dem Modell, das den Index gebaut hat.</p>
-          <h2>Herkunft</h2>
-          <p>Jedes Stück führt zur Quelle zurück: zum Video mit Originaldaten, zum Korrekturlauf mit Modell und Ähnlichkeit zum Rohtext und zu den Absätzen der Korrektur, aus denen es geschnitten wurde. Der Sprung zu YouTube öffnet das Video an der Sekunde des Zeitfensters.</p>
+        <i class="fa-solid fa-flag-checkered"></i>
+        <div class="m-hilfe-titel"><b>Erste Schritte</b><span>Von der leeren Bibliothek zur ersten Antwort.</span></div>
+        <div class="m-hilfe-aktionen">
+          <button class="btn btn-sm btn-light" title="Minimieren"><i class="fa-solid fa-window-minimize"></i></button>
+          <button class="btn btn-sm btn-light" title="Maximieren"><i class="fa-solid fa-expand"></i></button>
+          <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
         </div>
       </div>
+      <div class="m-hilfe-leiste">
+        <div class="btn-group btn-group-sm" role="group"><button class="btn btn-outline-secondary active">Alle Themen</button><button class="btn btn-outline-secondary">Dieses Thema</button></div>
+        <div class="m-hilfe-suchfeld"><i class="fa-solid fa-magnifying-glass text-secondary"></i><input placeholder="In allen Themen suchen ..." value="Umfang" /><span class="zaehler">2/11</span><button class="btn btn-sm btn-link p-0" title="Vorheriger Treffer"><i class="fa-solid fa-chevron-up"></i></button><button class="btn btn-sm btn-link p-0" title="Nächster Treffer"><i class="fa-solid fa-chevron-down"></i></button><button class="btn btn-sm btn-link p-0" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button></div>
+      </div>
+      <div class="m-hilfe-hinweis">Treffer in Erste Schritte; mit den Pfeilen geht es durch alle Themen.</div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Anfang</div>
+          <a class="aktiv" href="#"><span class="text-truncate">Erste Schritte</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Werkstatt</div>
+          <a href="#"><span class="text-truncate">Quellen: Dienst oder Verzeichnis</span> <span class="badge text-bg-secondary">1</span></a>
+          <a href="#"><span class="text-truncate">Schritt 0: Entdecken (Abgleich mit der Quelle)</span> <span class="badge text-bg-secondary">4</span></a>
+          <a href="#"><span class="text-truncate">Fließband</span> <span class="badge text-bg-secondary">2</span></a>
+          <div class="px-3 pt-2 pb-1 small text-uppercase text-secondary fw-semibold">Bibliothek</div>
+          <a href="#"><span class="text-truncate">Bibliothek</span> <span class="badge text-bg-secondary">2</span></a>
+        </nav>
+        <div class="m-hilfe-text">
+          <article class="m-hilfe-artikel">
+            <p>morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.</p>
+            <ol>
+              <li>Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den <mark class="tref aktiv">Umfang</mark>.</li>
+              <li>Unter Einstellungen, Anbieter prüfen, ob Sprachmodell und Einbettung erreichbar sind.</li>
+              <li>Im Fließband mit Band auffüllen die Aufträge anlegen. Ab dann läuft alles von selbst weiter.</li>
+              <li>Sobald die ersten Videos eingebettet sind, antwortet der Chat aus ihnen. Der Stand steht in der Kopfleiste.</li>
+            </ol>
+            <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf, der genau das passende Thema öffnet; Videos im <mark class="tref">Umfang</mark> laufen von selbst über das Fließband.</div>
+          </article>
+        </div>
+      </div>
+      <div class="m-hilfe-griff" title="Größe ändern"></div>
     </div>
   </body>
 </html>

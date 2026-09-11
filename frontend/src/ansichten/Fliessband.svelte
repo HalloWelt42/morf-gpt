@@ -258,7 +258,7 @@
   <div class="m-ansicht-koerper d-flex flex-column gap-3" style="overflow: hidden">
     <div class="m-band">
       <div class="m-band-stufe">
-        <div class="titel"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</div>
+        <div class="titel d-flex align-items-center gap-1"><i class="fa-solid fa-satellite-dish"></i> Entdeckt <InfoKnopf anker="stufe-abgleich" titel="Was beim Abgleich mit der Quelle passiert" /></div>
         <div class="zahl">{zahl(uebersicht?.videos_ausgewaehlt)}</div>
         <div class="klein">im Umfang, {zahl(uebersicht?.videos_gesamt)} gesamt</div>
         <div class="zeile"><span>Quelle</span><span>{quellen[0]?.typ_titel ?? "-"}</span></div>
@@ -269,7 +269,7 @@
         {@const fertig = fertigAb(stufe)}
         {@const gesamt = uebersicht?.videos_ausgewaehlt ?? 0}
         <div class="m-band-stufe {stufe}">
-          <div class="titel"><i class="fa-solid {ICON_JE_ART[a.art]}"></i> {a.titel}</div>
+          <div class="titel d-flex align-items-center gap-1"><i class="fa-solid {ICON_JE_ART[a.art]}"></i> {a.titel} <InfoKnopf anker="stufe-{a.art}" titel="Was in diesem Schritt passiert und warum er wichtig ist" /></div>
           <div class="zahl">{zahl(fertig)}</div>
           <div class="klein">fertig &middot; {a.laufend} {a.laufend === 1 ? "läuft" : "laufen"} &middot; {zahl(a.wartend)} warten{#if a.fehler} &middot; <span class="text-danger">{a.fehler} Fehler</span>{/if}</div>
           <div class="m-fortschritt" class:laeuft={a.laufend > 0}><span style="width: {gesamt ? Math.round((fertig / gesamt) * 100) : 0}%"></span></div>

@@ -3,20 +3,22 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy import case, delete, desc, func, literal_column, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import einstellungen
 from ..db.engine import sitzung_abhaengigkeit
-from ..db.modelle import Audio, Auftrag, Chunk, Einbettung, Korrektur, Transkript, Video
+from ..db.modelle import Audio, Auftrag, Chunk, Einbettung, Korrektur, Quelle, Transkript, Video
+from ..dienste.audio import bezug
 from ..dienste.auftraege.laeufer import auftrag_anlegen, auftrag_fuer_naechste_stufe, laeufer
 from ..dienste.einstellungen import dienst as einstellungen_dienst
 from ..dienste.ereignisse import bus
-from ..dienste.quellen import abgleich
-from ..dienste.quellen.basis import QuellVideo
+from ..dienste.quellen import abgleich, lokal
+from ..dienste.quellen.basis import QuellenFehler, QuellVideo
 from ..domaene.fliessband import (
     AUFTRAGSART_TITEL,
     STUFEN_REIHENFOLGE,
@@ -319,6 +321,8 @@ async def detail(video_id: str, session: AsyncSession = Depends(sitzung_abhaengi
     auftraege = (
         (await session.execute(select(Auftrag).where(Auftrag.video_id == v.id).order_by(Auftrag.erstellt.desc()).limit(10))).scalars().all()
     )
+    quelle = await session.get(Quelle, v.quelle_id) if v.quelle_id else None
+    quelle_typ = quelle.typ if quelle else ""
     return VideoDetail(
         **basis.model_dump(),
         beschreibung=v.beschreibung,
@@ -326,7 +330,10 @@ async def detail(video_id: str, session: AsyncSession = Depends(sitzung_abhaengi
         schlagworte=list(v.schlagworte or []),
         kanal_name=v.kanal_name,
         quelle_id=v.quelle_id,
+        quelle_typ=quelle_typ,
         quelle_heruntergeladen=v.quelle_heruntergeladen,
+        datei_pfad=str((v.metadaten_original or {}).get("pfad") or "") if quelle_typ == lokal.TYP_KENNUNG else "",
+        felder_manuell=list(v.felder_manuell or []),
         prioritaet=v.prioritaet,
         notizen=v.notizen,
         metadaten_original=v.metadaten_original or {},
@@ -340,7 +347,7 @@ async def detail(video_id: str, session: AsyncSession = Depends(sitzung_abhaengi
                 abtastrate=audio.abtastrate,
                 kanaele=audio.kanaele,
                 bezugsweg=audio.bezugsweg,
-                datei_vorhanden=Path(audio.pfad).exists() if audio.pfad else False,
+                datei_vorhanden=bezug.pfad_aufloesen(audio.pfad).exists() if audio.pfad else False,
                 erstellt=audio.erstellt,
             )
             if audio
@@ -410,11 +417,42 @@ async def miniatur(video_id: str, session: AsyncSession = Depends(sitzung_abhaen
     return FileResponse(pfad, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
 
 
+def _metadaten_pflegen(v: Video, e: VideoAenderung) -> None:
+    """Überträgt die von Hand gepflegten Metadaten und merkt sie sich als festgehalten."""
+    festgehalten = set(v.felder_manuell or [])
+    werte: list[tuple[str, Any]] = []
+    if e.titel is not None and e.titel.strip():
+        werte.append(("titel", e.titel.strip()))
+    if e.beschreibung is not None:
+        werte.append(("beschreibung", e.beschreibung))
+    if e.veroeffentlicht is not None:
+        werte.append(("veroeffentlicht", e.veroeffentlicht))
+    if e.dauer_s is not None:
+        werte.append(("dauer_s", e.dauer_s))
+    if e.typ is not None:
+        werte.append(("typ", e.typ.strip().lower()))
+    if e.original_url is not None:
+        werte.append(("original_url", e.original_url.strip()))
+    if e.kanal_name is not None:
+        werte.append(("kanal_name", e.kanal_name.strip()))
+    if e.serie is not None:
+        werte.append(("serie", e.serie.strip()))
+    if e.folge_nr is not None or e.folge_nr_loeschen:
+        werte.append(("folge_nr", None if e.folge_nr_loeschen else e.folge_nr))
+    if e.schlagworte is not None:
+        werte.append(("schlagworte", [w.strip() for w in e.schlagworte if w.strip()]))
+    for attribut, wert in werte:
+        setattr(v, attribut, wert)
+        festgehalten.add(attribut)
+    if e.handpflege_aufheben:
+        festgehalten.clear()
+    v.felder_manuell = sorted(festgehalten & set(abgleich.PFLEGBARE_FELDER))
+
+
 @router.put("/{video_id}", response_model=VideoDetail)
 async def aendern(video_id: str, e: VideoAenderung, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> VideoDetail:
     v = await _laden(session, video_id)
-    if e.titel is not None:
-        v.titel = e.titel.strip() or v.titel
+    _metadaten_pflegen(v, e)
     if e.notizen is not None:
         v.notizen = e.notizen
     if e.prioritaet is not None:
@@ -424,6 +462,33 @@ async def aendern(video_id: str, e: VideoAenderung, session: AsyncSession = Depe
         if v.ausgewaehlt != e.ausgewaehlt:
             v.ausgewaehlt = e.ausgewaehlt
             await _nach_auswahl(session, v, bool(await einstellungen_dienst.wert(session, "band.automatik")))
+    await session.commit()
+    bus.veroeffentliche("video", aktion="geaendert", video_id=v.id)
+    return await detail(video_id, session)
+
+
+@router.post("/{video_id}/miniatur", response_model=VideoDetail)
+async def miniatur_hochladen(video_id: str, datei: UploadFile = File(...), session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> VideoDetail:
+    """Eigenes Vorschaubild setzen (JPEG, PNG oder WebP); wird als JPEG abgelegt und bleibt beim Abgleich stehen."""
+    v = await _laden(session, video_id)
+    roh = await datei.read()
+    if not roh:
+        raise HTTPException(422, "Die Datei ist leer")
+    if len(roh) > 20 * 1024 * 1024:
+        raise HTTPException(413, "Das Bild ist größer als 20 Megabyte")
+    verzeichnis = einstellungen.miniaturen_verzeichnis
+    verzeichnis.mkdir(parents=True, exist_ok=True)
+    zwischen = verzeichnis / f"{v.extern_id}.hochgeladen{Path(datei.filename or '').suffix.lower() or '.bin'}"
+    zwischen.write_bytes(roh)
+    try:
+        jpeg = await lokal.bild_als_jpeg(zwischen)
+    except QuellenFehler as e:
+        raise HTTPException(422, f"Das Bild ist nicht lesbar: {e}") from e
+    finally:
+        zwischen.unlink(missing_ok=True)
+    ziel = abgleich.miniatur_pfad(verzeichnis, v.extern_id)
+    ziel.write_bytes(jpeg)
+    v.miniatur_pfad = str(ziel)
     await session.commit()
     bus.veroeffentliche("video", aktion="geaendert", video_id=v.id)
     return await detail(video_id, session)
@@ -471,7 +536,7 @@ async def _artefakte_loeschen(session: AsyncSession, v: Video, ziel: Stufe) -> G
     if zi < stufen_index(Stufe.AUDIO):
         audio = (await session.execute(select(Audio).where(Audio.video_id == v.id))).scalar_one_or_none()
         if audio is not None:
-            p = Path(audio.pfad)
+            p = bezug.pfad_aufloesen(audio.pfad)
             if p.exists():
                 p.unlink()
                 g.dateien += 1
