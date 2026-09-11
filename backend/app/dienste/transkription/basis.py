@@ -1,12 +1,12 @@
 """Schnittstelle der Transkription: Engine-Protokoll, Ergebnisformen, Fehler.
 
 Aufrufer (die Stufe Transkription, der Router) programmieren nur gegen dieses Modul.
-Welche Umsetzung dahintersteht (txt2voice-Worker oder txt2voice-App), entscheidet
+Welche Umsetzung dahintersteht (eigener Dienst, txt2voice-Worker oder txt2voice-App), entscheidet
 `register.py` anhand der Einstellung `transkription.engine`.
 
 Die Segmentform in der Datenbank (Spalte transkripte.segmente) folgt den Schlüsseln
 des Whisper-Dienstes: start, end, text, words[{word, start, end}]. `Segment` ist die
-typisierte Sicht darauf; `als_speicherform` und `aus_speicherform` übersetzen. Beide
+typisierte Sicht darauf; `als_speicherform` und `aus_speicherform` übersetzen. Alle
 Engines liefern dieselbe Rohform, darum liegen Parser und Wortzeiten-Filter hier.
 """
 

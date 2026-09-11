@@ -16,7 +16,7 @@ import contextlib
 import time
 from collections.abc import Coroutine
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import select, update
 
@@ -27,12 +27,12 @@ from ...domaene.fliessband import Auftragsart
 from ..auftraege import stufen
 from ..ereignisse import bus
 from ..transkription import register
-from ..transkription.basis import TranskriptErgebnis
+from ..transkription.basis import TranskriptErgebnis, TranskriptionsFehler
+from ..transkription.eigener_dienst import EigenerDienst
 
 if TYPE_CHECKING:
     from ..auftraege.laeufer import AuftragKontext
 
-T = TypeVar("T")
 
 # Vorgabewert, bis das Einstellungsregister den Schlüssel transkription.herzschlag_takt_s
 # kennt (vorgeschlagen: ganzzahl, 30 Sekunden, 5 bis 300). Sobald er existiert, greift er
@@ -53,6 +53,7 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
     audio = await _audio_laden(k.video_id)
     pfad = _audiopfad(audio)
     engine = register.engine_aus_werten(k.werte)
+    await _arbeiter_anpassen(k, engine)
     sprache = str(k.wert("transkription.sprache"))
     zeitgrenze_s = float(k.wert("transkription.zeitgrenze_s"))
     takt_s = float(k.werte.get("transkription.herzschlag_takt_s", HERZSCHLAG_TAKT_S_VORGABE))
@@ -83,10 +84,34 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
     }
 
 
+# ---------------------------------------------------------------- Arbeiter des eigenen Dienstes
+
+
+async def _arbeiter_anpassen(k: AuftragKontext, engine: Any) -> None:
+    """Beim eigenen Dienst die Zahl der Arbeiter auf die Einstellung bringen (er prüft den Speicher) und den Stand protokollieren."""
+    if not isinstance(engine, EigenerDienst):
+        return
+    gewuenscht = int(k.werte.get("transkription.arbeiter", 1))
+    try:
+        stand = await engine.arbeiter_setzen(gewuenscht)
+    except TranskriptionsFehler as e:
+        await k.protokoll(f"Arbeiter des Transkriptionsdienstes nicht anpassbar: {e}", "warn")
+        return
+    for hinweis in stand.get("hinweise", []):
+        await k.protokoll(str(hinweis), "warn")
+    bereit = [a for a in stand.get("arbeiter", []) if a.get("zustand") in ("bereit", "beschaeftigt")]
+    if gewuenscht > 1 or len(bereit) != 1:
+        speicher = stand.get("speicher", {})
+        await k.protokoll(
+            f"{len(bereit)} Arbeiter beim Transkriptionsdienst ({stand.get('engine')}, {stand.get('modell')}); "
+            f"verfügbarer Speicher {speicher.get('verfuegbar_gb', '?')} GB"
+        )
+
+
 # ---------------------------------------------------------------- Warten mit Lebenszeichen
 
 
-async def _mit_lebenszeichen(k: AuftragKontext, aufruf: Coroutine[Any, Any, T], takt_s: float) -> T:
+async def _mit_lebenszeichen[T](k: AuftragKontext, aufruf: Coroutine[Any, Any, T], takt_s: float) -> T:
     """Führt den blockierenden Aufruf als Task aus und meldet sich im Takt beim Auftrag.
 
     Bei gesetztem Abbruchwunsch (oder Abbruch dieser Task von außen) wird der innere

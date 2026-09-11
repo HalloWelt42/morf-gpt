@@ -208,11 +208,20 @@ async def serien(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> list
     return [SerieEintrag(serie=s or "", anzahl=int(n), ausgewaehlt=int(a or 0), min_folge=mn, max_folge=mx) for s, n, a, mn, mx in rows]
 
 
+def _regel_ausgabe(r: abgleich.Auswahlregeln) -> AuswahlregelAusgabe:
+    return AuswahlregelAusgabe(
+        mindest_dauer_s=r.mindest_dauer_s,
+        hoechst_dauer_s=r.hoechst_dauer_s,
+        typen=sorted(r.typen),
+        nur_heruntergeladene=r.nur_heruntergeladene,
+    )
+
+
 @router.get("/auswahl/regel", response_model=AuswahlregelAusgabe)
 async def auswahlregel(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> AuswahlregelAusgabe:
     werte = await einstellungen_dienst.alle(session)
     r = abgleich.Auswahlregeln.aus_werten(werte)
-    return AuswahlregelAusgabe(mindest_dauer_s=r.mindest_dauer_s, typen=sorted(r.typen), nur_heruntergeladene=r.nur_heruntergeladene)
+    return _regel_ausgabe(r)
 
 
 def _als_quellvideo(v: Video) -> QuellVideo:
@@ -262,7 +271,7 @@ async def auswahlregel_anwenden(session: AsyncSession = Depends(sitzung_abhaengi
     await session.commit()
     bus.veroeffentliche("video", aktion="auswahl", aufgenommen=aufgenommen, entfernt=entfernt)
     return AuswahlRegelErgebnis(
-        regel=AuswahlregelAusgabe(mindest_dauer_s=r.mindest_dauer_s, typen=sorted(r.typen), nur_heruntergeladene=r.nur_heruntergeladene),
+        regel=_regel_ausgabe(r),
         geprueft=len(rows),
         aufgenommen=aufgenommen,
         entfernt=entfernt,

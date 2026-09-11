@@ -1,0 +1,18 @@
+# Bauinhalt der Abbilder klein halten: Daten, Laufzeit und Abhängigkeiten bleiben draußen
+data/
+.run/
+.git/
+.env
+.env.*
+!.env.example
+**/.venv/
+**/node_modules/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.test-tmp/
+frontend/dist/
+mockups/
+docs/
+*.log
+.DS_Store

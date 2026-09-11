@@ -9,7 +9,7 @@ Zwischenstand ist in der Oberfläche sichtbar und vom Nutzer bearbeitbar.
 
 | Hälfte | Braucht | Zweck |
 |---|---|---|
-| **Werkstatt** | Videoquelle (TubeVault-Kanal oder ein Verzeichnis mit eigenen Dateien, beides nebeneinander), Transkriptionsdienst (txt2voice-Worker mit Whisper), Sprachmodell für die Korrektur | Rohdaten beschaffen und zu Bausteinen verarbeiten |
+| **Werkstatt** | Videoquelle (TubeVault-Kanal oder ein Verzeichnis mit eigenen Dateien, beides nebeneinander), Transkriptionsdienst (der mitgelieferte Dienst `hilfsdienste/transkription` mit Whisper; alternativ txt2voice), Sprachmodell für die Korrektur | Rohdaten beschaffen und zu Bausteinen verarbeiten |
 | **Bibliothek** | Datenbank (Bausteine + Vektoren), Einbettungsanbieter, Sprachmodell für die Antwort | Suchen, auswählen, antworten |
 
 Die Trennung ist bewusst: **sind die Daten einmal aggregiert, läuft die Bibliothek
@@ -46,7 +46,7 @@ entdeckt -> audio -> transkribiert -> korrigiert -> gestueckelt -> eingebettet
 |---|---|---|---|
 | Quelle abgleichen | `quelle_abgleich` | `VideoQuelle` | TubeVault-REST (Kanalvideos, Dauer, Downloadstand) |
 | Audio beschaffen | `audio` | `AudioBezug` | Videostrom von TubeVault holen, lokal mit ffmpeg zu Mono-AAC wandeln; alternativ Extraktion auf dem Pi |
-| Transkribieren | `transkription` | `TranskriptionsEngine` | txt2voice-Worker `POST /stt` (Whisper Large V3, MLX), ohne Sprechertrennung |
+| Transkribieren | `transkription` | `TranskriptionsEngine` | eigener Dienst `POST /transkription` (Whisper Large V3 über MLX, sonst CTranslate2), ohne Sprechertrennung; alternativ txt2voice-Worker oder -App |
 | Korrigieren | `korrektur` | `KorrekturEngine` | Sprachmodell (lokal 80B oder Hetzner) je Zeitblock, mit Abweichungswächter |
 | Stückeln | `stueckelung` | `Stueckler` | Absatzbewusst, große Stücke mit sauberer Überlappung an Satzgrenzen |
 | Einbetten | `einbettung` | `EinbettungsAnbieter` | LM Studio `/v1/embeddings` mit `text-embedding-bge-m3` |
@@ -57,7 +57,8 @@ Regeln des Fließbands:
   `wartend`, `laeuft`, `fertig`, `fehler`, `pausiert`, `abgebrochen`.
 - Der Auftragsläufer (`dienste/auftraege/laeufer.py`) ist eine Schleife im Backend. Je
   Stufe gilt eine eigene Parallelität (Einstellung, sichtbar): Audio 2, Transkription 1
-  (die GPU ist geteilt), Korrektur 1, Stückelung 4, Einbettung 1.
+  (mehr nur mit ebenso vielen Arbeitern des eigenen Dienstes, siehe 2a), Korrektur 1,
+  Stückelung 4, Einbettung 1.
 - Jede Stufe ist einzeln pausierbar. "Automatisch weiterreichen" (Einstellung je Stufe)
   legt nach Abschluss den Auftrag der nächsten Stufe an.
 - Reihenfolge: Einstellung "Serie zuerst" (mmM vor allem anderen), dann nach Datum.
@@ -67,6 +68,47 @@ Regeln des Fließbands:
   markiert.
 - Fortschritt und Protokoll je Auftrag laufen als Ereignisstrom (SSE) in die Oberfläche.
 
+### 2a. Eigener Transkriptionsdienst (`hilfsdienste/transkription`)
+
+Die Werkstatt hängt bei der Transkription an keinem fremden Programm: der Dienst wird mit
+dem Projekt ausgeliefert, hat sein eigenes venv (`start.sh` legt es an und startet ihn bei
+`MORF_TRANSKRIPTION_AKTIV=true`) und spricht HTTP auf Port 8463. Aufbau:
+
+- `engines/`: `basis.py` (Datenformen, Protokoll `Engine`, `EngineBeschreibung`),
+  `mlx_engine.py` (Whisper über MLX, Apple Silicon), `faster_engine.py` (Whisper über
+  CTranslate2, Prozessor oder CUDA, alle anderen Rechner), `wahl.py` (auto: mlx wenn
+  installiert, sonst faster; Vorgabemodelle `whisper-large-v3` als MLX-Gewichte bzw.
+  `large-v3-turbo`). Modelle liegen unter `data/modelle/hf` (HF_HOME), nie im Home.
+- `arbeiter.py`: Pool von Prozessen, je einer hält ein geladenes Modell und transkribiert
+  eine Datei zur Zeit; Aufträge über der Zahl der Arbeiter warten. `anpassen(n)` lädt
+  weitere Arbeiter nur, wenn nach dem Laden die Speicherreserve frei bleibt (Modellgröße
+  am ersten Arbeiter gemessen, Speicher aus `vm_stat` bzw. `/proc/meminfo`), und baut
+  überzählige ab (freie sofort, beschäftigte nach ihrem Auftrag). Ein abgestürzter Arbeiter
+  kostet nur seinen Auftrag.
+- `nachbearbeitung.py`: Halluzinationsfilter (leere und wiederholte Segmente, geringe
+  Wortvielfalt, Untertitel-Floskeln) und Zusammenführen zu Blöcken von 6 bis 15 Sekunden,
+  getrennt an Pausen ab 0,3 Sekunden; Wortzeiten bleiben erhalten.
+- `main.py`: `GET /health` (ok, sobald ein Arbeiter bereit ist; das Modell lädt im
+  Hintergrund), `GET /stand`, `POST /arbeiter {anzahl}`, `POST /transkription`
+  (multipart `datei`, `sprache`, `wortzeiten`; Antwort `text`, `segmente` in der
+  Speicherform der Bibliothek, `sprache`, `modell`, `engine`, `dauer_s`).
+
+Im Backend ist er die Engine `morf` (`dienste/transkription/eigener_dienst.py`, Vorgabe
+der Einstellung `transkription.engine`). Die Stufe Transkription bringt den Dienst vor jedem
+Auftrag auf `transkription.arbeiter` Arbeiter und protokolliert Stand und Hinweise; Router
+`/api/transkription/dienst` (Stand, Arbeiter anpassen) für die Einstellungsseite.
+
+Messung (Whisper large-v3, MLX, Videos von 5 bis 7 Minuten, 80B nebenbei geladen): ein
+Arbeiter etwa dreifache Echtzeit (733 s Audio in 245 s). Zwei Arbeiter mit je einer Datei:
+173 s, also 42 Prozent mehr Durchsatz. Drei: 1166 s Audio in 294 s statt 409 s (39 Prozent,
+gemessen unter Nebenlast). Vier: 1609 s Audio in 329 s statt etwa 550 s (rund zwei Drittel
+mehr). Jeder einzelne Auftrag wird dabei langsamer (1,3-fache statt 3-fache Echtzeit bei
+vier), die Grafikeinheit ist die gemeinsame Grenze; der Gewinn liegt im Durchsatz. Mehr als
+ein Arbeiter lohnt nur mit ebenso vielen parallelen Transkriptionen auf dem Fließband.
+
+Für Rechner ohne Apple Silicon gibt es `docker/Dockerfile.transkription` (Profil
+`werkstatt` im Compose, Engine faster auf dem Prozessor).
+
 ## 3. Datenmodell (PostgreSQL mit pgvector, Docker)
 
 Alle Kennungen sind UUIDs (hex). Zeiten in UTC. Tabellen und Felder tragen deutsche
@@ -74,7 +116,7 @@ ASCII-Namen.
 
 | Tabelle | Inhalt |
 |---|---|
-| `quellen` | Videoquelle: Typ, Basisadresse, Kanalkennung, Kanalname, Filterregeln (Mindestdauer) |
+| `quellen` | Videoquelle: Typ, Basisadresse, Kanalkennung, Kanalname, Filterregeln (Mindest- und Höchstdauer, Arten, Downloadstand) |
 | `videos` | Ein Video der Quelle: externe Kennung, Originaladresse (YouTube), Titel, Beschreibung, Datum, Dauer, Typ, Aufrufe, Schlagworte, Serie und Folgennummer (aus dem Titel, z. B. `mmM#377`), Vorschaubild (lokal gespeichert) und Original-Metadaten der Quelle als JSON, `ausgewaehlt` (im Umfang), `stufe` (höchste fertige Stufe), Fehlertext |
 | `audios` | Audiodatei je Video: Pfad, Format, Dauer, Größe, Bezugsweg |
 | `transkripte` | Rohtranskript: Engine, Modell, Sprache, Volltext, Segmente (JSON mit Start, Ende, Text, Wortzeiten) |
@@ -329,6 +371,11 @@ Bedienelemente aus dem Bild (Sichtschutz), schaltet das Fenster von selbst auf V
 - **Hilfepunkte** (`InfoKnopf`, der Mini-i-Knopf) öffnen genau das passende Thema; mit
   `finde` wird dort gleich ein Begriff gesucht und markiert (Auffinden). Jede Fließbandstufe
   und jeder Reiter der Videoansicht trägt einen solchen Punkt.
+- **Begriffe**: das Thema `begriffe.md` erklärt jedes Fachwort der Oberfläche (Einbettung,
+  Vektor, Token, Temperatur, Cross-Encoder, MCP, JSON, Arbeiter, Instanz, Bitrate ...) ohne
+  Vorwissen. Regel: wo ein Fachwort in Hilfe, Beschreibung einer Einstellung oder Hinweis
+  auftaucht, steht die Erklärung daneben oder ein Verweis auf die Begriffe; kein Text darf
+  ein Fachwort unerklärt voraussetzen.
 
 ## 10. Technik
 
@@ -339,12 +386,21 @@ einer Modelländerung sofort neu; ohne diesen Schritt trafen Aufträge auf Spalt
 der Datenbank noch fehlten, und verbrauchten ihre Versuche.
 
 - Backend: Python 3.12, FastAPI, SQLAlchemy 2 (async, asyncpg), Alembic, Pydantic v2,
-  httpx. Start über `start.sh` (Datenbank per Docker Compose, Backend, Frontend).
+  httpx. Start über `start.sh` (Datenbank per Docker Compose, Transkriptionsdienst,
+  Backend, Frontend).
 - Frontend: Svelte 5 (Runes, TypeScript), Vite, Bootstrap 5 (npm, SCSS-Thema: kantig,
   Radius 0), Barlow, Font Awesome. Große Schrift für Antworten und Dialoge. Kopf bleibt
   stehen, Listen rollen in eigenen Feldern, lange Listen seitenweise.
 - Version: einzige Wahrheit `version.json`, Pre-Commit-Hook zählt hoch, Backend liest sie,
   Oberfläche zeigt sie im Fuß.
+- Speicherplatz: `dienste/speicherplatz.py` misst das Datenverzeichnis nach Bereichen
+  (Audio, Datenbank, Modelle, Dokumente, Vorschaubilder, Umzugspakete, Zwischenablage,
+  Sonstiges) plus freien Platz der Platte, in einem Thread, 60 Sekunden zwischengespeichert
+  (`GET /api/system/speicherplatz`, `?frisch=true` misst neu). Die Karten unter Einstellungen,
+  Transkription und Einbettung zeigen ihn neben dem Arbeitsspeicher (Nutzerwunsch).
+- Einstellungen: die Vorgabe steht bei der Beschreibung, das Zurücksetzen vor dem Feld, alle
+  Felder schließen rechts bündig ab; Ganzzahlen mit höchstens zehn möglichen Werten sind
+  Stufenknöpfe, Zahlenfelder sind schmal.
 - Hilfe: freischwebendes, verschiebbares, durchsuchbares Fenster mit Sprungmarken; an
   jedem erklärungsbedürftigen Bedienelement ein Mini-i-Knopf.
 - Mockups (`mockups/`) sind echtes HTML mit demselben Stil und bleiben der verbindliche
@@ -358,7 +414,8 @@ der Datenbank noch fehlten, und verbrauchten ihre Versuche.
 | Frontend (Vite) | `http://127.0.0.1:5460` |
 | PostgreSQL (Docker) | `127.0.0.1:5462`, Daten als Bind-Mount unter `data/postgres` |
 | TubeVault (Quelle) | `http://192.168.178.49:8031` (Backend-API) |
-| txt2voice-Worker (Whisper) | `http://127.0.0.1:10033` |
+| Eigener Transkriptionsdienst | `http://127.0.0.1:8463` (per `MORF_TRANSKRIPTION_PORT`), Modelle unter `data/modelle/hf` |
+| txt2voice-Worker (Whisper, alternativ) | `http://127.0.0.1:10033` |
 | LM Studio | `http://127.0.0.1:1234` |
 
 Audio liegt unter `data/audio/<video_id>.m4a`, Vorschaubilder unter `data/miniaturen/<video_id>.jpg`, Exporte unter `data/export/`.

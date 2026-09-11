@@ -1,0 +1,14 @@
+# Eigener Transkriptionsdienst (hilfsdienste/transkription) für Rechner ohne Apple Silicon:
+# Whisper über CTranslate2 auf dem Prozessor (Engine faster). Die Modelle landen im
+# Bind-Mount data/modelle, damit sie einen Neubau des Abbilds überleben.
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir uv
+WORKDIR /dienst
+COPY version.json /version.json
+COPY hilfsdienste/transkription/pyproject.toml ./
+COPY hilfsdienste/transkription/app ./app
+RUN uv pip install --system ".[cpu]"
+EXPOSE 8463
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8463"]

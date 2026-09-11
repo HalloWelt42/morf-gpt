@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db.engine import sitzung_abhaengigkeit
 from ..db.modelle import Auftrag, Chunk, Dokument, Einbettung, Video
+from ..dienste import speicherplatz as speicherplatz_dienst
 from ..dienste.auftraege.laeufer import laeufer
 from ..dienste.einstellungen import dienst as einstellungen_dienst
 from ..domaene.fliessband import STUFEN_REIHENFOLGE, STUFEN_TITEL
@@ -98,15 +99,22 @@ async def _pruefe(url: str) -> tuple[bool, str]:
 
 @router.get("/dienste", response_model=list[Dienst])
 async def dienste(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> list[Dienst]:
-    werte = await einstellungen_dienst.werte(session, "transkription.worker_url", "transkription.app_url")
+    werte = await einstellungen_dienst.werte(session, "transkription.dienst_url", "transkription.worker_url", "transkription.app_url")
     aus: list[Dienst] = []
     for kennung, titel, adresse, pfad in (
+        ("morf", "morf-Transkription (eigener Dienst)", str(werte["transkription.dienst_url"]), "/health"),
         ("worker", "Whisper-Worker (txt2voice)", str(werte["transkription.worker_url"]), "/health"),
         ("app", "txt2voice-App", str(werte["transkription.app_url"]), "/api/system/health"),
     ):
         ok, hinweis = await _pruefe(adresse.rstrip("/") + pfad)
         aus.append(Dienst(kennung=kennung, titel=titel, adresse=adresse, erreichbar=ok, hinweis=hinweis))
     return aus
+
+
+@router.get("/speicherplatz", response_model=dict[str, Any])
+async def speicherplatz(frisch: bool = False) -> dict[str, Any]:
+    """Platz des Datenverzeichnisses nach Bereichen (Audio, Datenbank, Modelle, ...), kurz zwischengespeichert."""
+    return (await speicherplatz_dienst.speicherplatz(frisch)).als_dict()
 
 
 @router.get("/laeufer", response_model=dict[str, Any])

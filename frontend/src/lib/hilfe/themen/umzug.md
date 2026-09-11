@@ -10,4 +10,4 @@ stichworte: export, import, paket, umziehen, server
 *Umzug: Paket erstellen, herunterladen und an anderer Stelle importieren.*
 
 
-Das Paket enthält Videodaten, Korrekturen, Stücke, Vektoren und Vorschaubilder. Damit läuft die Bibliothek samt Chat an einem anderen Ort ohne die Rohdaten; nur ein Sprachmodell und dasselbe Einbettungsmodell werden gebraucht. Audio bleibt zurück, der Sprung zu YouTube bleibt immer möglich.
+Das Paket enthält Videodaten, Korrekturen, Stücke, deren Vektoren (die Einbettungen, siehe Begriffe) und Vorschaubilder. Damit läuft die Bibliothek samt Chat an einem anderen Ort ohne die Rohdaten; nur ein Sprachmodell und dasselbe Einbettungsmodell werden gebraucht. Audio bleibt zurück, der Sprung zu YouTube bleibt immer möglich.

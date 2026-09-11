@@ -531,7 +531,7 @@
       </div>
       <div class="mb-1">
         <label class="form-label small mb-1" for="p-neu">Neu-Bewertung</label>
-        <select id="p-neu" class="form-select form-select-sm" bind:value={parameter.neubewertung} title="Ordnet die gefundenen Kandidaten mit einem zweiten Verfahren neu: Aus ist am schnellsten, der Cross-Encoder läuft lokal in etwa einer Sekunde, das Sprachmodell ist am genauesten, aber langsam.">
+        <select id="p-neu" class="form-select form-select-sm" bind:value={parameter.neubewertung} title="Ordnet die gefundenen Kandidaten in einem zweiten Durchgang genauer: Aus ist am schnellsten; Cross-Encoder heißt, ein kleines lokales Modell liest Frage und Kandidat gemeinsam und bewertet die Passung (etwa eine Sekunde); das Sprachmodell ist am genauesten, aber langsam.">
           <option value="aus">Aus</option>
           <option value="crossencoder">Cross-Encoder (lokal, etwa eine Sekunde)</option>
           <option value="sprachmodell">Sprachmodell (sehr genau, langsam)</option>

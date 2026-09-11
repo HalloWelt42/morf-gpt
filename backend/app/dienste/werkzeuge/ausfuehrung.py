@@ -180,7 +180,7 @@ async def fuer_frage(
         )
 
     ergebnisse = await asyncio.gather(*(_eins(z, b) for z, b in gewaehlt), return_exceptions=True)
-    for (z, b), r in zip(gewaehlt, ergebnisse, strict=True):
+    for (_z, b), r in zip(gewaehlt, ergebnisse, strict=True):
         if isinstance(r, BaseException):
             log.warning("Werkzeug %s scheiterte: %s", b.titel, r)
             lauf.aufrufe.append(Aufrufprotokoll(kennung=b.kennung, titel=b.titel, argumente={}, herkunft="fehler", fehler=str(r)[:300]))

@@ -6,6 +6,7 @@
   import { meldungen, meldeFehler } from "../../lib/stores/meldungen.svelte";
   import { dezimal } from "../../lib/format";
   import InfoKnopf from "../../lib/komponenten/InfoKnopf.svelte";
+  import Speicherplatz from "../../lib/komponenten/Speicherplatz.svelte";
 
   let stand = $state<InstanzenStand | null>(null);
   let beschaeftigt = $state(false);
@@ -61,6 +62,7 @@
             <div class="m-kennzahl"><div class="wert">{dezimal(stand.speicher.gesamt_gb)} GB</div><div class="titel">gesamt</div></div>
           </div>
         </div>
+        <div class="col-12"><Speicherplatz /></div>
       </div>
       {#each stand.hinweise as h}
         <div class="alert alert-warning py-2 mt-2 mb-0"><i class="fa-solid fa-triangle-exclamation"></i> {h}</div>

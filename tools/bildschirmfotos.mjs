@@ -72,6 +72,7 @@ function motive(daten) {
     { name: "quellen-neu", pfad: "#/einstellungen/quellen", warten: 2000, vorher: `${f}.setze(document.getElementById("n-typ"), "lokal"); await ${f}.warte(300);`, ausschnitt: `${f}.rect(${f}.mitText(".card", "Neue Quelle"))`, rand: 4 },
     { name: "werkzeuge-mcp", pfad: "#/einstellungen/werkzeuge-verwaltung", warten: 2000, ausschnitt: `${f}.eins(".m-ansicht-koerper .card")`, rand: 4 },
     { name: "anbieter", pfad: "#/einstellungen/anbieter-verwaltung", warten: 2000, ausschnitt: `${f}.eins(".m-ansicht-koerper .card")`, rand: 4 },
+    { name: "transkription-dienst", pfad: "#/einstellungen/transkription", warten: 2500, ausschnitt: `${f}.eins(".m-ansicht-koerper .card")`, rand: 4 },
     { name: "einstellungen-gruppe", pfad: "#/einstellungen/suche", warten: 2000, ausschnitt: `(() => { const r = ${f}.eins(".m-ansicht-koerper"); r.height = Math.min(r.height, 520); return r; })()`, rand: 0 },
     { name: "umzug", pfad: "#/einstellungen/umzug", warten: 2000, ausschnitt: `${f}.eins(".m-ansicht-koerper .card")`, rand: 4 },
     { name: "hilfe-fenster", pfad: "#/chat", vorher: `localStorage.removeItem("m-hilfe-fenster"); document.querySelector('button[title="Hilfe öffnen oder schließen"]').click(); await ${f}.warte(600); ${f}.setze(document.querySelector(".m-hilfe-suchfeld input"), "Umfang"); await ${f}.warte(500);`, ausschnitt: `${f}.eins(".m-hilfe")`, rand: 0 },

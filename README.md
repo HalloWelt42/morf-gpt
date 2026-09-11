@@ -79,12 +79,13 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   <img src="frontend/public/hilfe/hilfe-fenster.png" width="640" alt="Hilfefenster mit Suche">
 </picture>
 
-  *Das Hilfefenster: Suche über alle Themen mit Trefferzähler, Themenliste mit Trefferzahl, Fundstellen im Text markiert.*
+  *Das Hilfefenster: Suche über alle Themen mit Trefferzähler, Themenliste mit Trefferzahl, Fundstellen im Text markiert. Das Thema Begriffe erklärt jedes Fachwort der Oberfläche ohne Vorwissen.*
 
 ## Werkstatt und Bibliothek
 
-Die Werkstatt braucht die Videoquelle (TubeVault), den Transkriptionsdienst (txt2voice-
-Worker mit Whisper) und ein Sprachmodell für die Korrektur. Die Bibliothek braucht nur die
+Die Werkstatt braucht eine Videoquelle (TubeVault-Kanal oder ein Verzeichnis mit eigenen
+Dateien), den mitgelieferten Transkriptionsdienst (Whisper, siehe unten) und ein
+Sprachmodell für die Korrektur. Die Bibliothek braucht nur die
 Datenbank, ein Einbettungsmodell und ein Sprachmodell. Sind die Daten einmal aggregiert,
 läuft die Bibliothek samt Chat auch an einem anderen Ort: Paket unter Einstellungen,
 Umzug exportieren und dort importieren. Als Sprachmodell eignet sich dann auch ein
@@ -99,7 +100,8 @@ OpenAI-kompatibler Dienst, als Einbettung das lokale bge-m3 über fastembed.
 - LM Studio mit `qwen3-next-80b-a3b-instruct-mlx` und `text-embedding-bge-m3` (oder ein
   anderer Anbieter, in der Oberfläche einstellbar)
 - für die Werkstatt: eine Videoquelle (TubeVault oder ein Verzeichnis mit eigenen
-  Dateien) und der txt2voice-Worker als Transkriptionsdienst
+  Dateien); der Transkriptionsdienst ist Teil des Projekts (auf Apple Silicon über MLX,
+  sonst über CTranslate2 auf dem Prozessor) und lädt sein Modell beim ersten Start
 
 ## Start
 
@@ -108,12 +110,37 @@ OpenAI-kompatibler Dienst, als Einbettung das lokale bge-m3 über fastembed.
 ```
 
 Das Skript legt beim ersten Mal `.env` aus `.env.example` an, startet die Datenbank im
-Container, richtet die Python-Umgebung ein, bringt das Schema auf den neuesten Stand und
-startet Backend und Oberfläche. Adressen stehen danach in der Konsole (Vorgabe:
-Oberfläche `http://127.0.0.1:5460`, Backend `http://127.0.0.1:8460`, Doku `/docs`).
+Container, richtet die Python-Umgebungen ein, bringt das Schema auf den neuesten Stand und
+startet Transkriptionsdienst, Backend und Oberfläche. Adressen stehen danach in der
+Konsole (Vorgabe: Oberfläche `http://127.0.0.1:5460`, Backend `http://127.0.0.1:8460`,
+Doku `/docs`, Transkriptionsdienst `http://127.0.0.1:8463`).
 
-Weitere Befehle: `./start.sh stop`, `restart`, `status`, `logs`, `migrate`, `db`. Das
-Backend wendet ausstehende Migrationen bei jedem Start auch selbst an.
+Weitere Befehle: `./start.sh stop`, `restart`, `status`, `logs`, `migrate`, `db`,
+`transkription`. Das Backend wendet ausstehende Migrationen bei jedem Start auch selbst an.
+
+## Transkriptionsdienst
+
+Die Transkription läuft über einen eigenen, mitgelieferten Dienst
+(`hilfsdienste/transkription`), damit die Werkstatt an keinem fremden Programm hängt. Er
+hat sein eigenes venv, nutzt auf Apple Silicon die Grafikeinheit (MLX) und sonst den
+Prozessor (CTranslate2), lädt sein Whisper-Modell beim ersten Start in `data/modelle`
+und antwortet auf Port 8463 (`MORF_TRANSKRIPTION_PORT`). Wer stattdessen einen anderen
+Dienst nutzt, setzt `MORF_TRANSKRIPTION_AKTIV=false` und wählt ihn unter Einstellungen,
+Transkription.
+
+Der Dienst hält einen oder mehrere Arbeiter, je einer mit geladenem Modell (etwa 3,5 GB).
+Die Zahl steht unter Einstellungen, Transkription; die Stufe Transkribieren bringt den
+Dienst vor jedem Auftrag darauf und lädt nur nach, wenn der freie Speicher reicht. Gemessen
+auf der Grafikeinheit: ein Arbeiter etwa dreifache Echtzeit, zwei Arbeiter zusammen etwa
+40 Prozent mehr, vier etwa zwei Drittel mehr. Mehrere Arbeiter arbeiten nur, wenn unter
+Fließband ebenso viele parallele Transkriptionen erlaubt sind.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/hilfe/transkription-dienst-dunkel.png">
+  <img src="frontend/public/hilfe/transkription-dienst.png" width="912" alt="Karte des Transkriptionsdienstes mit Arbeitern und Speicher">
+</picture>
+
+  *Einstellungen, Transkription: Arbeiter des Dienstes, ihr Zustand, der Arbeitsspeicher des Rechners und der Speicherplatz des Projekts auf der Platte.*
 
 ## Erste Schritte
 
@@ -134,7 +161,10 @@ docker compose --env-file .env -f docker/docker-compose.yml --profile app up -d 
 ```
 
 Startet Datenbank und die gebaute Anwendung (Backend samt Oberfläche) im Container.
-Danach das Paket unter Einstellungen, Umzug importieren und Anbieter einrichten.
+Danach das Paket unter Einstellungen, Umzug importieren und Anbieter einrichten. Soll dort
+auch transkribiert werden, bringt das Profil `werkstatt` den Transkriptionsdienst als
+Container (Whisper auf dem Prozessor); seine Adresse ist dann unter Einstellungen,
+Transkription einzutragen (`http://transkription:8463` aus dem App-Container heraus).
 
 ## Bildschirmfotos für Hilfe und README
 

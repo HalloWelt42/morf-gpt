@@ -170,6 +170,7 @@ class VideoAenderung(BaseModel):
 
 class AuswahlregelAusgabe(BaseModel):
     mindest_dauer_s: int
+    hoechst_dauer_s: int
     typen: list[str]
     nur_heruntergeladene: bool
 

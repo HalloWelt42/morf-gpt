@@ -1095,6 +1095,11 @@ body {
 .input-group-text {
   border-color: var(--m-rand-stark);
 }
+/* Bibliothek: der Umfang-Schalter ohne den Beschriftungsabstand des Bootstrap-Schalters */
+.m-umfang {
+  min-height: 0;
+  padding-left: 2.5em;
+}
 /* Einstellungen: Zahlenfelder schmal (der Wert ist kurz), kleine Bereiche als Stufenknöpfe */
 .m-zahlfeld {
   width: 11rem;

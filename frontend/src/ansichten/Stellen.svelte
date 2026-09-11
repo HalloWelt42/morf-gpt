@@ -151,9 +151,9 @@
         <option value="">Alle Serien</option>
         {#each serien.filter((s) => s.serie) as s (s.serie)}<option value={s.serie}>{s.serie}</option>{/each}
       </select>
-      <input class="form-control form-control-sm" style="width: 220px" title="Nur Stücke, deren Thema (Themenaufschlüsselung oder Kapitel) diesen Text enthält" placeholder="Thema enthält ..." list="themenliste" bind:value={thema} oninput={sucheGeaendert} />
+      <input class="form-control form-control-sm" style="width: 220px" title="Nur Stücke, deren Thema (Themenaufschlüsselung oder Kapitel) diesen Text enthält" placeholder="Thema des Stücks enthält ..." list="themenliste" bind:value={thema} oninput={sucheGeaendert} />
       <datalist id="themenliste">{#each themen.slice(0, 200) as t}<option value={t}></option>{/each}</datalist>
-      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="ohne" bind:checked={ohneEinbettung} title="Nur Stücke zeigen, die noch keinen Vektor haben und darum im Chat nicht gefunden werden" onchange={filterGeaendert} /><label class="form-check-label small" for="ohne">nur ohne Einbettung</label></div>
+      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="ohne" bind:checked={ohneEinbettung} title="Nur Stücke zeigen, die noch nicht eingebettet sind: sie haben noch keinen Bedeutungsvektor und können darum im Chat nicht gefunden werden (Stufe Einbetten fehlt)" onchange={filterGeaendert} /><label class="form-check-label small" for="ohne">nur noch nicht durchsuchbare</label></div>
       {#if laden}<span class="text-secondary small"><i class="fa-solid fa-circle-notch fa-spin"></i></span>{/if}
     </div>
     <div class="flex-grow-1" style="min-height: 0; overflow-y: auto">

@@ -18,7 +18,7 @@ Zahlen im Text wie [2] sind Belege. Ein Klick darauf hebt die Stelle rechts herv
 
 ## Videos und Dokumente
 
-Die Bibliothek enthält Videos und Dokumente (Bücher, eigene Texte). Beide liegen im selben Vektorraum; eine Antwort kann ein Video mit Zeitfenster und ein Buchkapitel nebeneinander belegen. Unter Filter schränkst du auf Videos, Dokumente oder ein bestimmtes Dokument ein.
+Die Bibliothek enthält Videos und Dokumente (Bücher, eigene Texte). Beide sind mit demselben Modell eingebettet, also vergleichbar (siehe Begriffe: Einbettung, Vektor); eine Antwort kann ein Video mit Zeitfenster und ein Buchkapitel nebeneinander belegen. Unter Filter schränkst du auf Videos, Dokumente oder ein bestimmtes Dokument ein.
 
 ![Eingabezeile mit Lupe und Senden](/hilfe/chat-eingabe.png)
 *Die Eingabe: Senden antwortet sofort, die Lupe sucht nur und lässt dich die Stellen vorher prüfen.*

@@ -79,6 +79,7 @@ class Auswahlregeln:
     """Welche Videos automatisch in den Umfang kommen."""
 
     mindest_dauer_s: int
+    hoechst_dauer_s: int  # 0 = keine Grenze
     typen: frozenset[str]
     nur_heruntergeladene: bool
 
@@ -94,14 +95,17 @@ class Auswahlregeln:
 
         return cls(
             mindest_dauer_s=int(wert("mindest_dauer_s")),
+            hoechst_dauer_s=int(wert("hoechst_dauer_s") or 0),
             typen=typen_parsen(wert("typen")),
             nur_heruntergeladene=bool(wert("nur_heruntergeladene")),
         )
 
 
 def ist_im_umfang(video: QuellVideo, regeln: Auswahlregeln) -> bool:
-    """Auswahlregel: länger als die Mindestdauer, erlaubter Typ, bei Bedarf heruntergeladen."""
+    """Auswahlregel: länger als die Mindestdauer, höchstens die Höchstdauer, erlaubter Typ, bei Bedarf heruntergeladen."""
     if video.dauer_s is None or video.dauer_s <= regeln.mindest_dauer_s:
+        return False
+    if regeln.hoechst_dauer_s and video.dauer_s > regeln.hoechst_dauer_s:
         return False
     if video.typ not in regeln.typen:
         return False
@@ -425,7 +429,9 @@ async def abgleichen(
     quelle.kanal_beschreibung = kanal.beschreibung or quelle.kanal_beschreibung
     await schreibe(
         f"Kanal '{quelle.kanal_name}' mit {kanal.videos_gesamt if kanal.videos_gesamt is not None else 'unbekannt vielen'} "
-        f"Videos; Regel: länger als {regeln.mindest_dauer_s} Sekunden, Arten {', '.join(sorted(regeln.typen))}"
+        f"Videos; Regel: länger als {regeln.mindest_dauer_s} Sekunden"
+        + (f", höchstens {regeln.hoechst_dauer_s} Sekunden" if regeln.hoechst_dauer_s else "")
+        + f", Arten {', '.join(sorted(regeln.typen))}"
         + (", nur heruntergeladene" if regeln.nur_heruntergeladene else ""),
         "info",
     )

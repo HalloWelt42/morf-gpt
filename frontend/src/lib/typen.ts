@@ -789,6 +789,36 @@ export interface DokumentArt {
 }
 
 // --- Einbettung: Instanzen -------------------------------------------------------
+export interface SpeicherplatzStand {
+  gesamt_bytes: number;
+  bereiche: { kennung: string; titel: string; pfad: string; bytes: number; dateien: number }[];
+  gemessen: string;
+  dauer_ms: number;
+  verzeichnis: string;
+  platte_frei_bytes: number;
+  platte_gesamt_bytes: number;
+}
+
+export interface TranskriptionsdienstStand {
+  engine_kennung: string;
+  engine_titel: string;
+  eigener: boolean;
+  arbeiter_einstellung: number;
+  adresse: string;
+  erreichbar: boolean;
+  hinweis: string;
+  engine?: string;
+  modell?: string;
+  gewuenscht?: number;
+  maximum?: number;
+  arbeiter?: { nummer: number; zustand: string; groesse_gb: number; auftraege: number; pid: number | null }[];
+  wartend?: number;
+  modell_groesse_gb?: number;
+  speicher?: { gesamt_gb: number; verfuegbar_gb: number; bekannt: boolean };
+  hinweise?: string[];
+  version?: string;
+}
+
 export interface InstanzenStand {
   modell: string;
   gewuenscht: number;

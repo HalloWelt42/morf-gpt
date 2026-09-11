@@ -49,3 +49,7 @@ target-version = "py312"
 select = ["E", "F", "W", "I", "B", "UP"]
 # B008: Depends() in Parametervorgaben ist der FastAPI-Stil
 ignore = ["B008"]
+
+[tool.ruff.lint.per-file-ignores]
+# Beispieltranskripte im Prompt sind absichtlich lange Zeilen
+"app/dienste/korrektur/prompts.py" = ["E501"]

@@ -6,6 +6,9 @@
 # benannten Volume: 'docker compose down -v' lässt sie unberührt, und zwei Klone des
 # Projekts teilen sich nie dieselbe Datenbank.
 #
+# Das Profil "werkstatt" bringt den eigenen Transkriptionsdienst als Container (Whisper auf
+# dem Prozessor) für Rechner ohne Apple Silicon; auf dem Mac läuft er über start.sh direkt.
+#
 # Projektname und Ports kommen aus ../.env (start.sh legt sie an), damit mehrere
 # Docker-Projekte auf demselben Rechner nicht kollidieren.
 name: ${COMPOSE_PROJECT_NAME:-morf-gpt}
@@ -47,4 +50,24 @@ services:
     depends_on:
       datenbank:
         condition: service_healthy
+    restart: unless-stopped
+
+  transkription:
+    profiles: ["werkstatt"]
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.transkription
+    container_name: ${COMPOSE_PROJECT_NAME:-morf-gpt}-transkription
+    environment:
+      MORF_TRANSKRIPTION_HOST: 0.0.0.0
+      MORF_TRANSKRIPTION_PORT: 8463
+      MORF_TRANSKRIPTION_ENGINE: faster
+      MORF_TRANSKRIPTION_ARBEITER: ${MORF_TRANSKRIPTION_ARBEITER:-1}
+      MORF_TRANSKRIPTION_MODELLE_VERZEICHNIS: /dienst/data/modelle
+      MORF_TRANSKRIPTION_TMP_VERZEICHNIS: /dienst/data/tmp/transkription
+    ports:
+      - "127.0.0.1:${MORF_TRANSKRIPTION_PORT:-8463}:8463"
+    volumes:
+      - ../data/modelle:/dienst/data/modelle
+      - ../data/tmp:/dienst/data/tmp
     restart: unless-stopped

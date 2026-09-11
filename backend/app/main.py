@@ -37,6 +37,7 @@ from .routers import (
     quellen,
     system,
     transkripte,
+    transkription,
     videos,
     werkzeuge,
 )
@@ -102,6 +103,7 @@ for r in (
     export,
     ereignisse,
     werkzeuge,
+    transkription,
 ):
     app.include_router(r.router, prefix="/api")
 

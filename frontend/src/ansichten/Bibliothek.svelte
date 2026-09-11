@@ -212,8 +212,8 @@
       <table class="table table-hover table-sm align-middle">
         <thead>
           <tr>
-            <th style="width: 34px"><input class="form-check-input" type="checkbox" title="Alle auf dieser Seite markieren" checked={!!daten?.eintraege.length && daten.eintraege.every((v) => markiert.has(v.id))} onchange={alleUmschalten} /></th>
-            <th style="width: 34px" title="Im Umfang"><i class="fa-solid fa-circle-check"></i></th>
+            <th style="width: 34px"><input class="form-check-input" type="checkbox" title="Alle Videos dieser Seite markieren, um sie unten gemeinsam zu behandeln (aufnehmen, ausschließen, Aufträge anlegen)" checked={!!daten?.eintraege.length && daten.eintraege.every((v) => markiert.has(v.id))} onchange={alleUmschalten} /></th>
+            <th style="width: 52px" title="Im Umfang: der Schalter sagt, ob das Video auf dem Fließband verarbeitet wird"><i class="fa-solid fa-circle-check"></i></th>
             <th style="width: 72px"></th>
             <th class="sortierbar" onclick={() => sortiere("titel")}>Titel {#if sortierung === "titel"}<i class="fa-solid fa-caret-{richtung === 'ab' ? 'down' : 'up'}"></i>{/if}</th>
             <th style="width: 100px" class="sortierbar" onclick={() => sortiere("folge")}>Serie {#if sortierung === "folge"}<i class="fa-solid fa-caret-{richtung === 'ab' ? 'down' : 'up'}"></i>{/if}</th>
@@ -227,9 +227,9 @@
         <tbody>
           {#each daten?.eintraege ?? [] as v (v.id)}
             <tr class:gewaehlt={markiert.has(v.id)} class:table-danger={!!v.fehler} onclick={() => ui.gehe("video", v.id)}>
-              <td onclick={(e) => e.stopPropagation()}><input class="form-check-input" type="checkbox" checked={markiert.has(v.id)} onchange={() => umschalten(v.id)} /></td>
+              <td onclick={(e) => e.stopPropagation()}><input class="form-check-input" type="checkbox" title="Markieren, um dieses Video mit anderen gemeinsam zu behandeln" checked={markiert.has(v.id)} onchange={() => umschalten(v.id)} /></td>
               <td onclick={(e) => e.stopPropagation()}>
-                <input class="form-check-input" type="checkbox" title={v.ausgewaehlt ? "Im Umfang - klicken zum Ausschließen" : "Nicht im Umfang - klicken zum Aufnehmen"} checked={v.ausgewaehlt} onchange={(e) => einzelAuswahl(v, (e.target as HTMLInputElement).checked)} />
+                <div class="form-check form-switch mb-0 m-umfang"><input class="form-check-input" type="checkbox" role="switch" title={v.ausgewaehlt ? "Im Umfang: wird auf dem Fließband verarbeitet; klicken zum Ausschließen" : "Nicht im Umfang: bleibt unverarbeitet; klicken zum Aufnehmen"} checked={v.ausgewaehlt} onchange={(e) => einzelAuswahl(v, (e.target as HTMLInputElement).checked)} /></div>
               </td>
               <td>{#if v.miniatur_url}<img class="m-mini" src={v.miniatur_url} alt="" loading="lazy" />{:else}<div class="m-mini"></div>{/if}</td>
               <td>

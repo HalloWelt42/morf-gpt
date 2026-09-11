@@ -46,6 +46,19 @@ DEFINITIONEN: tuple[Definition, ...] = (
         schritt=30,
     ),
     Definition(
+        "quelle.hoechst_dauer_s",
+        "Höchstdauer eines Videos",
+        "Videos, die länger sind als dieser Wert, bleiben automatisch außen vor (0 = keine Grenze). "
+        "Längere lassen sich in der Videoliste von Hand aufnehmen.",
+        "ganzzahl",
+        0,
+        "quelle",
+        einheit="Sekunden",
+        minimum=0,
+        maximum=86400,
+        schritt=300,
+    ),
+    Definition(
         "quelle.typen",
         "Videoarten im Umfang",
         "Welche Arten die Quelle liefert und automatisch aufgenommen werden (Shorts sind ohnehin kurz).",
@@ -132,7 +145,9 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "band.parallel.transkription",
         "Parallele Transkriptionen",
-        "Der Whisper-Dienst nutzt die Grafikeinheit; mehr als 1 bringt nichts.",
+        "Beim eigenen Dienst höchstens so viele wie Arbeiter dort (Einstellung Transkription); die Grafikeinheit ist "
+        "geteilt, gemessen schaffen zwei Arbeiter etwa 40 Prozent mehr als einer, vier etwa zwei Drittel mehr. "
+        "Bei den txt2voice-Diensten bringt mehr als 1 nichts.",
         "ganzzahl",
         1,
         "band",
@@ -212,7 +227,8 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "audio.bitrate_kbit",
         "Audio-Bitrate",
-        "Mono-AAC. 64 reicht für Sprache und Transkription; mehr macht die Dateien nur größer.",
+        "Datenmenge der Tonspur je Sekunde (eine Tonspur, Format AAC). 64 reicht für Sprache und Transkription; "
+        "mehr macht die Dateien nur größer.",
         "ganzzahl",
         64,
         "audio",
@@ -224,7 +240,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "audio.abtastrate",
         "Abtastrate",
-        "Whisper arbeitet mit 16.000 Hz; 24.000 klingt beim Abspielen etwas voller.",
+        "Messpunkte je Sekunde der Tonspur. Die Spracherkennung arbeitet mit 16.000 Hz; 24.000 klingt beim Abspielen etwas voller.",
         "ganzzahl",
         24000,
         "audio",
@@ -237,12 +253,39 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "transkription.engine",
         "Transkriptionsdienst",
-        "Worker: direkt der Whisper-Worker von txt2voice (ohne Sprechertrennung, ohne Eintrag in dessen "
+        "Eigener Dienst: der mitgelieferte Transkriptionsdienst (Whisper, mehrere Arbeiter möglich, läuft mit "
+        "start.sh). Worker: direkt der Whisper-Worker von txt2voice (ohne Sprechertrennung, ohne Eintrag in dessen "
         "Bibliothek). App: über die txt2voice-Oberfläche (legt dort eine Transkription an).",
         "auswahl",
-        "txt2voice_worker",
+        "morf",
         "transkription",
-        auswahl=(("txt2voice_worker", "txt2voice-Worker"), ("txt2voice_api", "txt2voice-App")),
+        auswahl=(
+            ("morf", "Eigener Dienst (morf-Transkription)"),
+            ("txt2voice_worker", "txt2voice-Worker"),
+            ("txt2voice_api", "txt2voice-App"),
+        ),
+    ),
+    Definition(
+        "transkription.dienst_url",
+        "Adresse des eigenen Dienstes",
+        "HTTP-Adresse des mitgelieferten Transkriptionsdienstes (MORF_TRANSKRIPTION_PORT in der .env, Vorgabe 8463).",
+        "text",
+        "http://127.0.0.1:8463",
+        "transkription",
+    ),
+    Definition(
+        "transkription.arbeiter",
+        "Arbeiter des eigenen Dienstes",
+        "Je Arbeiter hält der Dienst ein geladenes Modell (etwa 3,5 GB) und transkribiert eine Datei zur Zeit. Die Stufe "
+        "bringt den Dienst vor jedem Auftrag auf diese Zahl, soweit der freie Speicher reicht. Mehr als ein Arbeiter "
+        "lohnt nur zusammen mit ebenso vielen parallelen Transkriptionen (Fließband). Gemessen: zwei Arbeiter schaffen "
+        "zusammen etwa 40 Prozent mehr als einer, vier etwa zwei Drittel mehr; jeder einzelne Auftrag wird dabei langsamer.",
+        "ganzzahl",
+        1,
+        "transkription",
+        minimum=1,
+        maximum=4,
+        schritt=1,
     ),
     Definition(
         "transkription.worker_url",
@@ -316,7 +359,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "korrektur.temperatur",
         "Temperatur des Modells",
-        "0 = so wortgetreu wie möglich. Höhere Werte erlauben freiere Formulierungen (nicht empfohlen).",
+        "Wie frei das Modell formuliert: 0 = so wortgetreu wie möglich. Höhere Werte erlauben freiere Formulierungen (nicht empfohlen).",
         "zahl",
         0.0,
         "korrektur",
@@ -373,7 +416,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "stueckelung.kontextkopf",
         "Kontextkopf einbetten",
-        "Der Einbettungstext beginnt mit Videotitel und Thema, damit die Suche den Zusammenhang kennt.",
+        "Jedem Stück werden vor dem Einbetten Videotitel und Thema vorangestellt, damit die Suche den Zusammenhang eines Stücks kennt.",
         "schalter",
         True,
         "stueckelung",
@@ -382,7 +425,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "einbettung.stapel",
         "Stapelgröße",
-        "So viele Stücke gehen je Aufruf an das Einbettungsmodell.",
+        "So viele Stücke gehen in einer Anfrage zusammen an das Einbettungsmodell; größere Stapel sind schneller, brauchen mehr Speicher.",
         "ganzzahl",
         16,
         "einbettung",
@@ -392,7 +435,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "einbettung.instanzen",
         "Instanzen des Einbettungsmodells",
-        "So viele Instanzen des Modells hält LM Studio geladen; die Stapel werden im Wechsel verteilt. Gemessen: "
+        "So viele Instanzen (geladene Kopien) des Modells hält LM Studio; die Stapel werden im Wechsel verteilt. Gemessen: "
         "eine Instanz 3,9 Texte je Sekunde, zwei Instanzen 6,2. Jede weitere Instanz braucht Speicher (bge-m3: 0,63 GB); "
         "geladen wird nur, was in den freien Speicher passt.",
         "ganzzahl",
@@ -476,7 +519,8 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "suche.mindest_aehnlichkeit",
         "Mindestähnlichkeit",
-        "Treffer unter diesem Wert (Cosinus 0 bis 1) werden verworfen (Genauigkeit).",
+        "Treffer unter diesem Ähnlichkeitswert (0 bis 1, wie nah die Bedeutung einer Stelle der Frage kommt) werden "
+        "verworfen (Genauigkeit).",
         "zahl",
         0.45,
         "suche",
@@ -487,7 +531,8 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "suche.neubewertung",
         "Neu-Bewertung",
-        "Aus: reine Vektorreihenfolge. Cross-Encoder: lokales Modell ordnet die Kandidaten neu (genauer, "
+        "Zweiter Durchgang, der die gefundenen Kandidaten genauer ordnet. Aus: Reihenfolge nach Vektorähnlichkeit. "
+        "Cross-Encoder: ein kleines lokales Modell liest Frage und Kandidat gemeinsam und bewertet die Passung (genauer, "
         "etwa eine Sekunde). Sprachmodell: das Chat-Modell bewertet (sehr genau, langsam).",
         "auswahl",
         "aus",
@@ -507,7 +552,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "chat.max_tokens",
         "Antwortlänge",
-        "Höchstzahl an Tokens je Antwort.",
+        "Höchstzahl an Tokens je Antwort; ein Token ist ein Wortstück, im Deutschen etwa drei Viertel eines Wortes.",
         "ganzzahl",
         4000,
         "chat",
@@ -519,7 +564,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "chat.temperatur",
         "Temperatur",
-        "0 = nüchtern und belegnah, 1 = freier.",
+        "Wie frei das Modell formuliert: 0 = immer die wahrscheinlichste Fortsetzung, nüchtern und belegnah; 1 = freier.",
         "zahl",
         0.2,
         "chat",
@@ -530,7 +575,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "chat.verlauf_nachrichten",
         "Verlauf im Kontext",
-        "So viele vorige Nachrichten der Unterhaltung bekommt das Modell mit.",
+        "So viele vorige Nachrichten der Unterhaltung bekommt das Modell zusätzlich zu lesen (sein Kontext ist begrenzt).",
         "ganzzahl",
         6,
         "chat",

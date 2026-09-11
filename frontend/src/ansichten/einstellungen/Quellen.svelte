@@ -41,7 +41,7 @@
   let vorschauSeite = $state(1);
   let vorschauJeSeite = $state(50);
   let bearbeiten = $state<Quelle | null>(null);
-  let regeln = $state<{ mindest_dauer_s: string; typen: string; nur_heruntergeladene: string }>({ mindest_dauer_s: "", typen: "", nur_heruntergeladene: "" });
+  let regeln = $state<{ mindest_dauer_s: string; hoechst_dauer_s: string; typen: string; nur_heruntergeladene: string }>({ mindest_dauer_s: "", hoechst_dauer_s: "", typen: "", nur_heruntergeladene: "" });
 
   async function laden(): Promise<void> {
     try {
@@ -118,6 +118,7 @@
     bearbeiten = q;
     regeln = {
       mindest_dauer_s: q.regeln.mindest_dauer_s === undefined || q.regeln.mindest_dauer_s === null ? "" : String(q.regeln.mindest_dauer_s),
+      hoechst_dauer_s: q.regeln.hoechst_dauer_s === undefined || q.regeln.hoechst_dauer_s === null ? "" : String(q.regeln.hoechst_dauer_s),
       typen: (q.regeln.typen as string | undefined) ?? "",
       nur_heruntergeladene: q.regeln.nur_heruntergeladene === undefined || q.regeln.nur_heruntergeladene === null ? "" : String(q.regeln.nur_heruntergeladene),
     };
@@ -129,6 +130,7 @@
     try {
       const r: Record<string, unknown> = {};
       if (regeln.mindest_dauer_s !== "") r.mindest_dauer_s = Number(regeln.mindest_dauer_s);
+      if (regeln.hoechst_dauer_s !== "") r.hoechst_dauer_s = Number(regeln.hoechst_dauer_s);
       if (regeln.typen !== "") r.typen = regeln.typen;
       if (regeln.nur_heruntergeladene !== "") r.nur_heruntergeladene = regeln.nur_heruntergeladene === "true";
       await api.put(`/quellen/${bearbeiten.id}`, { name: bearbeiten.name, basis_url: bearbeiten.typ === "lokal" ? bearbeiten.basis_url : null, kanal_id: bearbeiten.kanal_id, regeln: r, aktiv: bearbeiten.aktiv });
@@ -168,6 +170,7 @@
               <div class="mt-1">{zahl(q.videos)} Videos, {zahl(q.videos_ausgewaehlt)} im Umfang &middot; zuletzt abgeglichen {q.zuletzt_abgeglichen ? vorZeit(q.zuletzt_abgeglichen) : "nie"}</div>
               <div class="small text-secondary mt-1">
                 Regeln: {q.regeln.mindest_dauer_s !== undefined && q.regeln.mindest_dauer_s !== null ? `Mindestdauer ${q.regeln.mindest_dauer_s} Sekunden` : "Mindestdauer aus den Einstellungen"},
+                {q.regeln.hoechst_dauer_s !== undefined && q.regeln.hoechst_dauer_s !== null ? (Number(q.regeln.hoechst_dauer_s) ? `Höchstdauer ${q.regeln.hoechst_dauer_s} Sekunden` : "keine Höchstdauer") : "Höchstdauer aus den Einstellungen"},
                 {q.regeln.typen ? `Arten ${q.regeln.typen}` : "Arten aus den Einstellungen"},
                 {#if q.typ !== "lokal"}{q.regeln.nur_heruntergeladene !== undefined && q.regeln.nur_heruntergeladene !== null ? (q.regeln.nur_heruntergeladene ? "nur heruntergeladene" : "auch nicht heruntergeladene") : "Downloadstand aus den Einstellungen"}{:else}jede Datei gilt als vorhanden{/if}
                 <InfoKnopf anker="quellen" />
@@ -190,7 +193,8 @@
                 <div class="col-md-5"><label class="form-label" for="q-url">TubeVault-Adresse</label><input class="form-control" id="q-url" value={bearbeiten.basis_url} disabled title="Zentral unter Einstellungen, Quelle und Auswahl einstellbar; gilt für alle TubeVault-Quellen" /><div class="form-text">Aus den Einstellungen <InfoKnopf anker="quellen" finde="TubeVault-Adresse" /></div></div>
                 <div class="col-md-3"><label class="form-label" for="q-kanal">Kanalkennung</label><input class="form-control" id="q-kanal" bind:value={bearbeiten.kanal_id} title="Kennung des Kanals, wie die Quelle sie führt (bei YouTube beginnt sie mit UC)" /></div>
               {/if}
-              <div class="col-md-4"><label class="form-label" for="r-dauer">Mindestdauer (leer = Einstellungen)</label><div class="input-group"><input class="form-control" id="r-dauer" type="number" bind:value={regeln.mindest_dauer_s} title="Nur Videos, die länger sind als dieser Wert, kommen automatisch in den Umfang; leer heißt Wert aus den Einstellungen" /><span class="input-group-text">Sekunden</span></div></div>
+              <div class="col-md-4"><label class="form-label" for="r-dauer">Mindestdauer (leer = Einstellungen)</label><div class="input-group"><input class="form-control" id="r-dauer" type="number" min="0" bind:value={regeln.mindest_dauer_s} title="Nur Videos, die länger sind als dieser Wert, kommen automatisch in den Umfang; leer heißt Wert aus den Einstellungen" /><span class="input-group-text">Sekunden</span></div></div>
+              <div class="col-md-4"><label class="form-label" for="r-hoechst">Höchstdauer (leer = Einstellungen)</label><div class="input-group"><input class="form-control" id="r-hoechst" type="number" min="0" bind:value={regeln.hoechst_dauer_s} title="Videos, die länger sind als dieser Wert, bleiben automatisch außen vor; 0 heißt keine Grenze, leer heißt Wert aus den Einstellungen" /><span class="input-group-text">Sekunden</span></div></div>
               <div class="col-md-4"><label class="form-label" for="r-typen">Arten (leer = Einstellungen)</label><input class="form-control" id="r-typen" placeholder="video,live" bind:value={regeln.typen} title="Welche Arten aufgenommen werden, durch Komma getrennt: video, live, short; leer heißt Wert aus den Einstellungen" /></div>
               {#if bearbeiten.typ !== "lokal"}<div class="col-md-4"><label class="form-label" for="r-dl">Nur heruntergeladene</label><select class="form-select" id="r-dl" bind:value={regeln.nur_heruntergeladene} title="Nur Videos aufnehmen, die in der Quelle schon als Datei vorliegen"><option value="">aus den Einstellungen</option><option value="true">ja</option><option value="false">nein</option></select></div>{/if}
               <div class="col-md-12 d-flex gap-2 align-items-center">

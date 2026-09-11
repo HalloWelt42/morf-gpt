@@ -10,4 +10,6 @@ stichworte: grenzen, vorgabe, zurücksetzen, speichern
 *Jede Einstellung mit Beschreibung, Einheit, Bereich und Vorgabe; Änderungen gelten sofort.*
 
 
-Alle Werte werden beim Ändern gespeichert, ohne Speichern-Knopf. Geänderte Werte sind hervorgehoben und lassen sich einzeln auf die Vorgabe zurücksetzen. Grenzen, Einheit und Wirkung stehen bei jedem Wert.
+Alle Werte werden beim Ändern gespeichert, ohne Speichern-Knopf. Geänderte Werte sind hervorgehoben und lassen sich mit dem Pfeil vor dem Feld einzeln auf die Vorgabe zurücksetzen. Vorgabe, Bereich, Einheit und Wirkung stehen bei jedem Wert; Ganzzahlen mit wenigen möglichen Werten erscheinen als Stufenknöpfe statt als Zahlenfeld.
+
+Unter Transkription und Einbettung steht über den Werten je eine Karte mit dem Stand des Dienstes (Arbeiter beziehungsweise Instanzen), dem Arbeitsspeicher des Rechners und dem Speicherplatz des Projekts auf der Platte, aufgeschlüsselt nach Audio, Datenbank, Modellen, Dokumenten, Vorschaubildern, Umzugspaketen und Zwischenablage.

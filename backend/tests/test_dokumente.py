@@ -216,4 +216,3 @@ def test_bereinigen_titelseite_mit_kurzer_unterzeile_faellt_weg() -> None:
     ]
     titel = [a.titel for a in basis.abschnitte_bereinigen(roh)]
     assert titel == ["Kapitel eins", "Teil", "Unterkapitel"]
-

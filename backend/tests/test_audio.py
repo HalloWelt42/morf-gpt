@@ -465,8 +465,11 @@ class FakeBezug:
 
 
 WERTE = {
-        "quelle.tubevault_api": "http://pi:8031",
-        "audio.bezugsweg": "videostrom_ffmpeg", "audio.abtastrate": 24000, "audio.bitrate_kbit": 64}
+    "quelle.tubevault_api": "http://pi:8031",
+    "audio.bezugsweg": "videostrom_ffmpeg",
+    "audio.abtastrate": 24000,
+    "audio.bitrate_kbit": 64,
+}
 
 
 def _video_und_quelle() -> tuple[Video, Quelle]:

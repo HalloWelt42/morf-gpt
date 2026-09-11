@@ -28,6 +28,7 @@ export interface Thema {
 /** Feste Reihenfolge der Themen; nicht Aufgeführtes folgt alphabetisch. */
 const REIHENFOLGE = [
   "erste-schritte",
+  "begriffe",
   "chat",
   "suche-breite",
   "suche-genauigkeit",

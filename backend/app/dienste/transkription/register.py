@@ -13,6 +13,7 @@ from typing import Any
 
 from ..einstellungen import register as einstellungen_register
 from .basis import TranskriptionsEngine, TranskriptionsFehler
+from .eigener_dienst import EigenerDienst
 from .txt2voice_app import Txt2VoiceApp
 from .txt2voice_worker import Txt2VoiceWorker
 
@@ -28,6 +29,14 @@ VERBINDUNGS_ZEITGRENZE_S_VORGABE: float = 20.0
 
 def _verbindungs_zeitgrenze(werte: dict[str, Any]) -> float:
     return float(werte.get("transkription.verbindungs_zeitgrenze_s", VERBINDUNGS_ZEITGRENZE_S_VORGABE))
+
+
+def _morf(werte: dict[str, Any]) -> TranskriptionsEngine:
+    return EigenerDienst(
+        basis_url=str(werte["transkription.dienst_url"]),
+        wortzeiten_behalten=bool(werte["transkription.wortzeiten_speichern"]),
+        verbindungs_zeitgrenze_s=_verbindungs_zeitgrenze(werte),
+    )
 
 
 def _worker(werte: dict[str, Any]) -> TranskriptionsEngine:
@@ -47,6 +56,7 @@ def _app(werte: dict[str, Any]) -> TranskriptionsEngine:
 
 
 BAUER: dict[str, Bauer] = {
+    EigenerDienst.kennung: _morf,
     Txt2VoiceWorker.kennung: _worker,
     Txt2VoiceApp.kennung: _app,
 }

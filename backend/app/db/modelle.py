@@ -51,7 +51,7 @@ class Quelle(Basis):
     kanal_id: Mapped[str] = mapped_column(String(100))
     kanal_name: Mapped[str] = mapped_column(String(200), default="")
     kanal_beschreibung: Mapped[str] = mapped_column(Text, default="")
-    # Filterregeln: mindest_dauer_s, typen (video/live/short), nur_heruntergeladene
+    # Filterregeln: mindest_dauer_s, hoechst_dauer_s, typen (video/live/short), nur_heruntergeladene
     regeln: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     aktiv: Mapped[bool] = mapped_column(Boolean, default=True)
     zuletzt_abgeglichen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -13,6 +13,7 @@
   import Quellen from "./einstellungen/Quellen.svelte";
   import Umzug from "./einstellungen/Umzug.svelte";
   import EinbettungInstanzen from "./einstellungen/EinbettungInstanzen.svelte";
+  import TranskriptionDienst from "./einstellungen/TranskriptionDienst.svelte";
 
   let { gruppe = "" }: { gruppe?: string } = $props();
 
@@ -144,6 +145,9 @@
     <div class="m-ansicht-koerper">
       {#if aktiv === "einbettung" && !woerter.length}
         <EinbettungInstanzen />
+      {/if}
+      {#if aktiv === "transkription" && !woerter.length}
+        <TranskriptionDienst />
       {/if}
       {#if laden}
         <div class="m-leer"><i class="fa-solid fa-circle-notch fa-spin"></i>Einstellungen werden geladen.</div>
