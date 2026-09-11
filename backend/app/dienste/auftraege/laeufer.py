@@ -65,8 +65,12 @@ class AuftragKontext:
             )
             await s.commit()
         bus.veroeffentliche(
-            "auftrag_fortschritt", auftrag_id=self.auftrag_id, video_id=self.video_id, art=self.art,
-            fortschritt=anteil, meldung=meldung,
+            "auftrag_fortschritt",
+            auftrag_id=self.auftrag_id,
+            video_id=self.video_id,
+            art=self.art,
+            fortschritt=anteil,
+            meldung=meldung,
         )
 
     async def herzschlag(self) -> None:
@@ -208,12 +212,16 @@ class Laeufer:
         frist = int(werte.get("band.herzschlag_frist_s", 7200))
         grenze = datetime.now(UTC) - timedelta(seconds=frist)
         rows = (
-            await s.execute(
-                select(Auftrag).where(
-                    and_(Auftrag.status == Auftragsstatus.LAEUFT, Auftrag.herzschlag.is_not(None), Auftrag.herzschlag < grenze)
+            (
+                await s.execute(
+                    select(Auftrag).where(
+                        and_(Auftrag.status == Auftragsstatus.LAEUFT, Auftrag.herzschlag.is_not(None), Auftrag.herzschlag < grenze)
+                    )
                 )
             )
-        ).scalars().all()
+            .scalars()
+            .all()
+        )
         for a in rows:
             if a.id in self._laufend:
                 self._laufend[a.id].cancel()
@@ -247,9 +255,7 @@ class Laeufer:
             return
         await self._abschluss(k, Auftragsstatus.FERTIG, ergebnis=ergebnis)
 
-    async def _abschluss(
-        self, k: AuftragKontext, status: Auftragsstatus, fehler: str = "", ergebnis: dict[str, Any] | None = None
-    ) -> None:
+    async def _abschluss(self, k: AuftragKontext, status: Auftragsstatus, fehler: str = "", ergebnis: dict[str, Any] | None = None) -> None:
         async with sitzung() as s:
             a = await s.get(Auftrag, k.auftrag_id)
             if a is None:
@@ -285,7 +291,12 @@ class Laeufer:
                     video.fehler = f"{stufen.TITEL[Auftragsart(a.art)]}: {fehler}"[:2000]
             await s.commit()
             bus.veroeffentliche(
-                "auftrag_status", auftrag_id=a.id, video_id=a.video_id, art=a.art, status=a.status, fehler=fehler,
+                "auftrag_status",
+                auftrag_id=a.id,
+                video_id=a.video_id,
+                art=a.art,
+                status=a.status,
+                fehler=fehler,
                 video_stufe=video.stufe if video else None,
             )
             if video is not None and status == Auftragsstatus.FERTIG and k.werte.get("band.automatik", True):
@@ -310,7 +321,8 @@ async def auftrag_anlegen(
     if video_id is not None:
         offen = await s.scalar(
             select(func.count(Auftrag.id)).where(
-                Auftrag.video_id == video_id, Auftrag.art == art,
+                Auftrag.video_id == video_id,
+                Auftrag.art == art,
                 Auftrag.status.in_([Auftragsstatus.WARTEND, Auftragsstatus.LAEUFT]),
             )
         )

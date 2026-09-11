@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Erster Start</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      .m-schritt { background: var(--m-flaeche); border-color: var(--m-rand); }
+      .m-schritt.bereit { border-top: 4px solid var(--m-akzent); }
+      .m-schritt.fertig { border-top: 4px solid var(--m-stufe-eingebettet); }
+      .m-pruefung { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--m-rand); font-size: 0.9rem; }
+      .m-schritt .card-header { background: var(--m-flaeche-2); border-bottom: 1px solid var(--m-rand); color: var(--m-text); }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a class="aktiv" href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">0</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">0</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">0</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Erster Start</h1>
+            <span class="m-unter">Die Bibliothek ist leer. Drei Schritte, dann läuft das Fließband und der Chat füllt sich.</span>
+            <span class="m-luecke"></span>
+            <a class="btn btn-sm btn-outline-secondary" href="umzug.html" title="Ein vorhandenes Bibliothekspaket einlesen statt die Bibliothek neu aufzubauen"><i class="fa-solid fa-truck-ramp-box"></i> Bibliothekspaket importieren</a>
+            <button class="m-info" title="Hilfe zum ersten Start: Quelle, Anbieter, Fließband">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <div class="mx-auto" style="max-width: 1400px">
+              <div class="row g-3">
+                <!-- Schritt 1: Quelle anlegen -->
+                <div class="col-lg-4">
+                  <div class="card h-100 m-schritt fertig">
+                    <div class="card-header d-flex align-items-center gap-2">
+                      <span class="badge text-bg-primary">1</span>
+                      <b>Quelle anlegen</b>
+                      <span class="ms-auto badge text-bg-success">Kanal geprüft</span>
+                    </div>
+                    <div class="card-body d-flex flex-column gap-3">
+                      <div>
+                        <label class="form-label small mb-1" for="q-adresse">Quelle und Basisadresse <button class="m-info" title="TubeVault liefert Kanalvideos, Dauer und Downloadstand. Die Basisadresse ist die Adresse des TubeVault-Backends im eigenen Netz.">i</button></label>
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text">TubeVault</span>
+                          <input class="form-control" id="q-adresse" value="http://192.168.178.49:8031" />
+                        </div>
+                      </div>
+                      <div>
+                        <label class="form-label small mb-1" for="q-kanal">Kanal <button class="m-info" title="Kanalname oder Kanalkennung, so wie TubeVault den Kanal führt.">i</button></label>
+                        <input class="form-control form-control-sm" id="q-kanal" value="morf" />
+                      </div>
+                      <div class="row g-2">
+                        <div class="col-7">
+                          <label class="form-label small mb-1" for="q-dauer">Mindestdauer eines Videos <button class="m-info" title="Nur Videos, die länger sind als dieser Wert, werden automatisch in den Umfang aufgenommen. Kürzere lassen sich in der Videoliste von Hand aufnehmen. Bereich 0 bis 36.000 Sekunden in Schritten von 30, Vorgabe 300.">i</button></label>
+                          <div class="input-group input-group-sm">
+                            <input type="number" class="form-control" id="q-dauer" value="300" min="0" max="36000" step="30" />
+                            <span class="input-group-text">Sekunden</span>
+                          </div>
+                        </div>
+                        <div class="col-5">
+                          <label class="form-label small mb-1" for="q-serie">Kennung der Erklärserie <button class="m-info" title="Text im Titel, an dem die Serie erkannt wird (zum Beispiel 'mmM'). Die Folgennummer folgt nach '#'.">i</button></label>
+                          <input class="form-control form-control-sm" id="q-serie" value="mmM" />
+                        </div>
+                      </div>
+                      <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="q-nur-dateien" checked />
+                        <label class="form-check-label small" for="q-nur-dateien">Nur bereits heruntergeladene Videos <button class="m-info" title="Wenn an, werden nur Videos aufgenommen, die in der Quelle schon als Datei vorliegen.">i</button></label>
+                      </div>
+                      <button class="btn btn-outline-primary" title="Verbindung zur Quelle testen und den Kanal zählen. Es wird noch nichts gespeichert."><i class="fa-solid fa-magnifying-glass"></i> Kanal prüfen</button>
+                      <div class="alert alert-success mb-0 py-2 px-3 small">
+                        <div class="fw-semibold"><i class="fa-solid fa-circle-check"></i> Kanal morf gefunden, Antwort in 0,4 Sekunden</div>
+                        <div>1.491 Videos, davon 664 länger als 5 Minuten und als Datei vorhanden. Serie mmM: 377 Folgen, Folge 1 vom 2. November 2020.</div>
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                          <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' fill='%231b2735' text-anchor='middle'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" />
+                          <div style="min-width: 0">
+                            <div class="text-truncate">Neueste Folge: Wieso passen unsere Geschichten fast nie zur Realität?</div>
+                            <div><span class="m-serie">mmM#377</span> &middot; 3. September 2026 &middot; 34:05</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Schritt 2: Anbieter prüfen -->
+                <div class="col-lg-4">
+                  <div class="card h-100 m-schritt bereit">
+                    <div class="card-header d-flex align-items-center gap-2">
+                      <span class="badge text-bg-primary">2</span>
+                      <b>Anbieter prüfen</b>
+                      <span class="ms-auto badge text-bg-warning">3 von 4 bereit</span>
+                    </div>
+                    <div class="card-body d-flex flex-column gap-2">
+                      <div class="small text-secondary">Die vier Standard-Anbieter aus den Voreinstellungen. Jede Rolle (Chat, Korrektur, Einbettung) braucht genau einen aktiven Anbieter. <button class="m-info" title="Ein Anbieter ist ein Dienst, der Sprachmodelle oder Einbettungen liefert. Die Rolle legt fest, wofür er benutzt wird. Fehlt ein Anbieter für eine Rolle, bleibt die zugehörige Stufe ohne Aufträge.">i</button></div>
+                      <div>
+                        <div class="m-pruefung">
+                          <span class="m-status-punkt" style="margin-top: 5px"></span>
+                          <div class="flex-grow-1" style="min-width: 0">
+                            <div class="fw-semibold">Whisper-Worker erreichbar</div>
+                            <div class="text-secondary">txt2voice-Worker, http://127.0.0.1:10033 &middot; Whisper Large V3 (MLX) &middot; Antwort in 0,3 Sekunden</div>
+                          </div>
+                          <span class="badge text-bg-secondary">Transkription</span>
+                        </div>
+                        <div class="m-pruefung">
+                          <span class="m-status-punkt" style="margin-top: 5px"></span>
+                          <div class="flex-grow-1" style="min-width: 0">
+                            <div class="fw-semibold">LM Studio Modell geladen</div>
+                            <div class="text-secondary">http://127.0.0.1:1234 &middot; qwen3-next-80b-a3b-instruct-mlx &middot; für Chat und Korrektur</div>
+                          </div>
+                          <span class="badge text-bg-secondary">Chat, Korrektur</span>
+                        </div>
+                        <div class="m-pruefung">
+                          <span class="m-status-punkt" style="margin-top: 5px"></span>
+                          <div class="flex-grow-1" style="min-width: 0">
+                            <div class="fw-semibold">bge-m3 geladen</div>
+                            <div class="text-secondary">LM Studio &middot; text-embedding-bge-m3 &middot; 1024 Dimensionen, baut und befragt den Index</div>
+                          </div>
+                          <span class="badge text-bg-secondary">Einbettung</span>
+                        </div>
+                        <div class="m-pruefung">
+                          <span class="m-status-punkt aus" style="margin-top: 5px"></span>
+                          <div class="flex-grow-1" style="min-width: 0">
+                            <div class="fw-semibold">Hetzner Schlüssel fehlt</div>
+                            <div class="text-secondary">https://inference.hetzner.com/api/v1 &middot; Cloud-Sprachmodell für Korrektur und Chat, wenn der eigene Rechner nicht rechnen soll. Ohne Schlüssel läuft alles lokal weiter.</div>
+                            <a class="btn btn-sm btn-outline-secondary mt-2" href="anbieter.html" title="Schlüssel im Verwaltungsbereich eintragen; dort bleibt er lesbar"><i class="fa-solid fa-key"></i> Schlüssel eintragen</a>
+                          </div>
+                          <span class="badge text-bg-secondary">optional</span>
+                        </div>
+                      </div>
+                      <div class="mt-auto d-flex align-items-center gap-2 flex-wrap">
+                        <small class="text-secondary">Zuletzt geprüft vor 8 Sekunden</small>
+                        <button class="btn btn-sm btn-outline-secondary ms-auto" title="Alle vier Anbieter erneut ansprechen"><i class="fa-solid fa-rotate"></i> Erneut prüfen</button>
+                        <a class="btn btn-sm btn-outline-secondary" href="anbieter.html" title="Anbieter hinzufügen, Rollen zuweisen, Schlüssel lesen"><i class="fa-solid fa-microchip"></i> Anbieter verwalten</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Schritt 3: Fließband starten -->
+                <div class="col-lg-4">
+                  <div class="card h-100 m-schritt bereit">
+                    <div class="card-header d-flex align-items-center gap-2">
+                      <span class="badge text-bg-primary">3</span>
+                      <b>Fließband starten</b>
+                      <span class="ms-auto badge text-bg-primary">bereit</span>
+                    </div>
+                    <div class="card-body d-flex flex-column gap-3">
+                      <p class="fs-5 mb-0"><b>664 Videos</b> über 5 Minuten würden aufgenommen, geschätzt <b>557 Stunden</b> Audio.</p>
+                      <div class="small">
+                        <div class="d-flex justify-content-between py-1"><span>Serie mmM zuerst</span><span>377 Folgen</span></div>
+                        <div class="d-flex justify-content-between py-1"><span>Danach nach Datum</span><span>287 weitere Videos</span></div>
+                        <div class="d-flex justify-content-between py-1"><span>Audio beschaffen</span><span>etwa 18 Stunden (2 parallel)</span></div>
+                        <div class="d-flex justify-content-between py-1"><span>Transkription</span><span>etwa 9 Tage (1 parallel)</span></div>
+                        <div class="d-flex justify-content-between py-1 align-items-center">
+                          <span>Parallelität je Stufe <button class="m-info" title="Audio 2, Transkription 1 (die Grafikeinheit ist geteilt), Korrektur 1, Stückelung 4, Einbettung 1. Änderbar unter Einstellungen, Gruppe Fließband.">i</button></span>
+                          <a class="text-decoration-none" href="einstellungen.html">2 / 1 / 1 / 4 / 1 <i class="fa-solid fa-up-right-from-square"></i></a>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="form-check form-switch mb-1">
+                          <input class="form-check-input" type="checkbox" id="b-automatik" checked />
+                          <label class="form-check-label small" for="b-automatik">Automatisch weiterreichen <button class="m-info" title="Nach einer fertigen Stufe wird sofort der Auftrag der nächsten Stufe angelegt.">i</button></label>
+                        </div>
+                        <div class="form-check form-switch mb-0">
+                          <input class="form-check-input" type="checkbox" id="b-serie-zuerst" checked />
+                          <label class="form-check-label small" for="b-serie-zuerst">Serie zuerst <button class="m-info" title="Aufträge für die Erklärserie (mmM) werden vor allen anderen Videos abgearbeitet.">i</button></label>
+                        </div>
+                      </div>
+                      <div class="mt-auto">
+                        <button class="btn btn-primary btn-lg w-100" title="Quelle speichern, Kanal abgleichen, 664 Videos aufnehmen und die ersten Audio-Aufträge anlegen"><i class="fa-solid fa-play"></i> Abgleichen und starten</button>
+                        <div class="small text-secondary mt-2">Speichert die Quelle, gleicht den Kanal ab, nimmt 664 Videos in den Umfang und legt die ersten Audio-Aufträge an. Jede Stufe lässt sich danach einzeln anhalten.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hinweis: was danach passiert -->
+              <div class="card m-schritt mt-3">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-circle-info"></i> <b>Was nach dem Start passiert</b>
+                  <span class="ms-auto small text-secondary">Sechs Stufen je Video, jede sichtbar im Fließband</span>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-md-4 col-xl-2">
+                      <span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span>
+                      <div class="small mt-2">Der Abgleich holt alle 1.491 Videos mit Titel, Beschreibung, Datum, Dauer, Vorschaubild und YouTube-Adresse. 664 landen im Umfang, die Zähler in der Kopfleiste zählen mit.</div>
+                    </div>
+                    <div class="col-md-4 col-xl-2">
+                      <span class="m-stufe audio"><i class="fa-solid fa-headphones"></i> Audio</span>
+                      <div class="small mt-2">Für jedes Video im Umfang holt das Band den Videostrom von TubeVault und wandelt ihn hier zu einer Audiodatei. Zwei Videos gleichzeitig, etwa 38 je Stunde.</div>
+                    </div>
+                    <div class="col-md-4 col-xl-2">
+                      <span class="m-stufe transkribiert"><i class="fa-solid fa-closed-captioning"></i> Transkribiert</span>
+                      <div class="small mt-2">Der Whisper-Worker schreibt das Audio mit Zeitmarken je Segment nieder. Das dauert am längsten: die Grafikeinheit arbeitet ein Video nach dem anderen.</div>
+                    </div>
+                    <div class="col-md-4 col-xl-2">
+                      <span class="m-stufe korrigiert"><i class="fa-solid fa-spell-check"></i> Korrigiert</span>
+                      <div class="small mt-2">Das Sprachmodell setzt blockweise Zeichensetzung und Absätze. Der Abweichungswächter (Vorgabe 0,80) verhindert, dass Inhalt verändert wird; danach entstehen Themen und eine Kurzzusammenfassung.</div>
+                    </div>
+                    <div class="col-md-4 col-xl-2">
+                      <span class="m-stufe gestueckelt"><i class="fa-solid fa-scissors"></i> Gestückelt</span>
+                      <div class="small mt-2">Der korrigierte Text wird in Stücke von etwa 3.000 Zeichen geteilt, mit 400 Zeichen Überlappung an Satzgrenzen. Kein Schnitt im Wort, jedes Stück behält sein Zeitfenster.</div>
+                    </div>
+                    <div class="col-md-4 col-xl-2">
+                      <span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span>
+                      <div class="small mt-2">Jedes Stück bekommt einen Vektor (bge-m3, 1024 Dimensionen). Ab dem ersten eingebetteten Video antwortet der Chat, belegt aus Textstellen mit Sprung ins Audio.</div>
+                    </div>
+                  </div>
+                  <hr />
+                  <div class="d-flex gap-4 flex-wrap small text-secondary">
+                    <span><i class="fa-solid fa-pause"></i> Jede Stufe ist einzeln pausierbar, nichts bricht das Band.</span>
+                    <span><i class="fa-solid fa-triangle-exclamation"></i> Fehler stehen je Auftrag mit Meldung im Fließband und werden bis zu 2 mal wiederholt.</span>
+                    <span><i class="fa-solid fa-comments"></i> Der Chat zeigt bis dahin den Stand der Bibliothek und Beispiel-Fragen.</span>
+                    <span><i class="fa-solid fa-truck-ramp-box"></i> Eine fertige Bibliothek lässt sich als Paket exportieren und anderswo importieren.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Kanal prüfen" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a class="aktiv" href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Erste Schritte</h2>
+          <p>Beim ersten Start ist die Bibliothek leer. morf-gpt führt dich in drei Schritten zum laufenden Fließband. Du kannst die Schritte in beliebiger Reihenfolge ausfüllen; gestartet wird erst mit dem großen Knopf im dritten Schritt.</p>
+          <h2>1. Quelle anlegen</h2>
+          <p>Die Quelle ist der Ort, an dem die Videos liegen: TubeVault im eigenen Netz. Trage die Basisadresse und den Kanal ein. Die <b>Mindestdauer</b> entscheidet, welche Videos automatisch in den Umfang kommen; kürzere lassen sich später in der Videoliste von Hand aufnehmen.</p>
+          <p><b><mark>Kanal prüfen</mark></b> spricht die Quelle an und zählt, ohne etwas zu speichern. Du siehst, wie viele Videos es gibt, wie viele davon über der Mindestdauer liegen und welche Folge der Serie die neueste ist.</p>
+          <h2>2. Anbieter prüfen</h2>
+          <p>Ein Anbieter liefert Sprachmodelle oder Einbettungen. Die vier Standard-Anbieter werden beim ersten Start angesprochen: der Whisper-Worker für die Transkription, LM Studio mit einem Sprachmodell für Chat und Korrektur, bge-m3 für die Einbettung und Hetzner als optionales Cloud-Sprachmodell. Ein grüner Punkt heißt erreichbar und einsatzbereit, ein roter Punkt nennt den Grund.</p>
+          <p>Der Hetzner-Schlüssel ist freiwillig. Ohne ihn rechnet alles auf dem eigenen Rechner.</p>
+          <h2>3. Fließband starten</h2>
+          <p>Die Zusammenfassung zeigt, was der Start auslöst: wie viele Videos aufgenommen werden, wie viel Audio das ergibt und wie lange die ersten Stufen grob brauchen. <b>Abgleichen und starten</b> speichert die Quelle, gleicht den Kanal ab und legt die ersten Audio-Aufträge an. Danach arbeitet das Band von allein weiter, solange <b>Automatisch weiterreichen</b> an ist.</p>
+          <h2>Schon eine Bibliothek vorhanden?</h2>
+          <p>Wer ein exportiertes Bibliothekspaket hat, importiert es über <b>Bibliothekspaket importieren</b> im Kopf der Ansicht. Der Chat ist dann sofort nutzbar, das Fließband bleibt ohne Aufträge.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

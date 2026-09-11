@@ -73,8 +73,14 @@ async def alle(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict[s
 async def anlegen(e: AnbieterEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict[str, Any]:
     _validiere(e)
     a = Anbieter(
-        name=e.name, typ=e.typ, art=e.art, basis_url=e.basis_url.strip(), api_schluessel=(e.api_schluessel or "").strip(),
-        modell=e.modell.strip(), parameter=e.parameter, aktiv=e.aktiv,
+        name=e.name,
+        typ=e.typ,
+        art=e.art,
+        basis_url=e.basis_url.strip(),
+        api_schluessel=(e.api_schluessel or "").strip(),
+        modell=e.modell.strip(),
+        parameter=e.parameter,
+        aktiv=e.aktiv,
     )
     session.add(a)
     await session.commit()
@@ -89,7 +95,13 @@ async def aendern(anbieter_id: str, e: AnbieterEingabe, session: AsyncSession = 
     if a is None:
         raise HTTPException(404, "Anbieter nicht gefunden")
     a.name, a.typ, a.art, a.basis_url, a.modell, a.parameter, a.aktiv = (
-        e.name, e.typ, e.art, e.basis_url.strip(), e.modell.strip(), e.parameter, e.aktiv,
+        e.name,
+        e.typ,
+        e.art,
+        e.basis_url.strip(),
+        e.modell.strip(),
+        e.parameter,
+        e.aktiv,
     )
     if e.api_schluessel is not None:
         a.api_schluessel = e.api_schluessel.strip()

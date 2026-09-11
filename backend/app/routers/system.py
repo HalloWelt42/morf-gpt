@@ -65,9 +65,7 @@ async def health() -> Gesundheit:
 async def uebersicht(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> Uebersicht:
     v = version_lesen()
     stufen_rows = (
-        await session.execute(
-            select(Video.stufe, func.count(Video.id)).where(Video.ausgewaehlt.is_(True)).group_by(Video.stufe)
-        )
+        await session.execute(select(Video.stufe, func.count(Video.id)).where(Video.ausgewaehlt.is_(True)).group_by(Video.stufe))
     ).all()
     je_stufe = {s: n for s, n in stufen_rows}
     auftrag_rows = (await session.execute(select(Auftrag.status, func.count(Auftrag.id)).group_by(Auftrag.status))).all()

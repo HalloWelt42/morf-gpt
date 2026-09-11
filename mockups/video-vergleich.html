@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Korrektur im Vergleich</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      .m-vergleich > .kopf { position: sticky; top: 0; z-index: 1; background: var(--m-flaeche-2); font-weight: 600; font-size: 0.85rem; border-bottom-color: var(--m-rand-stark); }
+      .m-vergleich > div.verworfen { background: #fdecea; }
+      .m-vergleich .m-absatz:last-child { border-bottom: 0; }
+      .pagination { --bs-pagination-border-radius: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a class="aktiv" href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <!-- Kopfzeile: bleibt stehen -->
+          <div class="m-ansicht-kopf">
+            <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Zurück zum Video"><i class="fa-solid fa-arrow-left"></i> Zurück</a>
+            <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='Barlow, sans-serif' font-size='22' font-weight='700' fill='%23ffffff' text-anchor='middle'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" />
+            <div class="flex-grow-1" style="min-width: 0">
+              <div class="d-flex align-items-center gap-2">
+                <span class="m-serie">mmM#374</span>
+                <h1 class="text-truncate">Ausbeutung als topologische Kategorie denken</h1>
+              </div>
+              <span class="m-unter d-block text-truncate">Korrektur vom 10. September 2026, 21:01 - qwen3-next-80b-a3b-instruct-mlx - 16 Blöcke, 1 verworfen, Ähnlichkeit 0,93</span>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" title="Alle 16 Blöcke mit dem aktiven Korrektur-Anbieter neu korrigieren (legt einen Auftrag auf dem Fließband an)"><i class="fa-solid fa-rotate-right"></i> Neu korrigieren</button>
+            <button class="btn btn-sm btn-outline-secondary" title="Themenaufschlüsselung und Kurzzusammenfassung aus den korrigierten Absätzen neu erstellen"><i class="fa-solid fa-list-ul"></i> Themen neu</button>
+            <button class="btn btn-sm btn-primary" title="Korrigierten Text aller Blöcke von Hand bearbeiten"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+            <button class="m-info" title="Hilfe zur Korrektur im Vergleich">i</button>
+          </div>
+
+          <!-- Körper: Umschalter fest, Vergleich rollt in eigenem Feld, Seitenzahlen fest -->
+          <div class="m-ansicht-koerper d-flex flex-column gap-3" style="overflow: hidden">
+            <div class="d-flex align-items-center gap-3">
+              <div class="btn-group btn-group-sm" role="group" aria-label="Ansicht des Vergleichs">
+                <input type="radio" class="btn-check" name="ansicht" id="ansicht-beide" checked />
+                <label class="btn btn-outline-secondary" for="ansicht-beide"><i class="fa-solid fa-table-columns"></i> Nebeneinander</label>
+                <input type="radio" class="btn-check" name="ansicht" id="ansicht-korrigiert" />
+                <label class="btn btn-outline-secondary" for="ansicht-korrigiert"><i class="fa-solid fa-spell-check"></i> Nur korrigiert</label>
+                <input type="radio" class="btn-check" name="ansicht" id="ansicht-roh" />
+                <label class="btn btn-outline-secondary" for="ansicht-roh"><i class="fa-solid fa-closed-captioning"></i> Nur roh</label>
+              </div>
+              <button class="m-info" title="Nebeneinander zeigt Rohtext und Korrektur Block für Block in zwei Spalten. Nur korrigiert und Nur roh zeigen jeweils eine Spalte in voller Breite.">i</button>
+              <div class="form-check form-switch mb-0 ms-2">
+                <input class="form-check-input" type="checkbox" id="nur-verworfene" />
+                <label class="form-check-label" for="nur-verworfene">Nur verworfene zeigen</label>
+              </div>
+              <button class="m-info" title="Blendet alle Blöcke aus, deren Korrektur der Abweichungswächter angenommen hat. Übrig bleiben die Blöcke, bei denen der Rohtext stehen geblieben ist.">i</button>
+              <span class="ms-auto small text-secondary">Lauf-Parameter: Blockgröße der Korrektur 2.500 Zeichen &middot; Abweichungswächter 0,80 &middot; Temperatur des Modells 0,0</span>
+              <a class="btn btn-sm btn-outline-secondary" href="einstellungen.html" title="Einstellungen der Korrektur öffnen"><i class="fa-solid fa-sliders"></i></a>
+            </div>
+
+            <div class="flex-grow-1 overflow-auto" style="min-height: 0">
+              <div class="m-vergleich">
+                <!-- Spaltenköpfe (bleiben beim Rollen stehen) -->
+                <div class="kopf"><i class="fa-solid fa-closed-captioning"></i> Roh <span class="text-secondary fw-normal ms-1">Whisper Large V3 (MLX), 212 Segmente</span> <button class="m-info ms-1" title="Der Rohtext der Transkription, in Blöcke von etwa 2.500 Zeichen an Segmentgrenzen geschnitten. Der Balken zeigt die Ähnlichkeit zwischen Rohtext und Korrektur des Blocks.">i</button></div>
+                <div class="kopf"><i class="fa-solid fa-spell-check"></i> Korrigiert <span class="text-secondary fw-normal ms-1">qwen3-next-80b-a3b-instruct-mlx, 10. September 2026, 21:01</span> <button class="m-info ms-1" title="Das Sprachmodell verbessert nur die Form: Zeichensetzung, Groß- und Kleinschreibung, offensichtliche Hörfehler, Absätze. Keine Umformulierung, keine Kürzung, keine Ergänzung.">i</button></div>
+
+                <!-- Block 1 -->
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <b>Block 1</b>
+                    <span class="text-secondary small">00:00 bis 01:26</span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 00:00 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <div class="d-flex align-items-center gap-2 ms-auto" style="width: 150px" title="Ähnlichkeit zwischen Rohtext und Korrektur"><div class="m-wert"><span style="width: 95%"></span></div><span class="m-wert-zahl">0,95</span></div>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 00:00 abspielen">00:00</span><div>Ja, hallo und herzlich willkommen zu einer neuen Folge. Heute will ich über Ausbeutung reden, aber nicht so, wie man das normalerweise macht, also nicht als Frage, wie viel jemandem weggenommen wird, sondern als Frage, wo jemand steht, ich will Ausbeutung als typologische Kategorie denken und das klingt jetzt erstmal furchtbar abstrakt aber ich glaube, das ist eigentlich das intuitivere Bild und ich werde versuchen, das in den nächsten zwanzig Minuten zu zeigen. Und zwar fange ich mal damit an, was die übliche Sicht ist, die übliche Sicht ist, Ausbeutung ist eine Menge, ich arbeite acht Stunden, ich kriege den Lohn für vier, die anderen vier sind der Mehrwert, den jemand anderes einstreicht und über diese Menge streitet man sich dann.</div></div>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="text-secondary small">3 Absätze</span>
+                    <button class="btn btn-sm btn-outline-secondary ms-auto" title="Diesen Block bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 00:00 abspielen">00:00</span><div>Ja, hallo und herzlich willkommen zu einer neuen Folge. Heute will ich über Ausbeutung reden, aber nicht so, wie man das normalerweise macht. Also nicht als Frage, wie viel jemandem weggenommen wird, sondern als Frage, wo jemand steht. Ich will Ausbeutung als topologische Kategorie denken.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 00:31 abspielen">00:31</span><div>Das klingt jetzt erstmal furchtbar abstrakt, aber ich glaube, das ist eigentlich das intuitivere Bild, und ich werde versuchen, das in den nächsten zwanzig Minuten zu zeigen.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 00:52 abspielen">00:52</span><div>Und zwar fange ich mal damit an, was die übliche Sicht ist. Die übliche Sicht ist: Ausbeutung ist eine Menge. Ich arbeite acht Stunden, ich kriege den Lohn für vier, die anderen vier sind der Mehrwert, den jemand anderes einstreicht. Und über diese Menge streitet man sich dann.</div></div>
+                </div>
+
+                <!-- Block 2 -->
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <b>Block 2</b>
+                    <span class="text-secondary small">01:26 bis 02:49</span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 01:26 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <div class="d-flex align-items-center gap-2 ms-auto" style="width: 150px" title="Ähnlichkeit zwischen Rohtext und Korrektur"><div class="m-wert"><span style="width: 94%"></span></div><span class="m-wert-zahl">0,94</span></div>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 01:26 abspielen">01:26</span><div>Das Problem mit dieser Sicht ist nicht, dass sie falsch wäre, das Problem ist, dass sie das Wesentliche nicht trifft, denn wenn ich sage, es geht um die Menge, dann sage ich implizit, mit der richtigen Menge wäre alles in Ordnung, also wenn ich den Lohn für sieben Stunden kriegen würde statt für vier, dann wäre ich nur noch ein bisschen ausgebeutet und bei acht gar nicht mehr, und genau das stimmt nicht, weil die Situation, in der ich stehe, dieselbe bleibt, ich muss immer noch morgens hingehen, ich muss immer noch das machen, was mir gesagt wird, und ich kann immer noch nicht weg, das ist keine Frage der Menge, das ist eine Frage der Lage und Lage ist ein typologischer Begriff.</div></div>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="text-secondary small">3 Absätze</span>
+                    <button class="btn btn-sm btn-outline-secondary ms-auto" title="Diesen Block bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 01:26 abspielen">01:26</span><div>Das Problem mit dieser Sicht ist nicht, dass sie falsch wäre. Das Problem ist, dass sie das Wesentliche nicht trifft. Denn wenn ich sage, es geht um die Menge, dann sage ich implizit: Mit der richtigen Menge wäre alles in Ordnung.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 01:52 abspielen">01:52</span><div>Also wenn ich den Lohn für sieben Stunden kriegen würde statt für vier, dann wäre ich nur noch ein bisschen ausgebeutet, und bei acht gar nicht mehr. Und genau das stimmt nicht, weil die Situation, in der ich stehe, dieselbe bleibt: Ich muss immer noch morgens hingehen, ich muss immer noch das machen, was mir gesagt wird, und ich kann immer noch nicht weg.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 02:30 abspielen">02:30</span><div>Das ist keine Frage der Menge, das ist eine Frage der Lage. Und Lage ist ein topologischer Begriff.</div></div>
+                </div>
+
+                <!-- Block 3 -->
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <b>Block 3</b>
+                    <span class="text-secondary small">02:49 bis 04:15</span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 02:49 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <div class="d-flex align-items-center gap-2 ms-auto" style="width: 150px" title="Ähnlichkeit zwischen Rohtext und Korrektur"><div class="m-wert"><span style="width: 91%"></span></div><span class="m-wert-zahl">0,91</span></div>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 02:49 abspielen">02:49</span><div>Jetzt kurz, was ich mit Typologie meine, für alle, die das nicht aus der Mathematik kennen, Typologie fragt nicht nach Größen und Abständen sondern nach Zusammenhang, also was hängt womit zusammen, was liegt innen, was liegt außen, wo gibt es ein Loch, das berühmte Beispiel ist die Kaffeetasse und der Donat, die sind typologisch dasselbe, weil beide genau ein Loch haben und man das eine in das andere verformen kann ohne zu schneiden oder zu kleben, das nennt man Homo Morphie, und die Größe der Tasse spielt dabei überhaupt keine Rolle, eine winzige Tasse und eine riesige Tasse sind dasselbe Ding, und genau diese Sorte Blick will ich auf Ausbeutung werfen, nicht wie groß, sondern wie hängt es zusammen.</div></div>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="text-secondary small">3 Absätze</span>
+                    <button class="btn btn-sm btn-outline-secondary ms-auto" title="Diesen Block bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 02:49 abspielen">02:49</span><div>Jetzt kurz, was ich mit Topologie meine, für alle, die das nicht aus der Mathematik kennen. Topologie fragt nicht nach Größen und Abständen, sondern nach Zusammenhang: Also was hängt womit zusammen, was liegt innen, was liegt außen, wo gibt es ein Loch?</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 03:18 abspielen">03:18</span><div>Das berühmte Beispiel ist die Kaffeetasse und der Donut. Die sind topologisch dasselbe, weil beide genau ein Loch haben und man das eine in das andere verformen kann, ohne zu schneiden oder zu kleben. Das nennt man Homöomorphie. Und die Größe der Tasse spielt dabei überhaupt keine Rolle: Eine winzige Tasse und eine riesige Tasse sind dasselbe Ding.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 03:56 abspielen">03:56</span><div>Und genau diese Sorte Blick will ich auf Ausbeutung werfen. Nicht: wie groß? Sondern: wie hängt es zusammen?</div></div>
+                </div>
+
+                <!-- Block 4: verworfen, Rohtext übernommen -->
+                <div class="verworfen">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <b>Block 4</b>
+                    <span class="text-secondary small">04:15 bis 05:38</span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 04:15 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <span class="badge text-bg-danger">verworfen</span>
+                    <div class="d-flex align-items-center gap-2 ms-auto" style="width: 150px" title="Ähnlichkeit zwischen Rohtext und Vorschlag des Modells"><div class="m-wert"><span style="width: 78%; background: #b3352c"></span></div><span class="m-wert-zahl text-danger">0,78</span></div>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 04:15 abspielen">04:15</span><div>Also übertragen wir das, was ist bei Ausbeutung das, was zusammenhängt, ich würde sagen, es sind drei Sachen, erstens, ich brauche etwas, das ich nicht selber herstellen kann, Essen, Wohnung, was auch immer, zweitens, es gibt jemanden, der den Zugang dazu kontrolliert, und drittens, der einzige Weg von mir zu dem Ding führt über diesen jemanden, das ist die Figur, ich, Nadelöhr, Ding, und wenn diese Figur steht, dann bin ich ausgebeutet, völlig egal, wie freundlich der Mensch am Nadelöhr ist und völlig egal, wie viel er mir davon abgibt, weil das Nadelöhr ist die Lage, und die Lage ändert sich nicht dadurch, dass es mir da drin ganz gut geht.</div></div>
+                </div>
+                <div class="verworfen">
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                    <b class="small">Ähnlichkeit 0,78 unter 0,80 - Rohtext übernommen</b>
+                    <button class="m-info" title="Der Abweichungswächter (Einstellung Korrektur, Vorgabe 0,80) verwirft einen Block, wenn die Korrektur zu weit vom Rohtext abweicht. Dann bleibt der Rohtext stehen, damit das Modell keinen Inhalt verändern kann.">i</button>
+                    <button class="btn btn-sm btn-outline-danger ms-auto" title="Den Vorschlag des Modells trotz der Abweichung als Korrektur dieses Blocks übernehmen"><i class="fa-solid fa-check"></i> Trotzdem übernehmen</button>
+                  </div>
+                  <div class="small text-secondary mb-1">Vorschlag des Modells, nicht übernommen (gekürzt und umformuliert):</div>
+                  <div class="m-absatz opacity-75"><span class="zeit" title="Ab 04:15 abspielen">04:15</span><div>Übertragen wir das auf Ausbeutung. Drei Dinge hängen zusammen: Ich brauche etwas, das ich nicht selbst herstellen kann. Jemand kontrolliert den Zugang dazu. Und der einzige Weg dorthin führt über diese Person. Diese Figur, ich, Nadelöhr, Ding, ist Ausbeutung, unabhängig davon, wie freundlich die Person ist oder wie viel sie abgibt. Das Nadelöhr ist die Lage, und die ändert sich nicht, nur weil es mir darin gut geht.</div></div>
+                </div>
+
+                <!-- Block 5 -->
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <b>Block 5</b>
+                    <span class="text-secondary small">05:38 bis 07:04</span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 05:38 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <div class="d-flex align-items-center gap-2 ms-auto" style="width: 150px" title="Ähnlichkeit zwischen Rohtext und Korrektur"><div class="m-wert"><span style="width: 96%"></span></div><span class="m-wert-zahl">0,96</span></div>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 05:38 abspielen">05:38</span><div>Und jetzt sieht man auch, warum die Mengenfrage so verführerisch ist, weil man über die Menge verhandeln kann, man kann streiken, man kann Tarifverträge machen, man kann Mindestlöhne einführen und das ist alles gut und richtig, ich will das nicht kleinreden, aber es verändert die Figur nicht, das Nadelöhr bleibt, ich habe nur ein größeres Stück von dem, was durchs Nadelöhr kommt, und deswegen fühlt sich das auch nach zwanzig Jahren Lohnerhöhung immer noch so an, wie es sich anfühlt, weil das, was sich anfühlt, die Lage ist und nicht der Betrag.</div></div>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="text-secondary small">2 Absätze</span>
+                    <button class="btn btn-sm btn-outline-secondary ms-auto" title="Diesen Block bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 05:38 abspielen">05:38</span><div>Und jetzt sieht man auch, warum die Mengenfrage so verführerisch ist: weil man über die Menge verhandeln kann. Man kann streiken, man kann Tarifverträge machen, man kann Mindestlöhne einführen. Und das ist alles gut und richtig, ich will das nicht kleinreden.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 06:14 abspielen">06:14</span><div>Aber es verändert die Figur nicht. Das Nadelöhr bleibt, ich habe nur ein größeres Stück von dem, was durchs Nadelöhr kommt. Und deswegen fühlt sich das auch nach zwanzig Jahren Lohnerhöhung immer noch so an, wie es sich anfühlt. Weil das, was sich anfühlt, die Lage ist und nicht der Betrag.</div></div>
+                </div>
+
+                <!-- Block 6 -->
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <b>Block 6</b>
+                    <span class="text-secondary small">07:04 bis 08:31</span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 07:04 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <div class="d-flex align-items-center gap-2 ms-auto" style="width: 150px" title="Ähnlichkeit zwischen Rohtext und Korrektur"><div class="m-wert"><span style="width: 92%"></span></div><span class="m-wert-zahl">0,92</span></div>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 07:04 abspielen">07:04</span><div>Ein Beispiel, das ich ganz gerne nehme, ist die Lieferkette, da hat man eine Näherin in Bangladesch, einen Zwischenhändler, eine Marke in Europa und am Ende mich mit dem T-Shirt, und wenn man jetzt fragt, wer beutet hier wen aus, dann fangen die Leute an zu rechnen, wie viel Cent vom T-Shirt kommen bei der Näherin an, und das ist wieder die Mengenfrage, die typologische Frage ist eine andere, nämlich, wer kann die Kette an welcher Stelle unterbrechen, die Näherin kann es nicht, die kann höchstens sich selber rausnehmen, die Marke kann es an jeder Stelle, und das, was Marks Verfügungsgewalt nennt, ist genau diese Eigenschaft der Figur, nicht der Betrag.</div></div>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="text-secondary small">3 Absätze</span>
+                    <button class="btn btn-sm btn-outline-secondary ms-auto" title="Diesen Block bearbeiten"><i class="fa-solid fa-pen"></i></button>
+                  </div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 07:04 abspielen">07:04</span><div>Ein Beispiel, das ich ganz gerne nehme, ist die Lieferkette. Da hat man eine Näherin in Bangladesch, einen Zwischenhändler, eine Marke in Europa und am Ende mich mit dem T-Shirt.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 07:35 abspielen">07:35</span><div>Und wenn man jetzt fragt, wer beutet hier wen aus, dann fangen die Leute an zu rechnen, wie viel Cent vom T-Shirt bei der Näherin ankommen. Und das ist wieder die Mengenfrage.</div></div>
+                  <div class="m-absatz"><span class="zeit" title="Ab 07:58 abspielen">07:58</span><div>Die topologische Frage ist eine andere, nämlich: Wer kann die Kette an welcher Stelle unterbrechen? Die Näherin kann es nicht, die kann höchstens sich selber rausnehmen. Die Marke kann es an jeder Stelle. Und das, was Marx Verfügungsgewalt nennt, ist genau diese Eigenschaft der Figur, nicht der Betrag.</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+              <span class="small text-secondary">Blöcke 1 bis 6 von 16 &middot; 1 verworfen</span>
+              <nav class="ms-auto" aria-label="Seiten der Blöcke">
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fa-solid fa-chevron-left"></i> Zurück</a></li>
+                  <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">Weiter <i class="fa-solid fa-chevron-right"></i></a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Audiospieler (bleibt über alle Ansichten) -->
+      <footer class="m-spieler">
+        <div>
+          <div class="titel">Ausbeutung als topologische Kategorie denken</div>
+          <div class="unter"><span class="m-serie">mmM#374</span> &middot; Thema: Was Topologie hier heißt</div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn btn-outline-secondary" title="30 Sekunden zurück"><i class="fa-solid fa-backward"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden zurück"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="btn btn-primary" title="Pause"><i class="fa-solid fa-pause"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
+        </div>
+        <div>
+          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+            <div class="thema" style="left: 0%; width: 6%">Einstieg</div>
+            <div class="thema" style="left: 6%; width: 13%">Was Topologie hier heißt</div>
+            <div class="thema" style="left: 19%; width: 12%">Die Figur des Nadelöhrs</div>
+            <div class="thema" style="left: 31%; width: 15%">Beispiel Lieferkette</div>
+            <div class="thema" style="left: 46%; width: 17%">Warum Zahlen nicht reichen</div>
+            <div class="thema" style="left: 63%; width: 21%">Einwände</div>
+            <div class="thema" style="left: 84%; width: 16%">Folgerungen</div>
+            <div class="gespielt" style="width: 15%"></div>
+            <div class="marke" style="left: 15%"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="zeiten">03:20 / 22:41</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Abweichungswächter" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a class="aktiv" href="#">Korrektur im Vergleich</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Korrektur im Vergleich</h2>
+          <p>Diese Ansicht zeigt für ein Video den Rohtext der Transkription und die Korrektur des Sprachmodells Block für Block nebeneinander. Links steht, was Whisper gehört hat, rechts, was das Modell daraus gemacht hat. So lässt sich prüfen, ob die Korrektur nur die Form verbessert hat.</p>
+          <h2>Blöcke</h2>
+          <p>Der Rohtext wird in Blöcke von etwa 2.500 Zeichen an Segmentgrenzen geschnitten (Einstellung <b>Blockgröße der Korrektur</b>). Jeder Block behält sein Zeitfenster, darum springt jede Zeitmarke im Audiospieler an die richtige Stelle. Das Modell darf je Block nur Zeichensetzung, Groß- und Kleinschreibung, offensichtliche Hörfehler und Absätze ändern - keine Umformulierung, keine Kürzung, keine Ergänzung.</p>
+          <h2>Ähnlichkeit und <mark>Abweichungswächter</mark></h2>
+          <p>Der Balken je Block zeigt die Zeichen-Ähnlichkeit zwischen Rohtext und Korrektur (0 bis 1). Liegt sie unter dem <mark>Abweichungswächter</mark> (Einstellung Korrektur, Vorgabe 0,80), wird der Block verworfen: Der Rohtext bleibt stehen und der Block wird rot markiert. Die Ähnlichkeit in der Unterzeile ist der Mittelwert über alle Blöcke.</p>
+          <h2>Verworfene Blöcke</h2>
+          <p>Bei einem verworfenen Block steht rechts der Vorschlag des Modells, der nicht übernommen wurde. Mit <b>Trotzdem übernehmen</b> wird dieser Vorschlag zur Korrektur des Blocks; danach werden die Stücke des Videos neu gebildet und neu eingebettet. Der Schalter <b>Nur verworfene zeigen</b> blendet alle angenommenen Blöcke aus.</p>
+          <h2>Neu korrigieren, Themen neu, Bearbeiten</h2>
+          <p><b>Neu korrigieren</b> legt einen Korrektur-Auftrag auf dem Fließband an und ersetzt die bestehende Korrektur, wenn er fertig ist. <b>Themen neu</b> erstellt nur die Themenaufschlüsselung und die Kurzzusammenfassung neu, ohne die Absätze anzufassen. <b>Bearbeiten</b> öffnet den korrigierten Text zum Ändern von Hand; der Stift an einem Block bearbeitet nur diesen Block.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

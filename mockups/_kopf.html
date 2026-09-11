@@ -1,0 +1,34 @@
+<!-- Gemeinsames Kopf-Fragment (Referenz, in jede Seite kopiert).
+     Asset-Pfade gehen vom Static-Server der Projektwurzel aus (start-mockups.sh).
+     Dieselben Stylesheets wie die App: Bootstrap-Thema (aus frontend/src/bootstrap.scss
+     gebaut) und frontend/src/app.css - Mockup und App sehen dadurch gleich aus. -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+<link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+<link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+<link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+<link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+<link rel="stylesheet" href="/mockups/bootstrap.css" />
+<link rel="stylesheet" href="/frontend/src/app.css" />
+<link rel="stylesheet" href="/mockups/mockup.css" />
+<script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script defer src="/mockups/mockup.js"></script>
+
+<!-- Gemeinsame Kopfleiste (Referenz). Die aktive Ansicht bekommt class="aktiv". -->
+<header class="m-kopf">
+  <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+  <nav class="m-nav">
+    <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+    <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+    <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+    <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+    <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+  </nav>
+  <div class="m-kopf-rechts">
+    <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+    <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+    <span class="version">v0.1.0</span>
+  </div>
+</header>

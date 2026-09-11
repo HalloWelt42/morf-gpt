@@ -33,4 +33,11 @@ def registriere(art: Auftragsart) -> Callable[[Ausfuehrer], Ausfuehrer]:
 
 def alle_laden() -> None:
     """Importiert alle Stufen-Module, damit sie sich registrieren."""
-    from ..stufen import audio, einbettung, korrektur, quelle_abgleich, stueckelung, transkription  # noqa: F401
+    from ..stufen import (  # noqa: F401
+        audio,
+        einbettung,
+        korrektur,
+        quelle_abgleich,
+        stueckelung,
+        transkription,
+    )

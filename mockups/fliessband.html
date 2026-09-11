@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Fließband</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a class="aktiv" href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Fließband</h1>
+            <span class="m-unter">664 Videos im Umfang &middot; 3 Aufträge laufen &middot; 412 warten &middot; 2 Fehler</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Kanal mit der Quelle abgleichen und neue Videos aufnehmen"><i class="fa-solid fa-rotate"></i> Quelle abgleichen</button>
+            <button class="btn btn-sm btn-outline-secondary" title="Für alle ausgewählten Videos den nächsten Schritt anlegen"><i class="fa-solid fa-fill-drip"></i> Band auffüllen</button>
+            <button class="btn btn-sm btn-outline-warning" title="Alle Stufen anhalten, laufende Aufträge enden noch"><i class="fa-solid fa-pause"></i> Alles anhalten</button>
+            <button class="m-info" title="Hilfe zum Fließband">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper d-flex flex-column gap-3" style="overflow: hidden">
+            <!-- Stufen -->
+            <div class="m-band">
+              <div class="m-band-stufe">
+                <div class="titel"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</div>
+                <div class="zahl">664</div>
+                <div class="klein">im Umfang, 1.491 gesamt</div>
+                <div class="zeile"><span>Quelle</span><span>TubeVault</span></div>
+                <div class="zeile"><span>Zuletzt abgeglichen</span><span>vor 12 Minuten</span></div>
+              </div>
+              <div class="m-band-stufe audio">
+                <div class="titel"><i class="fa-solid fa-headphones"></i> Audio</div>
+                <div class="zahl">641</div>
+                <div class="klein">fertig &middot; 2 laufen &middot; 21 warten</div>
+                <div class="m-fortschritt"><span style="width: 96%"></span></div>
+                <div class="zeile"><span>Durchsatz</span><span>38 je Stunde</span></div>
+                <div class="zeile"><span>Rest</span><span>etwa 35 Minuten</span></div>
+                <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-audio" checked /><label class="form-check-label small" for="p-audio">läuft (2 parallel)</label></div>
+              </div>
+              <div class="m-band-stufe transkribiert">
+                <div class="titel"><i class="fa-solid fa-closed-captioning"></i> Transkribiert</div>
+                <div class="zahl">212</div>
+                <div class="klein">fertig &middot; 1 läuft &middot; 429 warten</div>
+                <div class="m-fortschritt laeuft"><span style="width: 32%"></span></div>
+                <div class="zeile"><span>Durchsatz</span><span>3,1 je Stunde</span></div>
+                <div class="zeile"><span>Rest</span><span>etwa 5 Tage 18 Stunden</span></div>
+                <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-trans" checked /><label class="form-check-label small" for="p-trans">läuft (1 parallel)</label></div>
+              </div>
+              <div class="m-band-stufe korrigiert">
+                <div class="titel"><i class="fa-solid fa-spell-check"></i> Korrigiert</div>
+                <div class="zahl">180</div>
+                <div class="klein">fertig &middot; 0 laufen &middot; 32 warten</div>
+                <div class="m-fortschritt"><span style="width: 27%"></span></div>
+                <div class="zeile"><span>Durchsatz</span><span>9 je Stunde</span></div>
+                <div class="zeile"><span>Rest</span><span>etwa 3 Stunden 30 Minuten</span></div>
+                <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-korr" /><label class="form-check-label small" for="p-korr">angehalten</label></div>
+              </div>
+              <div class="m-band-stufe gestueckelt">
+                <div class="titel"><i class="fa-solid fa-scissors"></i> Gestückelt</div>
+                <div class="zahl">180</div>
+                <div class="klein">fertig &middot; 0 laufen &middot; 0 warten</div>
+                <div class="m-fortschritt"><span style="width: 27%"></span></div>
+                <div class="zeile"><span>Stücke gesamt</span><span>9.412</span></div>
+                <div class="zeile"><span>Mittlere Größe</span><span>2.980 Zeichen</span></div>
+                <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-stk" checked /><label class="form-check-label small" for="p-stk">läuft (4 parallel)</label></div>
+              </div>
+              <div class="m-band-stufe eingebettet">
+                <div class="titel"><i class="fa-solid fa-cube"></i> Eingebettet</div>
+                <div class="zahl">178</div>
+                <div class="klein">fertig &middot; 0 laufen &middot; 2 warten</div>
+                <div class="m-fortschritt"><span style="width: 27%"></span></div>
+                <div class="zeile"><span>Modell</span><span>text-embedding-bge-m3</span></div>
+                <div class="zeile"><span>Vektoren</span><span>9.301</span></div>
+                <div class="form-check form-switch mt-1"><input class="form-check-input" type="checkbox" id="p-emb" checked /><label class="form-check-label small" for="p-emb">läuft (1 parallel)</label></div>
+              </div>
+            </div>
+
+            <!-- Aufträge und Protokoll nebeneinander -->
+            <div class="d-flex gap-3 flex-grow-1" style="min-height: 0">
+              <div class="d-flex flex-column flex-grow-1" style="min-width: 0; min-height: 0">
+                <ul class="nav nav-tabs">
+                  <li class="nav-item"><a class="nav-link active" href="#">Laufend <span class="badge text-bg-primary">3</span></a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Wartend <span class="badge text-bg-secondary">412</span></a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Fehler <span class="badge text-bg-danger">2</span></a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Fertig <span class="badge text-bg-success">1.391</span></a></li>
+                  <li class="nav-item ms-auto d-flex align-items-center gap-2 pe-1">
+                    <button class="btn btn-sm btn-outline-secondary" title="Alle fehlgeschlagenen Aufträge erneut versuchen"><i class="fa-solid fa-rotate-right"></i> Fehler wiederholen</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Fertige Aufträge älter als 7 Tage aufräumen"><i class="fa-solid fa-broom"></i> Aufräumen</button>
+                  </li>
+                </ul>
+                <div class="m-tabelle-feld flex-grow-1" style="border-top: 0">
+                  <table class="table table-hover table-sm align-middle">
+                    <thead>
+                      <tr><th style="width: 130px">Stufe</th><th>Video</th><th style="width: 90px">Serie</th><th style="width: 220px">Fortschritt</th><th style="width: 110px">Seit</th><th style="width: 80px"></th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="m-stufe transkribiert"><i class="fa-solid fa-closed-captioning"></i> Transkription</span></td>
+                        <td class="text-truncate" style="max-width: 420px">Wieso passen unsere Geschichten fast nie zur Realität?</td>
+                        <td><span class="m-serie">mmM#377</span></td>
+                        <td><div class="m-fortschritt laeuft mb-1"><span style="width: 58%"></span></div><small class="text-secondary">Whisper arbeitet - 19:40 von 34:05</small></td>
+                        <td class="text-secondary">11 Minuten</td>
+                        <td><button class="btn btn-sm btn-outline-danger" title="Auftrag abbrechen"><i class="fa-solid fa-stop"></i></button></td>
+                      </tr>
+                      <tr>
+                        <td><span class="m-stufe audio"><i class="fa-solid fa-headphones"></i> Audio</span></td>
+                        <td class="text-truncate" style="max-width: 420px">Dogtooth-Effekt oder Herrschafts-Alexiphasie?</td>
+                        <td><span class="m-serie">mmM#376</span></td>
+                        <td><div class="m-fortschritt laeuft mb-1"><span style="width: 81%"></span></div><small class="text-secondary">Videostrom 163 von 201 Megabyte</small></td>
+                        <td class="text-secondary">40 Sekunden</td>
+                        <td><button class="btn btn-sm btn-outline-danger" title="Auftrag abbrechen"><i class="fa-solid fa-stop"></i></button></td>
+                      </tr>
+                      <tr>
+                        <td><span class="m-stufe audio"><i class="fa-solid fa-headphones"></i> Audio</span></td>
+                        <td class="text-truncate" style="max-width: 420px">eine Anekdote aus der Welt der Schamanen</td>
+                        <td><span class="m-serie">mmM#375</span></td>
+                        <td><div class="m-fortschritt laeuft mb-1"><span style="width: 12%"></span></div><small class="text-secondary">ffmpeg wandelt in Mono-AAC</small></td>
+                        <td class="text-secondary">9 Sekunden</td>
+                        <td><button class="btn btn-sm btn-outline-danger" title="Auftrag abbrechen"><i class="fa-solid fa-stop"></i></button></td>
+                      </tr>
+                      <tr class="table-danger">
+                        <td><span class="m-stufe korrigiert"><i class="fa-solid fa-spell-check"></i> Korrektur</span></td>
+                        <td class="text-truncate" style="max-width: 420px">Entropie &amp; Faschismus <small class="text-danger ms-2">Sprachmodell: Zeitgrenze von 1.800 Sekunden überschritten (Versuch 3 von 3)</small></td>
+                        <td><span class="m-serie">mmM#290</span></td>
+                        <td><div class="m-fortschritt mb-1"><span style="width: 44%; background: #b3352c"></span></div><small class="text-secondary">Block 7 von 16</small></td>
+                        <td class="text-secondary">vor 2 Stunden</td>
+                        <td><button class="btn btn-sm btn-outline-secondary" title="Erneut versuchen"><i class="fa-solid fa-rotate-right"></i></button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="d-flex flex-column" style="width: 440px; min-height: 0">
+                <div class="d-flex align-items-center mb-1">
+                  <h6 class="m-0"><i class="fa-solid fa-terminal"></i> Protokoll (live)</h6>
+                  <div class="form-check form-switch ms-auto mb-0"><input class="form-check-input" type="checkbox" id="mitrollen" checked /><label class="form-check-label small" for="mitrollen">mitrollen</label></div>
+                </div>
+                <div class="m-protokoll flex-grow-1">
+                  <div><span class="zeit">21:02:14</span>[transkription mmM#377] Whisper-Worker antwortet, Segmente: 118</div>
+                  <div><span class="zeit">21:02:09</span>[audio mmM#376] Videostrom 163 von 201 Megabyte</div>
+                  <div><span class="zeit">21:02:01</span>[audio mmM#375] Start: Audio beschaffen</div>
+                  <div><span class="zeit">21:01:58</span>[einbettung mmM#374] Fertig - 41 Stücke, 41 Vektoren (bge-m3, 1024)</div>
+                  <div><span class="zeit">21:01:40</span>[einbettung mmM#374] Stapel 3 von 3</div>
+                  <div><span class="zeit">21:01:22</span>[stueckelung mmM#374] Fertig - 41 Stücke, 122.480 Zeichen, Überlappung 400</div>
+                  <div><span class="zeit">21:01:21</span>[korrektur mmM#374] Fertig - 16 Blöcke, 0 verworfen, Ähnlichkeit 0,93, 7 Themen</div>
+                  <div class="warn"><span class="zeit">21:00:05</span>[korrektur mmM#374] Block 11: Ähnlichkeit 0,78 unter 0,80 - Rohtext bleibt</div>
+                  <div class="fehler"><span class="zeit">20:58:30</span>[korrektur mmM#290] Sprachmodell: Zeitgrenze von 1.800 Sekunden überschritten (Versuch 3 von 3)</div>
+                  <div><span class="zeit">20:51:10</span>[transkription mmM#377] Start: Transkribieren (Audio 34:05, 15,9 Megabyte)</div>
+                  <div><span class="zeit">20:50:44</span>[quelle_abgleich morf] Fertig - 1.491 Videos, 2 neu, 664 im Umfang</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+  </body>
+</html>

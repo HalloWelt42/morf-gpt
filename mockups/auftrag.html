@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Auftrag</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <style>
+      .card { --bs-card-bg: var(--m-flaeche); --bs-card-border-color: var(--m-rand); --bs-card-cap-bg: var(--m-flaeche-2); }
+    </style>
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a class="aktiv" href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <!-- Kopfzeile des Auftrags: bleibt stehen -->
+          <div class="m-ansicht-kopf">
+            <a class="btn btn-sm btn-outline-secondary" href="fliessband.html" title="Zurück zum Fließband"><i class="fa-solid fa-arrow-left"></i> Zurück</a>
+            <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='18' font-weight='bold' text-anchor='middle' fill='%23ffffff'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" />
+            <div class="overflow-hidden">
+              <h1 class="text-truncate">Transkription - Wieso passen unsere Geschichten fast nie zur Realität? | mmM#377</h1>
+              <span class="m-unter"><span class="m-stufe transkribiert"><i class="fa-solid fa-closed-captioning"></i> Transkription</span> &middot; Auftrag 7f3a9c2d &middot; angelegt 20:51:08 von der Automatik nach Stufe Audio &middot; Video vom 3. September 2026, 34:05</span>
+            </div>
+            <span class="badge text-bg-primary" title="Der Auftrag wird gerade abgearbeitet"><i class="fa-solid fa-circle-notch fa-spin"></i> läuft</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-danger" title="Auftrag abbrechen - der Worker beendet den Lauf, das Video bleibt auf Stufe Audio"><i class="fa-solid fa-stop"></i> Abbrechen</button>
+            <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Zum Video in der Bibliothek"><i class="fa-solid fa-film"></i> Video öffnen</a>
+            <button class="m-info" title="Hilfe zu Aufträgen">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper d-flex flex-column gap-3">
+            <!-- Kennzahlen -->
+            <div class="m-kennzahlen">
+              <div class="m-kennzahl">
+                <div class="wert">20:51:10</div>
+                <div class="titel">Gestartet <button class="m-info" title="Zeitpunkt, an dem der Auftragsläufer diesen Auftrag übernommen hat">i</button></div>
+                <small class="text-secondary">heute, 10. September 2026</small>
+              </div>
+              <div class="m-kennzahl">
+                <div class="wert">11 Minuten</div>
+                <div class="titel">Dauer bisher</div>
+                <small class="text-secondary">Zeitgrenze 14.400 Sekunden</small>
+              </div>
+              <div class="m-kennzahl">
+                <div class="wert">1 von 3</div>
+                <div class="titel">Versuch <button class="m-info" title="Wiederholungen bei Fehlern: So oft wird ein fehlgeschlagener Auftrag automatisch erneut versucht (Einstellung, Vorgabe 2)">i</button></div>
+                <small class="text-secondary">bisher kein Fehler</small>
+              </div>
+              <div class="m-kennzahl">
+                <div class="wert">58 Prozent</div>
+                <div class="titel">Fortschritt <button class="m-info" title="Anteil des Audios, den der Whisper-Worker bereits verarbeitet hat">i</button></div>
+                <div class="m-fortschritt laeuft mt-2"><span style="width: 58%"></span></div>
+                <small class="text-secondary">19:40 von 34:05, 118 Segmente</small>
+              </div>
+              <div class="m-kennzahl">
+                <div class="wert">vor 4 Sekunden</div>
+                <div class="titel">Letztes Lebenszeichen <button class="m-info" title="Frist ohne Lebenszeichen: Meldet sich ein laufender Auftrag so lange nicht, gilt er als hängend und wird als Fehler markiert (Einstellung, Vorgabe 7.200 Sekunden)">i</button></div>
+                <small class="text-secondary">21:02:14, Frist 7.200 Sekunden</small>
+              </div>
+            </div>
+
+            <!-- Parameter und Ergebnis -->
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <div class="card h-100">
+                  <div class="card-header d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> <b>Parameter</b>
+                    <button class="m-info" title="Die Einstellungen, mit denen dieser Auftrag angelegt wurde. Spätere Änderungen in den Einstellungen wirken erst auf neue Aufträge.">i</button>
+                    <a class="ms-auto small" href="einstellungen.html" title="Einstellungen der Stufe Transkription öffnen">Einstellungen <i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                  <div class="card-body p-0">
+                    <dl class="mb-0">
+                      <div class="row g-0 px-3 py-2 border-bottom">
+                        <dt class="col-5 fw-normal text-secondary">Transkriptionsdienst <button class="m-info" title="Worker: direkt der Whisper-Worker von txt2voice (ohne Sprechertrennung, ohne Eintrag in dessen Bibliothek). App: über die txt2voice-Oberfläche (legt dort eine Transkription an).">i</button></dt>
+                        <dd class="col-7 mb-0">txt2voice-Worker <small class="text-secondary ms-1">http://127.0.0.1:10033, Whisper Large V3 (MLX)</small></dd>
+                      </div>
+                      <div class="row g-0 px-3 py-2 border-bottom">
+                        <dt class="col-5 fw-normal text-secondary">Sprache <button class="m-info" title="Sprache der Aufnahmen (Whisper-Sprachname).">i</button></dt>
+                        <dd class="col-7 mb-0">german</dd>
+                      </div>
+                      <div class="row g-0 px-3 py-2 border-bottom">
+                        <dt class="col-5 fw-normal text-secondary">Zeitgrenze je Transkription <button class="m-info" title="So lange darf eine Transkription dauern, bevor sie als Fehler gilt (lange Videos brauchen lange).">i</button></dt>
+                        <dd class="col-7 mb-0">14.400 Sekunden</dd>
+                      </div>
+                      <div class="row g-0 px-3 py-2">
+                        <dt class="col-5 fw-normal text-secondary">Wortzeiten speichern <button class="m-info" title="Zeitmarke je Wort mitspeichern (größere Datensätze, feinere Sprünge).">i</button></dt>
+                        <dd class="col-7 mb-0"><i class="fa-solid fa-toggle-on text-primary"></i> an</dd>
+                      </div>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="card h-100">
+                  <div class="card-header d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-file-lines"></i> <b>Ergebnis</b>
+                    <button class="m-info" title="Was die Stufe erzeugt: bei der Transkription das Rohtranskript mit Segmenten und Wortzeiten">i</button>
+                  </div>
+                  <div class="card-body">
+                    <div class="m-leer py-4">
+                      <i class="fa-solid fa-closed-captioning"></i>
+                      <div class="fw-semibold">Noch kein Ergebnis - es liegt nach Abschluss hier.</div>
+                      <div class="small mt-1">Rohtranskript mit Segmenten, Sprache und Wortzeiten. Von hier aus geht es zum Transkript im Video und in die Korrektur.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Protokoll des Auftrags: eigenes Rollfeld, seitenweise -->
+            <div class="d-flex flex-column flex-grow-1" style="min-height: 280px">
+              <div class="d-flex align-items-center mb-1 gap-2">
+                <h6 class="m-0"><i class="fa-solid fa-terminal"></i> Protokoll</h6>
+                <span class="small text-secondary">25 von 66 Zeilen geladen, neueste oben</span>
+                <button class="m-info" title="Jede Zeile trägt Zeit, Stufe und Text. Warnungen sind gelb, Fehler rot. Neue Zeilen kommen live über den Ereignisstrom.">i</button>
+                <div class="form-check form-switch ms-auto mb-0"><input class="form-check-input" type="checkbox" id="mitrollen" checked /><label class="form-check-label small" for="mitrollen">mitrollen</label></div>
+                <button class="btn btn-sm btn-outline-secondary" title="Protokoll als Textdatei sichern"><i class="fa-solid fa-download"></i> Sichern</button>
+              </div>
+              <div class="m-protokoll flex-grow-1">
+                <div><span class="zeit">21:02:14</span>[transkription] Lebenszeichen: 19:40 von 34:05 verarbeitet (58 Prozent), 118 Segmente</div>
+                <div><span class="zeit">21:02:11</span>[transkription] Segmente 115 bis 118 empfangen (18:31 bis 19:40), 61 Wörter</div>
+                <div><span class="zeit">21:01:44</span>[transkription] Lebenszeichen: 18:31 von 34:05 verarbeitet (54 Prozent), 114 Segmente</div>
+                <div><span class="zeit">21:01:40</span>[transkription] Segmente 109 bis 114 empfangen (17:25 bis 18:31), 96 Wörter</div>
+                <div><span class="zeit">21:01:14</span>[transkription] Lebenszeichen: 17:25 von 34:05 verarbeitet (51 Prozent), 108 Segmente</div>
+                <div class="warn"><span class="zeit">21:01:10</span>[transkription] Segment 106 (17:02 bis 17:11) kam ohne Wortzeiten - Segment ohne Wortzeiten übernommen</div>
+                <div><span class="zeit">21:01:09</span>[transkription] Segmente 103 bis 108 empfangen (16:20 bis 17:25), 104 Wörter</div>
+                <div><span class="zeit">21:00:44</span>[transkription] Lebenszeichen: 16:20 von 34:05 verarbeitet (48 Prozent), 102 Segmente</div>
+                <div><span class="zeit">21:00:38</span>[transkription] Segmente 97 bis 102 empfangen (15:12 bis 16:20), 99 Wörter</div>
+                <div><span class="zeit">21:00:14</span>[transkription] Lebenszeichen: 15:12 von 34:05 verarbeitet (45 Prozent), 96 Segmente</div>
+                <div><span class="zeit">21:00:08</span>[transkription] Segmente 91 bis 96 empfangen (14:06 bis 15:12), 107 Wörter</div>
+                <div><span class="zeit">20:59:44</span>[transkription] Lebenszeichen: 14:06 von 34:05 verarbeitet (41 Prozent), 90 Segmente</div>
+                <div><span class="zeit">20:59:36</span>[transkription] Segmente 85 bis 90 empfangen (13:01 bis 14:06), 102 Wörter</div>
+                <div><span class="zeit">20:59:14</span>[transkription] Lebenszeichen: 13:01 von 34:05 verarbeitet (38 Prozent), 84 Segmente</div>
+                <div><span class="zeit">20:59:05</span>[transkription] Segmente 79 bis 84 empfangen (11:55 bis 13:01), 95 Wörter</div>
+                <div><span class="zeit">20:58:44</span>[transkription] Lebenszeichen: 11:55 von 34:05 verarbeitet (35 Prozent), 78 Segmente</div>
+                <div><span class="zeit">20:58:41</span>[transkription] Segmente 73 bis 78 empfangen (10:48 bis 11:55), 93 Wörter</div>
+                <div><span class="zeit">20:58:37</span>[transkription] Verbindung zum Whisper-Worker wieder da, Lauf 3f9c2d wird fortgesetzt</div>
+                <div class="fehler"><span class="zeit">20:58:31</span>[transkription] Verbindung zum Whisper-Worker unterbrochen (Lesefehler nach 30 Sekunden) - erneuter Abruf in 5 Sekunden, Versuch bleibt 1 von 3</div>
+                <div><span class="zeit">20:58:14</span>[transkription] Lebenszeichen: 10:48 von 34:05 verarbeitet (32 Prozent), 72 Segmente</div>
+                <div><span class="zeit">20:58:07</span>[transkription] Segmente 67 bis 72 empfangen (09:58 bis 10:48), 84 Wörter</div>
+                <div class="warn"><span class="zeit">20:57:50</span>[transkription] Grafikeinheit geteilt - das Sprachmodell rechnet parallel (Korrektur mmM#290), Durchsatz vorübergehend geringer</div>
+                <div><span class="zeit">20:57:44</span>[transkription] Lebenszeichen: 09:58 von 34:05 verarbeitet (29 Prozent), 66 Segmente</div>
+                <div><span class="zeit">20:57:36</span>[transkription] Segmente 61 bis 66 empfangen (08:45 bis 09:58), 101 Wörter</div>
+                <div><span class="zeit">20:57:14</span>[transkription] Lebenszeichen: 08:45 von 34:05 verarbeitet (26 Prozent), 60 Segmente</div>
+                <div class="text-center pt-2">
+                  <button class="btn btn-sm btn-outline-light" title="Die nächsten 25 älteren Zeilen laden"><i class="fa-solid fa-angles-down"></i> Ältere laden (noch 41)</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Lebenszeichen" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a class="aktiv" href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Fließband: Ein Auftrag im Detail</h2>
+          <p>Ein Auftrag bezieht sich auf genau ein Video und eine Stufe. Die Kopfzeile zeigt Stufe, Video und Zustand: wartend, läuft, fertig, Fehler, pausiert oder abgebrochen. Mit "Abbrechen" endet der laufende Auftrag; das Video bleibt auf der zuletzt fertigen Stufe und kann jederzeit neu angestoßen werden.</p>
+          <h2>Kennzahlen</h2>
+          <p><b>Versuch</b>: Schlägt ein Auftrag fehl, wird er so oft automatisch wiederholt, wie in den Einstellungen unter "Wiederholungen bei Fehlern" steht. Erst nach dem letzten Versuch landet er in der Liste der Fehler.</p>
+          <p><b><mark>Lebenszeichen</mark></b>: Ein laufender Auftrag meldet sich regelmäßig. Bleibt das Lebenszeichen länger aus als die "Frist ohne Lebenszeichen", gilt der Auftrag als hängend und wird als Fehler markiert. Nichts bricht dabei das Band; die anderen Stufen laufen weiter.</p>
+          <h2>Parameter und Ergebnis</h2>
+          <p>Die Parameter sind der Stand der Einstellungen zum Zeitpunkt, als der Auftrag angelegt wurde. Spätere Änderungen wirken nur auf neue Aufträge. Das Ergebnis erscheint nach Abschluss: bei der Transkription das Rohtranskript, bei der Korrektur der korrigierte Text mit Themen, bei der Stückelung die Stücke, bei der Einbettung die Anzahl der Vektoren.</p>
+          <h2>Protokoll</h2>
+          <p>Jede Zeile trägt Zeit, Stufe und Text. Warnungen sind gelb, Fehler rot. Das Protokoll wird seitenweise geladen, die neuesten Zeilen stehen oben; neue Zeilen kommen live über den Ereignisstrom, solange "mitrollen" eingeschaltet ist.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

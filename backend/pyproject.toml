@@ -40,5 +40,10 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 
 [tool.ruff]
-line-length = 110
+line-length = 140
 target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+# B008: Depends() in Parametervorgaben ist der FastAPI-Stil
+ignore = ["B008"]

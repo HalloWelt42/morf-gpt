@@ -20,3 +20,10 @@ frontend/dist/
 
 # System
 .DS_Store
+
+# Testablagen der Module
+.test-tmp/
+
+# Gebautes Mockup-Thema und Viewer-Laufzeit
+mockups/bootstrap.css
+mockups/.run/

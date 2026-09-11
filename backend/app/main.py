@@ -7,8 +7,8 @@ Die gebaute Oberfläche (frontend/dist) wird ausgeliefert, wenn sie existiert.
 from __future__ import annotations
 
 import logging
-from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -28,7 +28,6 @@ from .routers import (
     auftraege,
     chat,
     chunks,
-    einstellungen as einstellungen_router,
     ereignisse,
     export,
     korrekturen,
@@ -36,6 +35,9 @@ from .routers import (
     system,
     transkripte,
     videos,
+)
+from .routers import (
+    einstellungen as einstellungen_router,
 )
 from .version import version_lesen
 
@@ -77,7 +79,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-for r in (system, einstellungen_router, anbieter, quellen, videos, audio, transkripte, korrekturen, chunks, auftraege, chat, export, ereignisse):
+for r in (
+    system,
+    einstellungen_router,
+    anbieter,
+    quellen,
+    videos,
+    audio,
+    transkripte,
+    korrekturen,
+    chunks,
+    auftraege,
+    chat,
+    export,
+    ereignisse,
+):
     app.include_router(r.router, prefix="/api")
 
 

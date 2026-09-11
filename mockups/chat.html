@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Chat</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a class="aktiv" href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Unterhaltungen -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf">
+            <i class="fa-solid fa-comments"></i> Unterhaltungen
+            <button class="btn btn-sm btn-primary ms-auto" title="Neue Unterhaltung"><i class="fa-solid fa-plus"></i> Neu</button>
+          </div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action active" href="#">
+                <div class="fw-semibold text-truncate">Was meint morf mit Kasualisierung?</div>
+                <small class="opacity-75">heute, 20:41 - 3 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Wettbewerb und Fortschritt</div>
+                <small class="text-secondary">gestern - 6 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Bewusstsein und Wille (mmM#6)</div>
+                <small class="text-secondary">7. September - 2 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Noteninflation an Schulen</div>
+                <small class="text-secondary">2. September - 4 Nachrichten</small>
+              </a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Verlauf und Eingabe -->
+        <section class="m-chat">
+          <div class="m-ansicht-kopf">
+            <h1>Was meint morf mit Kasualisierung?</h1>
+            <span class="m-unter">Antworten des lokalen Sprachmodells, belegt aus 6 Textstellen</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Unterhaltung umbenennen"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-outline-secondary" title="Als Markdown exportieren"><i class="fa-solid fa-file-export"></i> Export</button>
+            <button class="btn btn-sm btn-outline-danger" title="Unterhaltung löschen"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="m-chat-verlauf">
+            <div class="m-nachricht nutzer">
+              <div class="rolle">Du</div>
+              <div class="koerper">
+                <div class="text">Was meint morf mit Kasualisierung, und warum wirkt sie laut ihm dem Fortschritt entgegen?</div>
+                <div class="meta"><span>20:41</span></div>
+              </div>
+            </div>
+
+            <div class="m-nachricht assistent">
+              <div class="rolle">m</div>
+              <div class="koerper">
+                <div class="text">
+                  <p>Mit <strong>Kasualisierung</strong> beschreibt morf den Vorgang, bei dem Anbieter ein Produkt so vereinfachen, dass es für die größtmögliche Zahl beiläufiger Nutzer bequem wird, während die anspruchsvolle Nutzung an den Rand gedrängt wird. Er entwickelt den Begriff am Beispiel von Spielen und Software, überträgt ihn aber ausdrücklich auf Märkte insgesamt.<a class="m-zitat" href="#stelle-1" title="Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung, 03:12 bis 06:40">1</a></p>
+                  <p>Der Kern seiner Kritik: Im Wettbewerb gewinnt nicht das bessere Produkt, sondern das Produkt mit der größeren zahlungswilligen Masse. Dadurch fließt Entwicklungsaufwand in Zugänglichkeit und Bindung statt in Tiefe.<a class="m-zitat" href="#stelle-2" title="Was der Wettbewerb wirklich verursacht, 08:05 bis 11:20">2</a> Fortschritt im engeren Sinn, also die Erweiterung dessen, was möglich ist, wird damit nicht belohnt, sondern verdrängt.<a class="m-zitat" href="#stelle-3" title="Weshalb Wettbewerb nicht mit Fortschritt einhergeht, 01:10 bis 04:30">3</a></p>
+                  <p>Als Gegenbild nennt er Projekte, die außerhalb der Marktlogik entstehen und deshalb komplex bleiben dürfen; erst dort sieht er echte Weiterentwicklung.<a class="m-zitat" href="#stelle-4" title="Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung, 09:48 bis 12:30">4</a></p>
+                </div>
+                <div class="meta">
+                  <span><i class="fa-solid fa-microchip"></i> qwen3-next-80b-a3b-instruct-mlx</span>
+                  <span><i class="fa-regular fa-clock"></i> 14,2 Sekunden</span>
+                  <span><i class="fa-solid fa-align-left"></i> 6 Stellen, 4 belegt</span>
+                  <span class="ms-auto">
+                    <button class="btn btn-sm btn-outline-secondary" title="Antwort kopieren"><i class="fa-regular fa-copy"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Mit denselben Stellen neu antworten lassen"><i class="fa-solid fa-rotate-right"></i> Neu antworten</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-nachricht nutzer">
+              <div class="rolle">Du</div>
+              <div class="koerper">
+                <div class="text">Gibt es dafür ein konkretes Beispiel in den Videos?</div>
+                <div class="meta"><span>20:44</span></div>
+              </div>
+            </div>
+
+            <div class="m-nachricht assistent">
+              <div class="rolle">m</div>
+              <div class="koerper">
+                <div class="text">
+                  <p>Ja. In der Folge zur Kasualisierung nennt er ein Strategiespiel, dessen Nachfolger Regeln und Tiefe abbaute, um mehr Käufer zu erreichen<span class="text-secondary">&#9646;</span></p>
+                </div>
+                <div class="meta"><span><i class="fa-solid fa-circle-notch fa-spin"></i> antwortet ...</span> <span>Stellen ausgewählt: 5</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-chat-eingabe">
+            <div class="feld">
+              <textarea class="form-control" rows="2" placeholder="Frage an die Bibliothek ... (Umschalt + Eingabe für eine neue Zeile)"></textarea>
+              <button class="btn btn-primary btn-lg" title="Senden"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+            <div class="hinweis">Die Antwort entsteht ausschließlich aus den rechts ausgewählten Stellen. Stellen abwählen und mit "Neu antworten" gezielt eingrenzen.</div>
+          </div>
+        </section>
+
+        <!-- Rechts: Suchparameter (feste Leiste) und Fundstellen -->
+        <aside class="m-seite">
+          <div class="m-seite-kopf"><i class="fa-solid fa-magnifying-glass"></i> Suche und Stellen <button class="m-info ms-auto" title="Hilfe zur Suche">i</button></div>
+          <div class="m-seite-koerper p-0">
+            <div class="m-parameter">
+              <h6>Breite <button class="m-info" title="Wie viele Stellen die Suche einbezieht">i</button></h6>
+              <div class="m-regler">
+                <label>Treffer</label><span class="wert"></span>
+                <input type="range" class="form-range" min="1" max="50" value="8" />
+              </div>
+              <div class="m-regler">
+                <label>Nachbarstücke je Treffer</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="3" value="1" />
+              </div>
+              <div class="m-regler">
+                <label>Höchstens je Video</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="10" value="3" />
+              </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Genauigkeit <button class="m-info" title="Wie streng die Suche filtert">i</button></h6>
+              <div class="m-regler">
+                <label>Mindestähnlichkeit</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="1" step="0.01" value="0.45" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small mb-1">Neu-Bewertung</label>
+                <select class="form-select form-select-sm">
+                  <option>Aus</option>
+                  <option selected>Cross-Encoder (lokal, etwa eine Sekunde)</option>
+                  <option>Sprachmodell (sehr genau, langsam)</option>
+                </select>
+              </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Filter</h6>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small mb-1">Serie</label>
+                  <select class="form-select form-select-sm"><option>Alle</option><option selected>mmM</option><option>gmM</option></select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small mb-1">Zeitraum</label>
+                  <select class="form-select form-select-sm"><option selected>Alle Jahre</option><option>2026</option><option>2025</option><option>2020 bis 2024</option></select>
+                </div>
+              </div>
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" id="videoebene" checked />
+                <label class="form-check-label small" for="videoebene">Videozusammenfassung mitgeben</label>
+              </div>
+            </div>
+
+            <div class="p-3">
+              <div class="d-flex align-items-center mb-2">
+                <h6 class="m-0 small text-uppercase text-secondary">Fundstellen (6)</h6>
+                <span class="ms-auto small text-secondary">5 ausgewählt</span>
+              </div>
+
+              <div class="m-stelle" id="stelle-1">
+                <div class="kopf">
+                  <span class="nr">1</span>
+                  <div>
+                    <div class="titel">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</div>
+                    <div class="zeit"><span class="m-serie">mmM#7</span> &middot; 03:12 bis 06:40 &middot; 17. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Kasualisierung heißt für mich: Man nimmt ein Produkt, das Tiefe hatte, und schleift alles ab, was Einarbeitung verlangt. Nicht, weil es besser wird, sondern weil dann mehr Leute zahlen ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 84%"></span></div><span class="m-wert-zahl">0,84</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 03:12 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 03:12 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=192" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-2">
+                <div class="kopf">
+                  <span class="nr">2</span>
+                  <div>
+                    <div class="titel">Was der Wettbewerb wirklich verursacht - morf erklärts</div>
+                    <div class="zeit"><span class="m-serie">mmM#8</span> &middot; 08:05 bis 11:20 &middot; 17. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Im Wettbewerb setzt sich nicht das durch, was gut ist, sondern das, was am meisten Leute zum Zahlen bringt. Das ist keine Wertung, das ist die Mechanik ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 79%"></span></div><span class="m-wert-zahl">0,79</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 08:05 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-3">
+                <div class="kopf">
+                  <span class="nr">3</span>
+                  <div>
+                    <div class="titel">Weshalb Wettbewerb nicht mit Fortschritt einhergeht</div>
+                    <div class="zeit"><span class="m-serie">mmM#4</span> &middot; 01:10 bis 04:30 &middot; 6. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Fortschritt wäre: Es wird mehr möglich. Wettbewerb belohnt aber nur, was sich verkaufen lässt, und das sind zwei völlig verschiedene Dinge ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 73%"></span></div><span class="m-wert-zahl">0,73</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-4">
+                <div class="kopf">
+                  <span class="nr">4</span>
+                  <div>
+                    <div class="titel">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</div>
+                    <div class="zeit"><span class="m-serie">mmM#7</span> &middot; 09:48 bis 12:30 &middot; 17. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Die Sachen, die wirklich weitergehen, entstehen oft da, wo keiner damit Geld verdienen muss. Da darf etwas kompliziert bleiben ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 68%"></span></div><span class="m-wert-zahl">0,68</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-5">
+                <div class="kopf">
+                  <span class="nr">5</span>
+                  <div>
+                    <div class="titel">Kapitalismus ist kein Wettbewerb der Ideen</div>
+                    <div class="zeit"><span class="m-serie">mmM#212</span> &middot; 14:02 bis 17:10 &middot; 3. März 2024</div>
+                  </div>
+                </div>
+                <div class="auszug">Ideen konkurrieren nicht, Kapitalstöcke konkurrieren. Die Idee ist nur das Vehikel ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 61%"></span></div><span class="m-wert-zahl">0,61</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle abgewaehlt" id="stelle-6">
+                <div class="kopf">
+                  <span class="nr">6</span>
+                  <div>
+                    <div class="titel">Noteninflation - ein ignoriertes Problem an Schulen und Universitäten</div>
+                    <div class="zeit"><span class="m-serie">mmM#5</span> &middot; 00:40 bis 03:05 &middot; 13. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Wenn alle gute Noten bekommen, sagt die Note nichts mehr. Das ist derselbe Mechanismus, nur im Bildungssystem ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 47%"></span></div><span class="m-wert-zahl">0,47</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle wieder aufnehmen"><i class="fa-regular fa-square"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Audiospieler (bleibt über alle Ansichten) -->
+      <footer class="m-spieler">
+        <div>
+          <div class="titel">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</div>
+          <div class="unter"><span class="m-serie">mmM#7</span> &middot; Thema: Was Kasualisierung bedeutet</div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn btn-outline-secondary" title="30 Sekunden zurück"><i class="fa-solid fa-backward"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden zurück"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="btn btn-primary" title="Pause"><i class="fa-solid fa-pause"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
+        </div>
+        <div>
+          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+            <div class="thema" style="left: 0%; width: 24%">Einstieg</div>
+            <div class="thema" style="left: 24%; width: 28%">Was Kasualisierung bedeutet</div>
+            <div class="thema" style="left: 52%; width: 25%">Beispiel Strategiespiele</div>
+            <div class="thema" style="left: 77%; width: 23%">Folgen für Fortschritt</div>
+            <div class="gespielt" style="width: 31%"></div>
+            <div class="marke" style="left: 31%"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="zeiten">03:58 / 12:49</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster (Referenz für alle Seiten) -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Mindestähnlichkeit" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a class="aktiv" href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Suche: Breite und Genauigkeit</h2>
+          <p>Bevor das Sprachmodell antwortet, sucht morf-gpt in der Bibliothek nach Textstellen, die zu deiner Frage passen. Zwei Gruppen von Reglern steuern, wie viel und wie streng gesucht wird.</p>
+          <h2>Breite</h2>
+          <p><b>Treffer</b>: So viele Stellen werden höchstens ausgewählt. Mehr Treffer geben dem Modell mehr Material, machen die Antwort aber breiter.</p>
+          <p><b>Nachbarstücke</b>: Jede Stelle bekommt die angrenzenden Stücke desselben Videos mit, damit ein Gedanke nicht am Schnitt endet.</p>
+          <p><b>Höchstens je Video</b>: Sorgt für Vielfalt. Ohne diese Grenze könnten alle Treffer aus einem einzigen Video stammen.</p>
+          <h2>Genauigkeit</h2>
+          <p><b><mark>Mindestähnlichkeit</mark></b>: Ein Wert zwischen 0 und 1. Stellen, deren Ähnlichkeit zur Frage darunter liegt, werden verworfen. 0,45 ist ein guter Anfang; bei sehr spezifischen Fragen hilft ein höherer Wert.</p>
+          <p><b>Neu-Bewertung</b>: Ordnet die Kandidaten mit einem zweiten Verfahren neu. Der Cross-Encoder ist lokal und schnell, das Sprachmodell ist am genauesten, aber langsam.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

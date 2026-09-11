@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Mockups</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      html, body { overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="mk-galerie">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <span class="m-logo" style="width: 40px; height: 40px; display: grid; place-items: center; background: var(--m-akzent-dunkel); color: #fff; font-weight: 800; font-size: 20px">m</span>
+        <h1 class="m-0">morf-gpt - Mockups</h1>
+        <button class="btn btn-outline-secondary btn-sm ms-auto" data-thema><i class="fa-solid fa-circle-half-stroke"></i> Thema wechseln</button>
+      </div>
+      <p class="unter">Jede Seite ist echtes HTML mit demselben Bootstrap-Thema und derselben app.css wie die Anwendung. Was hier stimmt, stimmt in der App. Layoutänderungen werden zuerst hier gemacht, dann im Svelte-Code nachgezogen.</p>
+
+      <h5 class="mt-4 mb-2">Hauptwerkzeug</h5>
+      <div class="mk-karten">
+        <a class="mk-karte" href="chat.html"><span class="icon"><i class="fa-solid fa-comments"></i></span><b>Chat</b><p>Frage, belegte Antwort, Suchleiste mit Breite und Genauigkeit, Fundstellen, Audiospieler, Hilfefenster.</p></a>
+        <a class="mk-karte" href="chat-leer.html"><span class="icon"><i class="fa-solid fa-comment"></i></span><b>Chat, leer</b><p>Neue Unterhaltung ohne Nachrichten, Beispiel-Fragen, Hinweis auf den Stand der Bibliothek.</p></a>
+        <a class="mk-karte" href="chat-suche.html"><span class="icon"><i class="fa-solid fa-magnifying-glass"></i></span><b>Nur suchen</b><p>Suche ohne Antwort: Stellen prüfen, abwählen, dann erst antworten lassen.</p></a>
+      </div>
+
+      <h5 class="mt-4 mb-2">Bibliothek</h5>
+      <div class="mk-karten">
+        <a class="mk-karte" href="bibliothek.html"><span class="icon"><i class="fa-solid fa-film"></i></span><b>Videos</b><p>Liste mit Vorschaubild, Serie, Stufe, Filter, Auswahl im Umfang, Stapelaktionen, seitenweise.</p></a>
+        <a class="mk-karte" href="video.html"><span class="icon"><i class="fa-solid fa-circle-play"></i></span><b>Video, Detail</b><p>Kopf mit Originaldaten und Sprüngen, Reiter Transkript, Korrektur, Themen, Stücke, Aufträge.</p></a>
+        <a class="mk-karte" href="video-vergleich.html"><span class="icon"><i class="fa-solid fa-code-compare"></i></span><b>Korrektur im Vergleich</b><p>Roh und korrigiert Block für Block nebeneinander, verworfene Blöcke markiert, Bearbeiten.</p></a>
+        <a class="mk-karte" href="stellen.html"><span class="icon"><i class="fa-solid fa-align-left"></i></span><b>Textstellen</b><p>Alle Stücke durchblättern, Volltextsuche, Nachbarn, Überlappung sichtbar, Bearbeiten und Teilen.</p></a>
+        <a class="mk-karte" href="stelle.html"><span class="icon"><i class="fa-solid fa-file-lines"></i></span><b>Textstelle, Detail</b><p>Ein Stück mit Kontext, Zeitfenster, Thema, Einbettungsstand, vorheriges und nächstes.</p></a>
+      </div>
+
+      <h5 class="mt-4 mb-2">Werkstatt</h5>
+      <div class="mk-karten">
+        <a class="mk-karte" href="fliessband.html"><span class="icon"><i class="fa-solid fa-diagram-next"></i></span><b>Fließband</b><p>Sechs Stufen mit Zählern, Durchsatz und Restzeit, laufende Aufträge, Fehler, Protokoll live.</p></a>
+        <a class="mk-karte" href="auftrag.html"><span class="icon"><i class="fa-solid fa-list-check"></i></span><b>Auftrag, Detail</b><p>Ein Auftrag mit Parametern, Ergebnis und seitenweisem Protokoll.</p></a>
+        <a class="mk-karte" href="quellen.html"><span class="icon"><i class="fa-solid fa-satellite-dish"></i></span><b>Quellen</b><p>Videoquelle anlegen, Kanal prüfen, Auswahlregel, Vorschau vor dem Übernehmen.</p></a>
+      </div>
+
+      <h5 class="mt-4 mb-2">Verwaltung</h5>
+      <div class="mk-karten">
+        <a class="mk-karte" href="einstellungen.html"><span class="icon"><i class="fa-solid fa-sliders"></i></span><b>Einstellungen</b><p>Alle Grenzen mit Beschreibung, Einheit, Bereich und Vorgabe, nach Gruppen.</p></a>
+        <a class="mk-karte" href="anbieter.html"><span class="icon"><i class="fa-solid fa-microchip"></i></span><b>Anbieter</b><p>Sprachmodelle und Einbettungen, Rollen zuweisen, prüfen, Schlüssel lesbar.</p></a>
+        <a class="mk-karte" href="umzug.html"><span class="icon"><i class="fa-solid fa-truck-ramp-box"></i></span><b>Umzug der Bibliothek</b><p>Paket exportieren, importieren, Fortschritt, Manifest.</p></a>
+        <a class="mk-karte" href="dialoge.html"><span class="icon"><i class="fa-solid fa-window-restore"></i></span><b>Dialoge und Meldungen</b><p>Bestätigen, Bearbeiten, Zurücksetzen, Meldungen unten rechts - große Schrift.</p></a>
+        <a class="mk-karte" href="erststart.html"><span class="icon"><i class="fa-solid fa-flag-checkered"></i></span><b>Erster Start</b><p>Leere Bibliothek: Quelle anlegen, Anbieter prüfen, Band starten.</p></a>
+      </div>
+
+      <div class="mk-hinweis"><b>Regeln:</b> Kopf bleibt stehen, Listen rollen in eigenen Feldern und laden seitenweise. Große Schrift für Antworten und Dialoge. Keine Rundungen, keine einseitigen Ränder, kein Popup für Einstellungen. Jedes erklärungsbedürftige Bedienelement trägt einen Mini-i-Knopf in die Hilfe.</div>
+    </div>
+  </body>
+</html>

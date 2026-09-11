@@ -1,0 +1,900 @@
+/* morf-gpt - Design-System oberhalb von Bootstrap.
+   Klassisch, kantig, sachlich. Große Schrift für Antworten und Dialoge. Kopf bleibt
+   stehen, Listen rollen in eigenen Feldern. Dieselbe Datei gilt für Mockups und App. */
+
+/* ----- Marken und Maße ----- */
+:root {
+  --m-akzent: #214a86;
+  --m-akzent-dunkel: #183963;
+  --m-akzent-hell: #e4ecf7;
+  --m-akzent-text: #ffffff;
+  --m-flaeche: #ffffff;
+  --m-flaeche-2: #eaeef3;
+  --m-flaeche-3: #dfe5ec;
+  --m-rand: #d4dbe3;
+  --m-rand-stark: #b9c3cf;
+  --m-text: #1b2735;
+  --m-text-2: #55657a;
+  --m-text-3: #8492a3;
+  --m-serie: #6d3d9c;
+  --m-serie-hell: #efe7f7;
+  --m-kopf-h: 52px;
+  --m-spieler-h: 64px;
+  --m-nav-b: 260px;
+  --m-seite-b: 340px;
+  --m-antwort-schrift: 1.1875rem; /* 19px - große Schrift für Antworten */
+  --m-dialog-schrift: 1.0625rem; /* 17px - große Schrift für Dialoge */
+  --m-schnell: 0.12s ease;
+  --m-schatten: 0 8px 28px rgba(20, 30, 45, 0.18);
+  /* Stufenfarben des Fließbands */
+  --m-stufe-entdeckt: #8492a3;
+  --m-stufe-audio: #2b7a99;
+  --m-stufe-transkribiert: #b7791f;
+  --m-stufe-korrigiert: #6d3d9c;
+  --m-stufe-gestueckelt: #1f6f8b;
+  --m-stufe-eingebettet: #2e7d4f;
+}
+
+:root[data-bs-theme="dark"] {
+  --m-akzent: #5b93e0;
+  --m-akzent-dunkel: #3f78c8;
+  --m-akzent-hell: #1a2c46;
+  --m-akzent-text: #0b1420;
+  --m-flaeche: #171e27;
+  --m-flaeche-2: #1e2731;
+  --m-flaeche-3: #26313d;
+  --m-rand: #2f3b48;
+  --m-rand-stark: #40505f;
+  --m-text: #e6ecf3;
+  --m-text-2: #a0aebd;
+  --m-text-3: #6f7f90;
+  --m-serie: #b48be0;
+  --m-serie-hell: #2c2140;
+  --m-schatten: 0 10px 34px rgba(0, 0, 0, 0.5);
+  --bs-body-bg: #10161d;
+  --bs-body-color: #e6ecf3;
+  --bs-border-color: #2f3b48;
+  --bs-tertiary-bg: #1e2731;
+  --bs-secondary-bg: #1a222c;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden; /* die Seite rollt nie als Ganzes */
+}
+body {
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ----- Rahmen: Kopf | Inhalt | Spieler ----- */
+.m-app {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: var(--m-kopf-h) 1fr auto;
+  grid-template-areas: "kopf" "inhalt" "spieler";
+}
+.m-kopf {
+  grid-area: kopf;
+  background: var(--m-akzent-dunkel);
+  color: #ffffff;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+  user-select: none;
+}
+.m-marke {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+  text-decoration: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+.m-marke .m-logo {
+  width: 26px;
+  height: 26px;
+  background: #ffffff;
+  color: var(--m-akzent-dunkel);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+}
+.m-nav {
+  display: flex;
+  align-items: stretch;
+}
+.m-nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: background var(--m-schnell), color var(--m-schnell);
+}
+.m-nav a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+.m-nav a.aktiv {
+  color: #ffffff;
+  border-bottom-color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.m-nav a .zaehler {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 1px 6px;
+}
+.m-kopf-rechts {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+.m-status-punkt {
+  width: 9px;
+  height: 9px;
+  display: inline-block;
+  background: #4ade80;
+  margin-right: 6px;
+}
+.m-status-punkt.aus {
+  background: #f87171;
+}
+.m-kopf-knopf {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.m-kopf-knopf:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ----- Inhalt: eine Ansicht = Kopfzeile (fest) + Körper (rollt) ----- */
+.m-inhalt {
+  grid-area: inhalt;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+.m-ansicht {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.m-ansicht-kopf {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  background: var(--m-flaeche);
+  border-bottom: 1px solid var(--m-rand);
+  min-height: 56px;
+}
+.m-ansicht-kopf h1 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+}
+.m-ansicht-kopf .m-unter {
+  color: var(--m-text-2);
+  font-size: 0.9rem;
+}
+.m-ansicht-kopf .m-luecke {
+  flex: 1;
+}
+.m-ansicht-koerper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 18px;
+}
+.m-ansicht-koerper.ohne-rand {
+  padding: 0;
+}
+
+/* Seitenleisten (Navigation einer Ansicht, Parameterleiste) */
+.m-seite {
+  flex: none;
+  width: var(--m-seite-b);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--m-flaeche);
+  border-left: 1px solid var(--m-rand);
+}
+.m-seite.links {
+  width: var(--m-nav-b);
+  border-left: 0;
+  border-right: 1px solid var(--m-rand);
+}
+.m-seite-kopf {
+  flex: none;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--m-rand);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+}
+.m-seite-koerper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 14px;
+}
+
+/* ----- Kennzahlen ----- */
+.m-kennzahlen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.m-kennzahl {
+  background: var(--m-flaeche);
+  border: 1px solid var(--m-rand);
+  padding: 12px 14px;
+}
+.m-kennzahl .wert {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.m-kennzahl .titel {
+  color: var(--m-text-2);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* ----- Tabellen: Kopfzeile bleibt stehen ----- */
+.m-tabelle-feld {
+  background: var(--m-flaeche);
+  border: 1px solid var(--m-rand);
+  min-height: 0;
+  overflow: auto;
+}
+.m-tabelle-feld table {
+  margin: 0;
+}
+.m-tabelle-feld thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--m-flaeche-2);
+  border-bottom: 1px solid var(--m-rand-stark);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: none;
+  white-space: nowrap;
+}
+.m-tabelle-feld tbody tr {
+  cursor: pointer;
+}
+.m-tabelle-feld tbody tr.gewaehlt {
+  background: var(--m-akzent-hell);
+}
+.m-mini {
+  width: 64px;
+  height: 36px;
+  object-fit: cover;
+  background: var(--m-flaeche-3);
+  display: block;
+}
+.m-mini.gross {
+  width: 240px;
+  height: 135px;
+}
+
+/* ----- Abzeichen ----- */
+.m-serie {
+  display: inline-block;
+  background: var(--m-serie-hell);
+  color: var(--m-serie);
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+.m-stufe {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+.m-stufe.entdeckt { background: var(--m-stufe-entdeckt); }
+.m-stufe.audio { background: var(--m-stufe-audio); }
+.m-stufe.transkribiert { background: var(--m-stufe-transkribiert); }
+.m-stufe.korrigiert { background: var(--m-stufe-korrigiert); }
+.m-stufe.gestueckelt { background: var(--m-stufe-gestueckelt); }
+.m-stufe.eingebettet { background: var(--m-stufe-eingebettet); }
+
+/* ----- Fließband ----- */
+.m-band {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+.m-band-stufe {
+  background: var(--m-flaeche);
+  border: 1px solid var(--m-rand);
+  border-top: 4px solid var(--m-text-3);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.m-band-stufe.audio { border-top-color: var(--m-stufe-audio); }
+.m-band-stufe.transkribiert { border-top-color: var(--m-stufe-transkribiert); }
+.m-band-stufe.korrigiert { border-top-color: var(--m-stufe-korrigiert); }
+.m-band-stufe.gestueckelt { border-top-color: var(--m-stufe-gestueckelt); }
+.m-band-stufe.eingebettet { border-top-color: var(--m-stufe-eingebettet); }
+.m-band-stufe .zahl {
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.m-band-stufe .titel {
+  font-weight: 600;
+}
+.m-band-stufe .klein {
+  color: var(--m-text-2);
+  font-size: 0.82rem;
+}
+.m-band-stufe .zeile {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+.m-fortschritt {
+  height: 8px;
+  background: var(--m-flaeche-3);
+  position: relative;
+  overflow: hidden;
+}
+.m-fortschritt > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--m-akzent);
+}
+.m-fortschritt.laeuft > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: m-lauf 1.4s linear infinite;
+}
+@keyframes m-lauf {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+.m-protokoll {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  background: #10161d;
+  color: #d5dde6;
+  padding: 10px 12px;
+  overflow: auto;
+  min-height: 0;
+}
+.m-protokoll .zeit { color: #6f7f90; margin-right: 8px; }
+.m-protokoll .warn { color: #e8b54a; }
+.m-protokoll .fehler { color: #ff6b6b; }
+
+/* ----- Chat ----- */
+.m-chat {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.m-chat-verlauf {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 0;
+}
+.m-nachricht {
+  max-width: 900px;
+  margin: 0 auto 22px auto;
+  padding: 0 28px;
+  display: flex;
+  gap: 16px;
+}
+.m-nachricht .rolle {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  background: var(--m-flaeche-3);
+  color: var(--m-text-2);
+}
+.m-nachricht.assistent .rolle {
+  background: var(--m-akzent);
+  color: var(--m-akzent-text);
+}
+.m-nachricht .koerper {
+  flex: 1;
+  min-width: 0;
+}
+.m-nachricht .text {
+  font-size: var(--m-antwort-schrift);
+  line-height: 1.6;
+}
+.m-nachricht.nutzer .text {
+  background: var(--m-flaeche);
+  border: 1px solid var(--m-rand);
+  padding: 12px 16px;
+}
+.m-nachricht .text p:last-child {
+  margin-bottom: 0;
+}
+.m-nachricht .meta {
+  color: var(--m-text-3);
+  font-size: 0.8rem;
+  margin-top: 8px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.m-zitat {
+  display: inline-block;
+  vertical-align: super;
+  font-size: 0.7em;
+  font-weight: 700;
+  color: var(--m-akzent);
+  background: var(--m-akzent-hell);
+  padding: 0 5px;
+  margin: 0 1px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.m-zitat:hover {
+  background: var(--m-akzent);
+  color: var(--m-akzent-text);
+}
+.m-chat-eingabe {
+  flex: none;
+  border-top: 1px solid var(--m-rand);
+  background: var(--m-flaeche);
+  padding: 14px 28px;
+}
+.m-chat-eingabe .feld {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+.m-chat-eingabe textarea {
+  font-size: var(--m-antwort-schrift);
+  line-height: 1.5;
+  resize: none;
+  min-height: 56px;
+  max-height: 220px;
+}
+.m-chat-eingabe .hinweis {
+  max-width: 900px;
+  margin: 8px auto 0 auto;
+  color: var(--m-text-3);
+  font-size: 0.8rem;
+}
+
+/* Fundstellen (rechte Leiste im Chat und in der Suche) */
+.m-stelle {
+  border: 1px solid var(--m-rand);
+  background: var(--m-flaeche);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  transition: border-color var(--m-schnell);
+}
+.m-stelle.abgewaehlt {
+  opacity: 0.55;
+}
+.m-stelle .kopf {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.m-stelle .nr {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  background: var(--m-akzent);
+  color: var(--m-akzent-text);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+.m-stelle .titel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+.m-stelle .zeit {
+  color: var(--m-text-2);
+  font-size: 0.8rem;
+}
+.m-stelle .auszug {
+  font-size: 0.88rem;
+  color: var(--m-text-2);
+  margin-top: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.m-stelle .aktionen {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: center;
+}
+.m-wert {
+  height: 6px;
+  background: var(--m-flaeche-3);
+  flex: 1;
+  position: relative;
+}
+.m-wert > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--m-akzent);
+}
+.m-wert-zahl {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--m-text-2);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* Parameterleiste (feste Leiste, keine Popups) */
+.m-parameter {
+  border-bottom: 1px solid var(--m-rand);
+  padding: 12px 14px;
+}
+.m-parameter h6 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--m-text-3);
+  margin-bottom: 8px;
+}
+.m-regler {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 10px;
+  margin-bottom: 8px;
+}
+.m-regler label {
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.m-regler .wert {
+  font-weight: 600;
+  font-size: 0.88rem;
+  min-width: 44px;
+  text-align: right;
+}
+.m-regler input[type="range"] {
+  grid-column: 1 / -1;
+}
+
+/* Mini-i-Knopf (Tiefenlink in die Hilfe) */
+.m-info {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--m-text-3);
+  color: var(--m-text-3);
+  font-size: 10px;
+  font-weight: 700;
+  font-style: normal;
+  cursor: help;
+  background: transparent;
+  padding: 0;
+  line-height: 1;
+}
+.m-info:hover {
+  border-color: var(--m-akzent);
+  color: var(--m-akzent);
+}
+
+/* ----- Audiospieler (Leiste unten, bleibt über Ansichten) ----- */
+.m-spieler {
+  grid-area: spieler;
+  height: var(--m-spieler-h);
+  background: var(--m-flaeche);
+  border-top: 1px solid var(--m-rand-stark);
+  display: grid;
+  grid-template-columns: 300px auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+}
+.m-spieler.leer {
+  display: none;
+}
+.m-spieler .titel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-spieler .unter {
+  color: var(--m-text-2);
+  font-size: 0.8rem;
+}
+.m-spieler .knoepfe {
+  display: flex;
+  gap: 4px;
+}
+.m-spieler .knoepfe .btn {
+  min-width: 40px;
+}
+.m-zeitleiste {
+  position: relative;
+  height: 22px;
+  background: var(--m-flaeche-3);
+  cursor: pointer;
+}
+.m-zeitleiste .thema {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-right: 1px solid var(--m-flaeche);
+  background: var(--m-flaeche-2);
+  font-size: 0.7rem;
+  color: var(--m-text-2);
+  padding: 3px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.m-zeitleiste .thema:nth-child(even) {
+  background: var(--m-flaeche-3);
+}
+.m-zeitleiste .marke {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--m-akzent);
+}
+.m-zeitleiste .gespielt {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(33, 74, 134, 0.18);
+  pointer-events: none;
+}
+.m-spieler .zeiten {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--m-text-2);
+  white-space: nowrap;
+}
+
+/* ----- Transkript / Absätze mit Zeitmarken ----- */
+.m-absatz {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--m-rand);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+.m-absatz .zeit {
+  color: var(--m-akzent);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding-top: 3px;
+}
+.m-absatz .zeit:hover {
+  text-decoration: underline;
+}
+.m-absatz.aktiv {
+  background: var(--m-akzent-hell);
+}
+.m-vergleich {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--m-rand);
+}
+.m-vergleich > div {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--m-rand);
+}
+.m-vergleich > div:nth-child(odd) {
+  border-right: 1px solid var(--m-rand);
+  background: var(--m-flaeche-2);
+}
+.m-vergleich .verworfen {
+  background: #fdecea;
+}
+:root[data-bs-theme="dark"] .m-vergleich .verworfen {
+  background: #3a1d1d;
+}
+
+/* ----- Dialoge: große Schrift ----- */
+.modal-content {
+  font-size: var(--m-dialog-schrift);
+}
+.modal-title {
+  font-size: 1.2rem;
+}
+
+/* ----- Hilfe: freischwebendes Fenster ----- */
+.m-hilfe {
+  position: fixed;
+  z-index: 1080;
+  width: 560px;
+  height: 640px;
+  min-width: 360px;
+  min-height: 300px;
+  background: var(--m-flaeche);
+  border: 1px solid var(--m-rand-stark);
+  box-shadow: var(--m-schatten);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  resize: both;
+  overflow: hidden;
+}
+.m-hilfe-kopf {
+  background: var(--m-akzent-dunkel);
+  color: #ffffff;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: move;
+  user-select: none;
+}
+.m-hilfe-suche {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--m-rand);
+}
+.m-hilfe-koerper {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+}
+.m-hilfe-inhalt {
+  min-height: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--m-rand);
+  padding: 8px 0;
+}
+.m-hilfe-inhalt a {
+  display: block;
+  padding: 6px 12px;
+  color: var(--m-text-2);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.m-hilfe-inhalt a.aktiv,
+.m-hilfe-inhalt a:hover {
+  background: var(--m-akzent-hell);
+  color: var(--m-akzent);
+}
+.m-hilfe-text {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 18px;
+  font-size: 1.05rem; /* Hilfetext größer als Beschriftungen */
+  line-height: 1.6;
+}
+.m-hilfe-text h2 {
+  font-size: 1.2rem;
+  margin-top: 18px;
+}
+.m-hilfe-text mark {
+  background: #ffe58a;
+  padding: 0 2px;
+}
+
+/* ----- Leerzustand ----- */
+.m-leer {
+  text-align: center;
+  color: var(--m-text-2);
+  padding: 60px 20px;
+}
+.m-leer i {
+  font-size: 2.2rem;
+  color: var(--m-text-3);
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* ----- Meldungen unten rechts ----- */
+.m-meldungen {
+  position: fixed;
+  right: 18px;
+  bottom: calc(var(--m-spieler-h) + 14px);
+  z-index: 1090;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 360px;
+}
+.m-meldung {
+  background: var(--m-flaeche);
+  border: 1px solid var(--m-rand-stark);
+  border-top: 3px solid var(--m-akzent);
+  padding: 10px 12px;
+  box-shadow: var(--m-schatten);
+  font-size: var(--m-dialog-schrift);
+}
+.m-meldung.fehler {
+  border-top-color: #b3352c;
+}
+.m-meldung.gut {
+  border-top-color: #2e7d4f;
+}
+
+/* Bootstrap-Feinschliff im Sinn der Marke (keine Rundung, ruhige Flächen) */
+.btn,
+.form-control,
+.form-select,
+.card,
+.badge,
+.alert,
+.nav-tabs .nav-link,
+.dropdown-menu,
+.modal-content,
+.list-group-item,
+.progress {
+  border-radius: 0;
+}
+.form-check-input {
+  border-radius: 0;
+}
+.form-check-input[type="checkbox"] {
+  border-radius: 0;
+}
+.form-switch .form-check-input {
+  border-radius: 2em;
+}
+.card {
+  display: block;
+}

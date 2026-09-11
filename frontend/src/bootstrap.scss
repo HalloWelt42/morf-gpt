@@ -1,0 +1,56 @@
+// Bootstrap 5, auf morf-gpt gethemt: klassisch, kantig, sachlich.
+// Keine Rundungen, Barlow als Schrift, ein tiefes Blau als Akzent. Dunkel läuft über
+// data-bs-theme="dark" am <html>. Die app.css lädt danach und behält bei gleicher
+// Spezifität das letzte Wort.
+
+$enable-rounded: false;
+$enable-shadows: false;
+$enable-gradients: false;
+
+$font-family-sans-serif: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-size-base: 0.9375rem; // 15px
+$line-height-base: 1.5;
+$headings-font-weight: 600;
+
+$primary: #214a86;
+$secondary: #5c6b7a;
+$success: #2e7d4f;
+$info: #2b7a99;
+$warning: #b7791f;
+$danger: #b3352c;
+$light: #f3f5f8;
+$dark: #16202b;
+
+$body-bg: #f3f5f8;
+$body-color: #1b2735;
+$border-color: #d4dbe3;
+
+$input-border-color: #b9c3cf;
+$input-focus-border-color: #214a86;
+$input-focus-box-shadow: 0 0 0 0.15rem rgba(33, 74, 134, 0.25);
+$input-btn-padding-y: 0.45rem;
+$input-btn-padding-x: 0.8rem;
+$btn-font-weight: 500;
+
+$table-cell-padding-y: 0.5rem;
+$table-cell-padding-x: 0.65rem;
+$table-hover-bg: rgba(33, 74, 134, 0.06);
+
+$nav-tabs-border-width: 1px;
+$nav-tabs-link-active-bg: #ffffff;
+
+$modal-content-border-width: 1px;
+$modal-header-padding: 0.9rem 1.2rem;
+$modal-inner-padding: 1.2rem;
+
+$badge-font-weight: 600;
+$badge-padding-y: 0.3em;
+$badge-padding-x: 0.55em;
+
+$card-border-color: #d4dbe3;
+$card-cap-bg: #eaeef3;
+
+$form-range-thumb-width: 1rem;
+$form-range-track-height: 0.35rem;
+
+@import "bootstrap/scss/bootstrap";

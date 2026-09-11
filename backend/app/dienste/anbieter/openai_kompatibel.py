@@ -127,9 +127,7 @@ class OpenAiKompatibel:
                             continue
                         if isinstance(obj, dict) and obj.get("error"):
                             err = obj["error"]
-                            raise AnbieterFehler(
-                                f"{self.info.name}: {err.get('message') if isinstance(err, dict) else err}"
-                            )
+                            raise AnbieterFehler(f"{self.info.name}: {err.get('message') if isinstance(err, dict) else err}")
                         modell = str(obj.get("model") or modell)
                         nutzung = obj.get("usage")
                         if nutzung:

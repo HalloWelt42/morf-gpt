@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Umzug der Bibliothek</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      /* Seitenspezifisch, Vorschlag für app.css: Karten auf Markenflächen statt Bootstrap-Vorgaben */
+      .card { --bs-card-bg: var(--m-flaeche); --bs-card-cap-bg: var(--m-flaeche-2); --bs-card-border-color: var(--m-rand); }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a class="aktiv" href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Navigation der Verwaltung -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf"><i class="fa-solid fa-sliders"></i> Verwaltung</div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">
+                <div class="fw-semibold"><i class="fa-solid fa-sliders fa-fw"></i> Einstellungen</div>
+                <small class="text-secondary">Grenzen, Vorgaben, Einheiten</small>
+              </a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#quelle">Quelle und Auswahl</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#band">Fließband</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#audio">Audio</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#transkription">Transkription</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#korrektur">Korrektur</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#stueckelung">Stückelung</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#einbettung">Einbettung</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#suche">Suche</a>
+              <a class="list-group-item list-group-item-action py-1 ps-5 small" href="einstellungen.html#chat">Chat</a>
+              <a class="list-group-item list-group-item-action" href="anbieter.html">
+                <div class="fw-semibold"><i class="fa-solid fa-microchip fa-fw"></i> Anbieter</div>
+                <small class="text-secondary">Sprachmodelle und Einbettungen</small>
+              </a>
+              <a class="list-group-item list-group-item-action active" href="umzug.html">
+                <div class="fw-semibold"><i class="fa-solid fa-truck-ramp-box fa-fw"></i> Umzug</div>
+                <small class="opacity-75">Bibliothek als Paket exportieren und einlesen</small>
+              </a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Exportieren und Importieren -->
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1 class="text-nowrap">Umzug der Bibliothek</h1>
+            <span class="m-unter text-nowrap">Ein Paket trägt die Bibliothek an einen anderen Ort, Audio bleibt in der Werkstatt</span>
+            <span class="m-luecke"></span>
+            <span class="small text-secondary text-nowrap" title="Ablageordner der Pakete"><i class="fa-solid fa-folder"></i> data/export/ &middot; 3 Pakete &middot; 1.181 Megabyte</span>
+            <button class="m-info" title="Hilfe zum Umzug der Bibliothek">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <div class="d-flex flex-column gap-3" style="max-width: 1100px">
+
+              <!-- Karte: Exportieren -->
+              <div class="card">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-box-open"></i> <b>Exportieren</b>
+                  <button class="m-info" title="Schreibt die Bibliothek als ein Paket nach data/export/. Die Werkstatt läuft dabei weiter.">i</button>
+                  <span class="ms-auto small text-secondary">Stand der Bibliothek: 664 Videos &middot; 180 korrigiert &middot; 33.812 Stücke &middot; 33.702 Vektoren</span>
+                </div>
+                <div class="card-body">
+                  <p class="mb-3">Das Paket enthält alles, was die Bibliothek zum Suchen und Antworten braucht. Es wird als <span class="font-monospace">morf-gpt-bibliothek-&lt;datum&gt;.tar.gz</span> abgelegt und lässt sich auf jedem anderen Rechner mit morf-gpt einlesen, auch ohne Zugang zur Videoquelle.</p>
+
+                  <div class="row row-cols-2 row-cols-xl-3 g-2 mb-3">
+                    <div class="col">
+                      <div class="border p-2 h-100 d-flex gap-2">
+                        <i class="fa-solid fa-film fa-fw mt-1 text-secondary"></i>
+                        <div><div class="fw-semibold">Metadaten</div><small class="text-secondary">664 Videos: Titel, Beschreibung, Datum, Dauer, Serie und Folge, YouTube-Adresse, Originaldaten der Quelle</small></div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="border p-2 h-100 d-flex gap-2">
+                        <i class="fa-solid fa-spell-check fa-fw mt-1 text-secondary"></i>
+                        <div><div class="fw-semibold">Korrekturen</div><small class="text-secondary">180 korrigierte Texte mit Absätzen, Themenaufschlüsselung und Kurzzusammenfassung</small></div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="border p-2 h-100 d-flex gap-2">
+                        <i class="fa-solid fa-scissors fa-fw mt-1 text-secondary"></i>
+                        <div><div class="fw-semibold">Stücke</div><small class="text-secondary">33.812 Textstellen mit Zeitfenster, Thema und Überlappung</small></div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="border p-2 h-100 d-flex gap-2">
+                        <i class="fa-solid fa-cube fa-fw mt-1 text-secondary"></i>
+                        <div><div class="fw-semibold">Vektoren</div><small class="text-secondary">33.702 Vektoren, text-embedding-bge-m3, 1024 Dimensionen</small></div>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="border p-2 h-100 d-flex gap-2">
+                        <i class="fa-solid fa-image fa-fw mt-1 text-secondary"></i>
+                        <div class="flex-grow-1"><div class="fw-semibold">Vorschaubilder</div><small class="text-secondary">664 Dateien aus data/miniaturen/</small></div>
+                        <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='10' fill='%231b2735' text-anchor='middle'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" />
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="border p-2 h-100 d-flex gap-2 text-secondary">
+                        <i class="fa-solid fa-headphones fa-fw mt-1"></i>
+                        <div><div class="fw-semibold">Audio bleibt hier</div><small>Gehört zur Werkstatt. Am Zielort fehlt der Abspielknopf, der Sprung zu YouTube mit Zeitmarke bleibt.</small></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-4 flex-wrap">
+                    <div class="form-check form-switch mb-0 d-flex align-items-center gap-2">
+                      <input class="form-check-input mt-0" type="checkbox" id="transkripte" />
+                      <label class="form-check-label" for="transkripte">Transkripte mitnehmen</label>
+                      <button class="m-info" title="Rohtranskripte mit Segmenten und Wortzeiten. Für Suche und Chat nicht nötig, macht das Paket etwa 60 Megabyte größer.">i</button>
+                    </div>
+                    <button class="btn btn-primary" disabled title="Ein Export läuft bereits"><i class="fa-solid fa-box"></i> Paket erstellen</button>
+                    <span class="small text-secondary">Die Werkstatt läuft während des Exports weiter; der Stand ist der Moment des Starts.</span>
+                  </div>
+
+                  <!-- Laufender Export -->
+                  <div class="border p-3 mt-3" style="background: var(--m-flaeche-2)">
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                      <b><i class="fa-solid fa-circle-notch fa-spin"></i> Export läuft</b>
+                      <span class="small text-secondary">seit 1 Minute 52 Sekunden &middot; Ziel: data/export/morf-gpt-bibliothek-2026-09-10-2.tar.gz &middot; ohne Transkripte</span>
+                      <button class="btn btn-sm btn-outline-danger ms-auto" title="Export abbrechen, das angefangene Paket wird gelöscht"><i class="fa-solid fa-stop"></i> Abbrechen</button>
+                    </div>
+                    <div class="m-fortschritt laeuft my-2"><span style="width: 62%"></span></div>
+                    <div class="d-flex small">
+                      <span>chunks.jsonl 20.912 von 33.812</span>
+                      <span class="ms-auto fw-semibold">62 Prozent</span>
+                    </div>
+                    <ul class="list-unstyled small mb-0 mt-2 d-flex flex-wrap gap-3">
+                      <li><i class="fa-solid fa-circle-check text-success"></i> videos.jsonl 664 von 664</li>
+                      <li><i class="fa-solid fa-circle-check text-success"></i> korrekturen.jsonl 180 von 180</li>
+                      <li class="fw-semibold"><i class="fa-solid fa-circle-notch fa-spin"></i> chunks.jsonl 20.912 von 33.812</li>
+                      <li class="text-secondary"><i class="fa-regular fa-circle"></i> einbettungen.jsonl</li>
+                      <li class="text-secondary"><i class="fa-regular fa-circle"></i> miniaturen/ 664 Dateien</li>
+                      <li class="text-secondary"><i class="fa-regular fa-circle"></i> manifest.json</li>
+                      <li class="text-secondary"><i class="fa-regular fa-circle"></i> packen</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Vorhandene Pakete -->
+                <div class="px-3 pt-3 pb-2 d-flex align-items-center">
+                  <h6 class="m-0 small text-uppercase text-secondary">Vorhandene Pakete (3)</h6>
+                  <button class="m-info ms-2" title="Pakete unter data/export/. Eine Zeile wählen zeigt rechts das Manifest.">i</button>
+                </div>
+                <div class="m-tabelle-feld" style="border-width: 1px 0 0 0; max-height: 260px">
+                  <table class="table table-hover table-sm align-middle">
+                    <thead>
+                      <tr><th>Paket</th><th style="width: 200px">Erstellt</th><th style="width: 110px">Transkripte</th><th style="width: 130px" class="text-end">Größe</th><th style="width: 200px"></th></tr>
+                    </thead>
+                    <tbody>
+                      <tr class="gewaehlt">
+                        <td><div class="fw-semibold text-nowrap">morf-gpt-bibliothek-2026-09-10.tar.gz</div><small class="text-secondary">664 Videos &middot; 180 Korrekturen &middot; 33.812 Stücke &middot; 33.702 Vektoren</small></td>
+                        <td class="text-nowrap">heute, 19:12</td>
+                        <td>nein</td>
+                        <td class="text-end">412 Megabyte</td>
+                        <td class="text-end text-nowrap">
+                          <button class="btn btn-sm btn-outline-primary" title="Paket herunterladen"><i class="fa-solid fa-download"></i> Herunterladen</button>
+                          <button class="btn btn-sm btn-outline-danger" title="Paket löschen"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><div class="fw-semibold text-nowrap">morf-gpt-bibliothek-2026-09-03.tar.gz</div><small class="text-secondary">662 Videos &middot; 174 Korrekturen &middot; 32.640 Stücke &middot; 32.640 Vektoren</small></td>
+                        <td class="text-nowrap">3. September 2026, 22:40</td>
+                        <td>ja</td>
+                        <td class="text-end">398 Megabyte</td>
+                        <td class="text-end text-nowrap">
+                          <button class="btn btn-sm btn-outline-primary" title="Paket herunterladen"><i class="fa-solid fa-download"></i> Herunterladen</button>
+                          <button class="btn btn-sm btn-outline-danger" title="Paket löschen"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td><div class="fw-semibold text-nowrap">morf-gpt-bibliothek-2026-08-21.tar.gz</div><small class="text-secondary">660 Videos &middot; 151 Korrekturen &middot; 28.310 Stücke &middot; 28.310 Vektoren</small></td>
+                        <td class="text-nowrap">21. August 2026, 18:05</td>
+                        <td>nein</td>
+                        <td class="text-end">371 Megabyte</td>
+                        <td class="text-end text-nowrap">
+                          <button class="btn btn-sm btn-outline-primary" title="Paket herunterladen"><i class="fa-solid fa-download"></i> Herunterladen</button>
+                          <button class="btn btn-sm btn-outline-danger" title="Paket löschen"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer small text-secondary d-flex">
+                  <span>3 von 3 Paketen geladen</span>
+                  <span class="ms-auto">zusammen 1.181 Megabyte</span>
+                </div>
+              </div>
+
+              <!-- Karte: Importieren -->
+              <div class="card">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-file-import"></i> <b>Importieren</b>
+                  <button class="m-info" title="Liest ein Paket in diese Bibliothek. Bekannte Videos werden über ihre Kennung abgeglichen, neue angelegt, nichts wird gelöscht.">i</button>
+                  <span class="ms-auto small text-secondary">Aktiver Einbettungsanbieter: text-embedding-bge-m3 (LM Studio) &middot; 1024 Dimensionen</span>
+                </div>
+                <div class="card-body">
+                  <p class="mb-3">Ein Paket wird in diese Bibliothek eingelesen, in eine leere genauso wie in eine bestehende. Vor dem Einlesen zeigt "Paket prüfen" das Manifest und was sich ändern würde; erst "Paket einlesen" schreibt in die Datenbank.</p>
+                  <div class="row g-3 align-items-end">
+                    <div class="col-lg-7">
+                      <label class="form-label d-flex align-items-center gap-2 mb-1" for="paketdatei">Paket (tar.gz) <button class="m-info" title="Ein mit morf-gpt erstelltes Paket. Andere Archive werden abgelehnt.">i</button></label>
+                      <input class="form-control" type="file" id="paketdatei" accept=".tar.gz,.tgz" />
+                    </div>
+                    <div class="col-lg-5 d-flex gap-2">
+                      <button class="btn btn-outline-secondary" title="Manifest lesen und Vorschau zeigen, nichts wird geschrieben"><i class="fa-solid fa-magnifying-glass"></i> Paket prüfen</button>
+                      <button class="btn btn-primary" title="Paket in die Bibliothek einlesen"><i class="fa-solid fa-file-import"></i> Paket einlesen</button>
+                    </div>
+                  </div>
+
+                  <div class="alert alert-secondary d-flex gap-3 align-items-start mt-3 mb-0">
+                    <i class="fa-solid fa-ruler-horizontal mt-1"></i>
+                    <div>
+                      <b>Dimension der Vektoren</b>
+                      <button class="m-info" title="Die Datenbank hält Vektoren fester Länge. Die Länge steht im Manifest und beim Anbieter.">i</button>
+                      <div>Vektoren werden nur übernommen, wenn die Dimension im Paket zum aktiven Einbettungsanbieter passt. Hier aktiv: <b>text-embedding-bge-m3, 1024 Dimensionen</b>. Weicht sie ab, werden die Texte trotzdem eingelesen und die Stufe Einbettung legt die Vektoren hier neu an.</div>
+                    </div>
+                  </div>
+
+                  <!-- Ergebnis des letzten Imports -->
+                  <div class="mt-3">
+                    <div class="d-flex align-items-center mb-2 flex-wrap gap-2">
+                      <h6 class="m-0 small text-uppercase text-secondary">Letzter Import</h6>
+                      <span class="ms-auto small text-secondary">3. September 2026, 22:48 &middot; morf-gpt-bibliothek-2026-09-02.tar.gz &middot; Dauer 48 Sekunden</span>
+                    </div>
+                    <div class="m-kennzahlen">
+                      <div class="m-kennzahl"><div class="wert">180</div><div class="titel">Videos neu</div></div>
+                      <div class="m-kennzahl"><div class="wert">0</div><div class="titel">Videos aktualisiert</div></div>
+                      <div class="m-kennzahl"><div class="wert">9.412</div><div class="titel">Stücke</div></div>
+                      <div class="m-kennzahl"><div class="wert">9.301</div><div class="titel">Vektoren (1024 Dimensionen)</div></div>
+                    </div>
+                    <ul class="list-unstyled small text-secondary mb-0 mt-2 d-flex flex-wrap gap-3">
+                      <li><i class="fa-solid fa-circle-check text-success"></i> Dimension geprüft: 1024 im Paket, 1024 beim Anbieter</li>
+                      <li><i class="fa-solid fa-circle-check text-success"></i> 180 Vorschaubilder übernommen</li>
+                      <li><i class="fa-regular fa-circle"></i> Transkripte nicht enthalten</li>
+                      <li><i class="fa-regular fa-circle"></i> Audio nicht enthalten, die Werkstatt kann es nachholen</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- Rechts: Manifest des gewählten Pakets -->
+        <aside class="m-seite">
+          <div class="m-seite-kopf"><i class="fa-solid fa-file-lines"></i> Manifest <button class="m-info ms-auto" title="Die manifest.json beschreibt ein Paket: Version, Einbettungsmodell, Dimension und Zähler. Beim Import wird sie zuerst gelesen.">i</button></div>
+          <div class="m-seite-koerper">
+            <div class="small text-uppercase text-secondary fw-semibold mb-1">Gewähltes Paket</div>
+            <div class="fw-semibold text-break">morf-gpt-bibliothek-2026-09-10.tar.gz</div>
+            <div class="small text-secondary mb-3">heute, 19:12 &middot; 412 Megabyte</div>
+
+            <dl class="row g-0 small mb-3">
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Format</dt><dd class="col-7 py-1 mb-0 border-bottom">morf-gpt-bibliothek, Version 1</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Erzeugt mit</dt><dd class="col-7 py-1 mb-0 border-bottom">morf-gpt v0.1.0</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Erstellt</dt><dd class="col-7 py-1 mb-0 border-bottom">10. September 2026, 19:12</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Quelle</dt><dd class="col-7 py-1 mb-0 border-bottom">Kanal morf (TubeVault)</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Videos</dt><dd class="col-7 py-1 mb-0 border-bottom">664, davon Serie mmM 377</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Korrekturen</dt><dd class="col-7 py-1 mb-0 border-bottom">180</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Transkripte</dt><dd class="col-7 py-1 mb-0 border-bottom">nicht enthalten</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Stücke</dt><dd class="col-7 py-1 mb-0 border-bottom">33.812</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Vektoren</dt><dd class="col-7 py-1 mb-0 border-bottom">33.702</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Einbettungsmodell</dt><dd class="col-7 py-1 mb-0 border-bottom text-break">text-embedding-bge-m3</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Dimension</dt><dd class="col-7 py-1 mb-0 border-bottom">1024</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Vorschaubilder</dt><dd class="col-7 py-1 mb-0 border-bottom">664 Dateien</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Audio</dt><dd class="col-7 py-1 mb-0 border-bottom">nicht enthalten</dd>
+              <dt class="col-5 fw-normal text-secondary py-1 border-bottom">Größe</dt><dd class="col-7 py-1 mb-0 border-bottom">412 Megabyte, entpackt 1.360 Megabyte</dd>
+              <dt class="col-5 fw-normal text-secondary py-1">Prüfsumme (SHA-256)</dt><dd class="col-7 py-1 mb-0 text-break"><span class="font-monospace">9f3a41c07b2e...d8c21e</span> <button class="btn btn-sm btn-outline-secondary py-0 px-1" title="Prüfsumme kopieren"><i class="fa-regular fa-copy"></i></button></dd>
+            </dl>
+
+            <div class="small text-uppercase text-secondary fw-semibold mb-1">Dateien im Paket</div>
+            <ul class="list-unstyled small mb-3">
+              <li class="d-flex py-1 border-bottom"><span><i class="fa-regular fa-file-code fa-fw text-secondary"></i> manifest.json</span><span class="ms-auto text-secondary">2 Kilobyte</span></li>
+              <li class="d-flex py-1 border-bottom"><span><i class="fa-regular fa-file-lines fa-fw text-secondary"></i> videos.jsonl</span><span class="ms-auto text-secondary">3 Megabyte</span></li>
+              <li class="d-flex py-1 border-bottom"><span><i class="fa-regular fa-file-lines fa-fw text-secondary"></i> korrekturen.jsonl</span><span class="ms-auto text-secondary">41 Megabyte</span></li>
+              <li class="d-flex py-1 border-bottom"><span><i class="fa-regular fa-file-lines fa-fw text-secondary"></i> chunks.jsonl</span><span class="ms-auto text-secondary">118 Megabyte</span></li>
+              <li class="d-flex py-1 border-bottom"><span><i class="fa-regular fa-file-lines fa-fw text-secondary"></i> einbettungen.jsonl</span><span class="ms-auto text-secondary">1.164 Megabyte</span></li>
+              <li class="d-flex py-1"><span><i class="fa-regular fa-folder fa-fw text-secondary"></i> miniaturen/ (664 Dateien)</span><span class="ms-auto text-secondary">34 Megabyte</span></li>
+            </ul>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-sm btn-outline-secondary" title="Manifest als JSON in die Zwischenablage kopieren"><i class="fa-regular fa-copy"></i> Als JSON kopieren</button>
+              <button class="btn btn-sm btn-outline-secondary" title="Dieses Paket in die Bibliothek zurücklesen"><i class="fa-solid fa-file-import"></i> Dieses Paket einlesen</button>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Dimension" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a class="aktiv" href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Umzug der Bibliothek</h2>
+          <p>Die Bibliothek ist alles, was Suche und Chat brauchen: Metadaten der Videos, korrigierte Texte, Stücke, Vektoren und Vorschaubilder. Sie wird als ein einziges Paket exportiert und an einem anderen Ort wieder eingelesen, zum Beispiel auf einem Server, der keinen Zugang zur Videoquelle hat.</p>
+          <h2>Exportieren</h2>
+          <p><b>Paket erstellen</b> schreibt die Bibliothek nach <span class="font-monospace">data/export/</span>. Die Werkstatt läuft dabei weiter; das Paket zeigt den Stand vom Start des Exports. Audiodateien gehören zur Werkstatt und bleiben hier. Am Zielort gibt es dann keinen Abspielknopf, der Sprung zu YouTube mit Zeitmarke bleibt an jeder Textstelle möglich.</p>
+          <p><b>Transkripte mitnehmen</b> legt zusätzlich die Rohtranskripte mit Segmenten und Wortzeiten ins Paket. Für Suche und Chat sind sie nicht nötig; sie erlauben am Zielort den Vergleich zwischen Roh und Korrektur.</p>
+          <h2>Importieren</h2>
+          <p><b>Paket prüfen</b> liest nur das Manifest und zeigt, was sich ändern würde. <b>Paket einlesen</b> schreibt in die Datenbank: bekannte Videos werden über ihre Kennung abgeglichen und aktualisiert, neue werden angelegt, nichts wird gelöscht. Danach steht der Stand des Pakets im Fließband, die fehlenden Stufen (etwa Audio) kann die Werkstatt nachholen.</p>
+          <h2>Manifest und <mark>Dimension</mark></h2>
+          <p>Jedes Paket trägt eine <span class="font-monospace">manifest.json</span> mit Version, Einbettungsmodell, <mark>Dimension</mark> und Zählern. Die <mark>Dimension</mark> ist die Länge der Vektoren (1024 bei text-embedding-bge-m3). Sie muss zum aktiven Einbettungsanbieter passen, sonst werden die Vektoren nicht übernommen und die Stufe Einbettung erzeugt sie hier neu. Die Texte bleiben in jedem Fall erhalten.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

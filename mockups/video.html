@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Video</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      /* Vorschlag für app.css: aktiver Reiter und Karten auf der Themenfläche statt fest weiß */
+      .nav-tabs { --bs-nav-tabs-link-active-bg: var(--m-flaeche); --bs-nav-tabs-link-active-border-color: var(--m-rand) var(--m-rand) var(--m-flaeche); }
+      .card { --bs-card-bg: var(--m-flaeche); --bs-card-border-color: var(--m-rand); }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a class="aktiv" href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Mitte: Video im Detail -->
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <a class="btn btn-sm btn-outline-secondary" href="bibliothek.html" title="Zurück zur Videoliste"><i class="fa-solid fa-arrow-left"></i></a>
+            <h1 class="text-truncate" title="Wieso passen unsere Geschichten fast nie zur Realität? | mmM#377">Wieso passen unsere Geschichten fast nie zur Realität?</h1>
+            <span class="m-serie" title="Serie mmM, Folge 377">mmM#377</span>
+            <span class="m-stufe eingebettet" title="Höchste fertige Stufe: alle Stücke sind eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-primary" title="Im eigenen Spieler ab Anfang abspielen"><i class="fa-solid fa-play"></i> Abspielen</button>
+            <a class="btn btn-sm btn-outline-secondary" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Originalvideo bei YouTube öffnen"><i class="fa-brands fa-youtube"></i> Bei YouTube öffnen</a>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Aufträge für dieses Video anlegen oder Stufen zurücksetzen"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><h6 class="dropdown-header">Auftrag anlegen</h6></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-headphones fa-fw"></i> Audio beschaffen</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-closed-captioning fa-fw"></i> Transkribieren</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-spell-check fa-fw"></i> Korrigieren</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-scissors fa-fw"></i> Stückeln</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-cube fa-fw"></i> Einbetten</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><h6 class="dropdown-header">Zurücksetzen auf Stufe</h6></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-satellite-dish fa-fw"></i> Entdeckt (alles verwerfen)</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-headphones fa-fw"></i> Audio (Transkript und Folgestufen verwerfen)</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-closed-captioning fa-fw"></i> Transkribiert (Korrektur und Folgestufen verwerfen)</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-spell-check fa-fw"></i> Korrigiert (Stücke und Vektoren verwerfen)</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-scissors fa-fw"></i> Gestückelt (nur Vektoren verwerfen)</a></li>
+              </ul>
+            </div>
+            <button class="btn btn-sm btn-outline-danger" title="Video mit Audio, Transkript, Korrektur, Stücken und Vektoren aus der Bibliothek entfernen (fragt nach)"><i class="fa-solid fa-trash"></i> Löschen</button>
+            <button class="m-info" title="Hilfe zur Videoansicht">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <!-- Oben: Originaldaten und Kennzahlen -->
+            <div class="d-flex gap-3 align-items-start mb-3">
+              <div class="card flex-grow-1" style="min-width: 0">
+                <div class="card-body d-flex gap-3">
+                  <div class="flex-shrink-0">
+                    <img class="m-mini gross" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='135'%3E%3Crect width='240' height='135' fill='%239aa5b3'/%3E%3Ctext x='120' y='75' text-anchor='middle' font-family='sans-serif' font-size='24' font-weight='700' fill='%231b2735'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="small text-secondary mt-2">Vorschaubild, lokal gespeichert</div>
+                  </div>
+                  <dl class="row mb-0 flex-grow-1" style="min-width: 0">
+                    <dt class="col-sm-3 fw-semibold">Veröffentlicht</dt>
+                    <dd class="col-sm-9">3. September 2026</dd>
+                    <dt class="col-sm-3 fw-semibold">Dauer</dt>
+                    <dd class="col-sm-9">34:05 (34 Minuten 5 Sekunden)</dd>
+                    <dt class="col-sm-3 fw-semibold">Aufrufe</dt>
+                    <dd class="col-sm-9">18.432 <span class="text-secondary">(Stand des letzten Abgleichs, vor 12 Minuten)</span></dd>
+                    <dt class="col-sm-3 fw-semibold">Schlagworte</dt>
+                    <dd class="col-sm-9">
+                      <span class="badge text-bg-secondary">Erzählung</span>
+                      <span class="badge text-bg-secondary">Realität</span>
+                      <span class="badge text-bg-secondary">Kausalität</span>
+                      <span class="badge text-bg-secondary">Erkenntnistheorie</span>
+                      <span class="badge text-bg-secondary">Überlebendenfehler</span>
+                      <span class="badge text-bg-secondary">mmM</span>
+                    </dd>
+                    <dt class="col-sm-3 fw-semibold">Kanal</dt>
+                    <dd class="col-sm-9">morf</dd>
+                    <dt class="col-sm-3 fw-semibold">Originaladresse</dt>
+                    <dd class="col-sm-9"><a href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer">https://youtu.be/xxxxxxxxxxx</a></dd>
+                    <dt class="col-sm-3 fw-semibold">Quelle</dt>
+                    <dd class="col-sm-9">TubeVault <span class="text-secondary">(Kennung 7f3c2a9e, zuletzt abgeglichen vor 12 Minuten)</span></dd>
+                    <dt class="col-sm-3 fw-semibold">Heruntergeladen</dt>
+                    <dd class="col-sm-9 mb-0"><i class="fa-solid fa-circle-check text-success"></i> ja, in der Quelle als Datei vorhanden</dd>
+                  </dl>
+                </div>
+                <div class="card-body border-top">
+                  <h6 class="small text-uppercase text-secondary mb-2">Kurzzusammenfassung <button class="m-info" title="Vom Sprachmodell nach der Korrektur erzeugt; geht als Videoebene in den Chat ein">i</button></h6>
+                  <p class="mb-0">morf geht der Frage nach, warum unsere Erzählungen über die Welt so selten mit dem übereinstimmen, was tatsächlich geschieht. Geschichten brauchen Anfang, Mitte und Ende und einen Grund für jede Wendung; die Realität liefert nichts davon von selbst. Er zeigt an Erfolgsgeschichten und dem Überlebendenfehler, wie der Erzähldrang Ursachen erfindet, wo nur Zufall und Auswahl waren, und schließt mit dem Vorschlag, Geschichten als Werkzeug zu nutzen, ohne ihnen Beweiskraft zuzuschreiben.</p>
+                </div>
+                <div class="card-body border-top">
+                  <label class="form-label small text-uppercase text-secondary mb-2" for="notiz">Notizen <button class="m-info" title="Eigene Anmerkungen zu diesem Video. Sie gehören zum Bibliothekspaket, werden aber nicht eingebettet und nicht durchsucht">i</button></label>
+                  <textarea class="form-control" id="notiz" rows="3" placeholder="Eigene Notiz zu diesem Video ...">Passt gut zu mmM#374 (Ausbeutung als topologische Kategorie): dort dieselbe Kritik an nachträglich erfundenen Ursachen.</textarea>
+                  <div class="d-flex align-items-center gap-2 mt-2">
+                    <button class="btn btn-sm btn-outline-secondary" title="Notiz speichern"><i class="fa-solid fa-floppy-disk"></i> Notiz speichern</button>
+                    <span class="small text-secondary">zuletzt gespeichert heute, 20:12</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex-shrink-0" style="width: 360px">
+                <div class="m-kennzahlen">
+                  <div class="m-kennzahl">
+                    <div class="wert">15,9</div>
+                    <div class="titel"><i class="fa-solid fa-headphones"></i> Audio, Megabyte (Mono-AAC)</div>
+                  </div>
+                  <div class="m-kennzahl">
+                    <div class="wert">118</div>
+                    <div class="titel"><i class="fa-solid fa-closed-captioning"></i> Segmente im Transkript, 31.204 Zeichen</div>
+                  </div>
+                  <div class="m-kennzahl">
+                    <div class="wert">0,93</div>
+                    <div class="titel"><i class="fa-solid fa-spell-check"></i> Ähnlichkeit der Korrektur zum Rohtext <button class="m-info" title="Zeichenähnlichkeit zwischen Rohtext und Korrektur; unter 0,80 bleibt der Rohtext des Blocks stehen">i</button></div>
+                  </div>
+                  <div class="m-kennzahl">
+                    <div class="wert">0 <span class="fs-6 fw-normal text-secondary">von 13</span></div>
+                    <div class="titel"><i class="fa-solid fa-shield-halved"></i> Blöcke vom Abweichungswächter verworfen</div>
+                  </div>
+                  <div class="m-kennzahl">
+                    <div class="wert">11</div>
+                    <div class="titel"><i class="fa-solid fa-scissors"></i> Stücke (Ziel 3.000 Zeichen, Überlappung 400)</div>
+                  </div>
+                  <div class="m-kennzahl">
+                    <div class="wert">11</div>
+                    <div class="titel"><i class="fa-solid fa-cube"></i> Vektoren (text-embedding-bge-m3, 1024 Dimensionen)</div>
+                  </div>
+                </div>
+                <div class="small text-secondary mt-2"><i class="fa-regular fa-clock"></i> Zuletzt verarbeitet: Einbettung, heute 21:14 (Whisper Large V3 (MLX), qwen3-next-80b-a3b-instruct-mlx)</div>
+              </div>
+            </div>
+
+            <!-- Reiter -->
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#reiter-transkript" type="button" role="tab">Transkript <span class="badge text-bg-secondary">46 Absätze</span></button></li>
+              <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reiter-korrektur" type="button" role="tab">Korrektur <span class="badge text-bg-secondary">13 Blöcke</span></button></li>
+              <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reiter-themen" type="button" role="tab">Themen <span class="badge text-bg-secondary">7</span></button></li>
+              <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reiter-stuecke" type="button" role="tab">Stücke <span class="badge text-bg-secondary">11</span></button></li>
+              <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reiter-auftraege" type="button" role="tab">Aufträge <span class="badge text-bg-success">5 fertig</span></button></li>
+            </ul>
+            <div class="tab-content card border-top-0">
+              <!-- Transkript -->
+              <div class="tab-pane fade show active card-body" id="reiter-transkript" role="tabpanel">
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                  <div class="btn-group btn-group-sm" role="group" aria-label="Textfassung">
+                    <button class="btn btn-outline-secondary active" title="Korrigierter Text in Absätzen mit Zeitfenster">Korrigierte Absätze</button>
+                    <button class="btn btn-outline-secondary" title="Rohsegmente des Transkriptionsdienstes, unverändert">Rohsegmente</button>
+                  </div>
+                  <button class="m-info" title="Die Absätze stammen aus der Korrektur und tragen die Zeitfenster der Rohsegmente; ein Klick auf die Zeitmarke springt im Spieler dorthin">i</button>
+                  <div class="form-check form-switch mb-0 ms-2">
+                    <input class="form-check-input" type="checkbox" id="mitrollen" checked />
+                    <label class="form-check-label small" for="mitrollen">Mit dem Spieler mitrollen</label>
+                  </div>
+                  <span class="ms-auto small text-secondary">Sprache: Deutsch &middot; Whisper Large V3 (MLX) &middot; Wortzeiten gespeichert</span>
+                  <button class="btn btn-sm btn-outline-secondary" title="Gesamten Text in die Zwischenablage kopieren"><i class="fa-regular fa-copy"></i> Kopieren</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Als Textdatei mit Zeitmarken speichern"><i class="fa-solid fa-file-export"></i> Export</button>
+                </div>
+
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 00:00 abspielen">00:00</span>
+                  <div>Wir erzählen uns ständig Geschichten. Über den Tag, über andere Leute, über uns selbst. Und die meisten davon fühlen sich richtig an, obwohl sie, wenn man genauer hinschaut, mit dem, was tatsächlich passiert ist, erstaunlich wenig zu tun haben. Darum geht es heute: Wieso passen unsere Geschichten fast nie zur Realität, und warum fällt uns das so selten auf?</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 00:48 abspielen">00:48</span>
+                  <div>Zuerst eine Beobachtung, die jeder kennt. Wenn du jemandem erzählst, was dir letzte Woche passiert ist, dann erzählst du nicht, was passiert ist. Du erzählst eine Auswahl. Du lässt weg, was langweilig war, du ordnest um, damit es eine Pointe gibt, und du verbindest Dinge mit einem "weil", die in Wirklichkeit einfach nur nacheinander stattgefunden haben.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 01:35 abspielen">01:35</span>
+                  <div>Das ist kein Vorwurf. Das ist die Form. Eine Geschichte, die nichts weglässt, ist keine Geschichte, sondern ein Protokoll, und ein Protokoll hört sich niemand an. Die Frage ist also nicht, ob wir auswählen, sondern was mit unserem Bild von der Welt passiert, wenn wir nur noch die ausgewählten Fassungen im Kopf haben.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 02:20 abspielen">02:20</span>
+                  <div>Ich will das in drei Schritten machen. Erstens: Was leistet eine Geschichte eigentlich, welche Bauteile braucht sie? Zweitens: Was davon liefert die Realität, und was liefert sie eben nicht? Und drittens: Was folgt daraus, wenn man trotzdem nicht ohne Geschichten auskommt, und das tut niemand.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 03:05 abspielen">03:05</span>
+                  <div>Vorweg noch ein Hinweis, damit das nicht missverstanden wird. Ich rede nicht über Lügen. Lügen sind der einfache Fall, da weiß wenigstens einer, dass die Geschichte falsch ist. Mir geht es um die Geschichten, die alle Beteiligten für wahr halten, und die trotzdem nicht stimmen, weil die Form sie verbiegt.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 03:40 abspielen">03:40</span>
+                  <div>Also, was ist eine Geschichte? Im Kern: ein Anfang, eine Mitte, ein Ende, und zwischen den Stationen ein Grund. Etwas passiert, deshalb passiert etwas anderes, und am Ende ist die Welt anders als vorher. Sobald diese Kette steht, verstehen wir. Und das Verstehen fühlt sich an wie Wahrheit, das ist der Trick.</div>
+                </div>
+                <div class="m-absatz aktiv">
+                  <span class="zeit" title="Ab 04:12 abspielen">04:12</span>
+                  <div>Die Realität hat aber keinen Anfang. Sie hat auch keine Mitte und kein Ende. Sie hat nur ein "und dann". Alles, was wir als Anfang einer Geschichte setzen, ist eine Entscheidung von uns: Hier fange ich an zu schauen. Und alles, was wir als Ende setzen, ist der Moment, in dem wir aufhören hinzusehen. Die Welt macht an der Stelle einfach weiter.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 05:01 abspielen">05:01</span>
+                  <div>Und dieses "Grund zwischen den Stationen", das ist der zweite Punkt, den die Realität nicht liefert. Sie liefert Nacheinander. Ob das eine das andere verursacht hat, ist eine Frage, die man untersuchen muss, mit Aufwand, mit Vergleichen, mit Gegenproben. Die Geschichte spart sich den Aufwand und setzt das "weil" einfach ein, weil es sonst keine Geschichte wäre.</div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 mt-3">
+                  <span class="small text-secondary">8 von 46 Absätzen geladen (00:00 bis 05:46 von 34:05)</span>
+                  <button class="btn btn-sm btn-outline-secondary" title="Die nächsten 20 Absätze laden"><i class="fa-solid fa-angles-down"></i> Weitere 20 Absätze laden</button>
+                  <button class="btn btn-sm btn-outline-secondary ms-auto" title="Zum Absatz springen, der gerade gesprochen wird"><i class="fa-solid fa-crosshairs"></i> Zum aktuellen Absatz</button>
+                </div>
+              </div>
+
+              <!-- Korrektur (eigene Seite) -->
+              <div class="tab-pane fade card-body" id="reiter-korrektur" role="tabpanel">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1">Korrektur im Vergleich</h6>
+                    <p class="text-secondary mb-2">Roh und korrigiert Block für Block nebeneinander, verworfene Blöcke markiert, Text bearbeitbar. 13 Blöcke, Ähnlichkeit 0,93, 0 verworfen, Modell qwen3-next-80b-a3b-instruct-mlx, Abweichungswächter 0,80.</p>
+                    <a class="btn btn-sm btn-primary" href="video-vergleich.html"><i class="fa-solid fa-code-compare"></i> Vergleich öffnen</a>
+                    <button class="btn btn-sm btn-outline-secondary" title="Korrektur mit dem aktiven Anbieter erneut ausführen"><i class="fa-solid fa-rotate-right"></i> Korrektur wiederholen</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Themen -->
+              <div class="tab-pane fade card-body" id="reiter-themen" role="tabpanel">
+                <h6 class="mb-1">Themenaufschlüsselung</h6>
+                <p class="text-secondary mb-2">7 Abschnitte mit Zeitfenster und Kurzfassung, erzeugt nach der Korrektur. Die Liste steht rechts in der Seitenleiste und im Spieler als Abschnitte der Zeitleiste; hier lassen sich Titel und Grenzen bearbeiten.</p>
+                <button class="btn btn-sm btn-outline-secondary" title="Titel, Zeitfenster und Kurzfassungen bearbeiten"><i class="fa-solid fa-pen"></i> Themen bearbeiten</button>
+                <button class="btn btn-sm btn-outline-secondary" title="Themenaufschlüsselung vom Sprachmodell neu erzeugen lassen (Vorschau vor dem Übernehmen)"><i class="fa-solid fa-wand-magic-sparkles"></i> Neu erzeugen</button>
+              </div>
+
+              <!-- Stücke (eigene Seite) -->
+              <div class="tab-pane fade card-body" id="reiter-stuecke" role="tabpanel">
+                <h6 class="mb-1">Stücke dieses Videos</h6>
+                <p class="text-secondary mb-2">11 Stücke, Zielgröße 3.000 Zeichen, Überlappung 400 Zeichen an Satzgrenzen, jedes mit Zeitfenster, Thema und Vektor. Ansehen, bearbeiten, zusammenlegen, teilen, neu stückeln und neu einbetten.</p>
+                <a class="btn btn-sm btn-primary" href="stellen.html"><i class="fa-solid fa-align-left"></i> Stücke in den Textstellen öffnen</a>
+                <button class="btn btn-sm btn-outline-secondary" title="Alle Stücke dieses Videos verwerfen und aus den korrigierten Absätzen neu bilden"><i class="fa-solid fa-scissors"></i> Neu stückeln</button>
+              </div>
+
+              <!-- Aufträge (eigene Seite) -->
+              <div class="tab-pane fade card-body" id="reiter-auftraege" role="tabpanel">
+                <h6 class="mb-1">Aufträge dieses Videos</h6>
+                <p class="text-secondary mb-2">5 Aufträge, alle fertig: Audio (2 Minuten 10 Sekunden), Transkription (19 Minuten 42 Sekunden), Korrektur (6 Minuten 5 Sekunden), Stückelung (3 Sekunden), Einbettung (41 Sekunden). Jeder Auftrag hat Parameter, Ergebnis und seitenweises Protokoll.</p>
+                <a class="btn btn-sm btn-primary" href="auftrag.html"><i class="fa-solid fa-list-check"></i> Letzten Auftrag öffnen</a>
+                <a class="btn btn-sm btn-outline-secondary" href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Zum Fließband</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rechts: Themen des Videos -->
+        <aside class="m-seite">
+          <div class="m-seite-kopf">
+            <i class="fa-solid fa-list-ol"></i> Themen <span class="badge text-bg-secondary">7</span>
+            <button class="m-info" title="Abschnitte des Videos mit Zeitfenster und Kurzfassung; ein Klick springt im Spieler und im Transkript dorthin">i</button>
+            <button class="btn btn-sm btn-outline-secondary ms-auto" title="Themenaufschlüsselung bearbeiten"><i class="fa-solid fa-pen"></i></button>
+          </div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action" href="#" title="Ab 00:00 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">1. Warum wir Geschichten brauchen</span>
+                  <span class="ms-auto small text-secondary text-nowrap">00:00 bis 03:40</span>
+                </div>
+                <div class="small text-secondary">Einstieg: Erzählen ist Auswählen. Nicht Lügen sind das Problem, sondern die Geschichten, die alle für wahr halten.</div>
+              </a>
+              <a class="list-group-item list-group-item-action active" href="#" title="Ab 03:40 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">2. Was eine Geschichte leistet</span>
+                  <span class="ms-auto small text-nowrap opacity-75">03:40 bis 08:15</span>
+                </div>
+                <div class="small opacity-75">Anfang, Mitte, Ende und ein Grund je Wendung. Verstehen fühlt sich an wie Wahrheit; die Realität kennt nur ein "und dann".</div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#" title="Ab 08:15 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">3. Die Realität hat keine Handlung</span>
+                  <span class="ms-auto small text-secondary text-nowrap">08:15 bis 13:02</span>
+                </div>
+                <div class="small text-secondary">Anfang und Ende sind Entscheidungen des Betrachters. Die Welt macht an jedem Schlusspunkt einfach weiter.</div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#" title="Ab 13:02 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">4. Kausalität im Kopf, Nacheinander in der Welt</span>
+                  <span class="ms-auto small text-secondary text-nowrap">13:02 bis 18:30</span>
+                </div>
+                <div class="small text-secondary">Das "weil" der Geschichte ersetzt die Untersuchung. Warum Gegenproben anstrengend sind und Erzählungen nicht.</div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#" title="Ab 18:30 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">5. Erfolgsgeschichten und der Überlebendenfehler</span>
+                  <span class="ms-auto small text-secondary text-nowrap">18:30 bis 23:48</span>
+                </div>
+                <div class="small text-secondary">Beispiel: Wer erzählt, ist übrig geblieben. Die Gescheiterten mit derselben Strategie kommen in keiner Geschichte vor.</div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#" title="Ab 23:48 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">6. Warum die Abweichung nicht auffällt</span>
+                  <span class="ms-auto small text-secondary text-nowrap">23:48 bis 29:10</span>
+                </div>
+                <div class="small text-secondary">Die Geschichte wird zur Erinnerung. Was nicht in die Form passt, wird vergessen, und die Lücke fällt niemandem auf.</div>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#" title="Ab 29:10 abspielen">
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fw-semibold">7. Mit Geschichten rechnen, nicht auf sie bauen</span>
+                  <span class="ms-auto small text-secondary text-nowrap">29:10 bis 34:05</span>
+                </div>
+                <div class="small text-secondary">Schluss: Geschichten als Werkzeug behalten, ihnen aber keine Beweiskraft zuschreiben. Drei Fragen, die man jeder Erzählung stellen kann.</div>
+              </a>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Audiospieler (bleibt über alle Ansichten) -->
+      <footer class="m-spieler">
+        <div>
+          <div class="titel">Wieso passen unsere Geschichten fast nie zur Realität?</div>
+          <div class="unter"><span class="m-serie">mmM#377</span> &middot; Thema: Was eine Geschichte leistet</div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn btn-outline-secondary" title="30 Sekunden zurück"><i class="fa-solid fa-backward"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden zurück"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="btn btn-primary" title="Pause"><i class="fa-solid fa-pause"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
+        </div>
+        <div>
+          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+            <div class="thema" style="left: 0%; width: 10.8%">Warum wir Geschichten brauchen</div>
+            <div class="thema" style="left: 10.8%; width: 13.4%">Was eine Geschichte leistet</div>
+            <div class="thema" style="left: 24.2%; width: 14%">Die Realität hat keine Handlung</div>
+            <div class="thema" style="left: 38.2%; width: 16.1%">Kausalität im Kopf</div>
+            <div class="thema" style="left: 54.3%; width: 15.5%">Überlebendenfehler</div>
+            <div class="thema" style="left: 69.8%; width: 15.8%">Warum die Abweichung nicht auffällt</div>
+            <div class="thema" style="left: 85.6%; width: 14.4%">Mit Geschichten rechnen</div>
+            <div class="gespielt" style="width: 12.3%"></div>
+            <div class="marke" style="left: 12.3%"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="zeiten">04:12 / 34:05</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="https://youtu.be/xxxxxxxxxxx?t=252" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Zurücksetzen" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a class="aktiv" href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Bibliothek: ein Video im Detail</h2>
+          <p>Die Videoansicht zeigt alles, was morf-gpt zu einem Video weiß: die Originaldaten der Quelle, den Stand auf dem Fließband, den Text in Absätzen mit Zeitmarken und die Themen. Von hier springst du in den eigenen Spieler oder zum Original bei YouTube.</p>
+          <h2>Kopfzeile</h2>
+          <p><b>Serie und Stufe</b>: Das Abzeichen mmM#377 nennt Serie und Folge, das farbige Abzeichen die höchste fertige Stufe des Fließbands.</p>
+          <p><b>Fließband</b>: Legt für dieses Video gezielt einen Auftrag einer Stufe an, etwa eine neue Korrektur mit einem anderen Anbieter. <b><mark>Zurücksetzen</mark> auf Stufe</b> verwirft alles oberhalb der gewählten Stufe; die Stücke und Vektoren werden dann beim nächsten Durchlauf neu gebildet. Beides fragt vorher nach.</p>
+          <p><b>Löschen</b> entfernt das Video mit Audio, Transkript, Korrektur, Stücken und Vektoren aus der Bibliothek. Beim nächsten Abgleich mit der Quelle taucht es wieder als entdeckt auf, ist aber nicht mehr im Umfang.</p>
+          <h2>Karte und Kennzahlen</h2>
+          <p>Die Originaldaten kommen unverändert von der Quelle und werden beim Abgleich aufgefrischt. Die Kurzzusammenfassung stammt aus der Korrektur und geht als Videoebene in den Chat ein. Notizen sind nur für dich; sie werden nicht eingebettet und nicht durchsucht, wandern aber mit dem Bibliothekspaket um.</p>
+          <p>Die Kennzahlen zeigen je Stufe das Ergebnis: Größe des Audios, Segmente und Zeichen des Transkripts, Ähnlichkeit der Korrektur zum Rohtext und verworfene Blöcke, Anzahl der Stücke und Vektoren.</p>
+          <h2>Reiter</h2>
+          <p><b>Transkript</b>: Die korrigierten Absätze mit Zeitfenstern. Ein Klick auf die Zeitmarke spielt ab dieser Stelle; mit "Mitrollen" folgt die Ansicht dem Spieler. Lange Texte werden in Teilen geladen.</p>
+          <p><b>Korrektur</b>, <b>Stücke</b> und <b>Aufträge</b> haben eigene Ansichten; der Reiter zeigt den Stand und führt hin.</p>
+          <h2>Themen</h2>
+          <p>Die Themenaufschlüsselung teilt das Video in Abschnitte mit Zeitfenster und Kurzfassung. Sie erscheint rechts, als Abschnitte in der Zeitleiste des Spielers und als Themenkontext an jedem Stück.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

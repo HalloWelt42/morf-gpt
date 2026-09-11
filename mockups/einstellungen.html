@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Einstellungen</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      /* Seitenspezifika (Vorschlag für app.css, Abschnitt "Einstellungen") */
+      .m-einstellungen { background: var(--m-flaeche); border: 1px solid var(--m-rand); }
+      .m-einstellung { display: grid; grid-template-columns: 1fr 500px; gap: 24px; padding: 14px; border-bottom: 1px solid var(--m-rand); align-items: start; }
+      .m-einstellung.geaendert { background: var(--m-akzent-hell); }
+      .m-einstellung .titel { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+      .m-einstellung .eingabe { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a class="aktiv" href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Gruppen der Einstellungen -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf">
+            <i class="fa-solid fa-sliders"></i> Gruppen
+            <button class="m-info ms-auto" title="Jede Gruppe bündelt die Einstellungen eines Bausteins. Die Zahl nennt, wie viele Einstellungen die Gruppe hat.">i</button>
+          </div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-gear"></i> Allgemein</a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2 active" href="#"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="ms-auto small opacity-75">13 &middot; 2 geändert</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-headphones"></i> Audio <span class="ms-auto small text-secondary">3</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-closed-captioning"></i> Transkription <span class="ms-auto small text-secondary">6</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-spell-check"></i> Korrektur <span class="ms-auto small text-secondary">5</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-scissors"></i> Stückelung <span class="ms-auto small text-secondary">3</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-cube"></i> Einbettung <span class="ms-auto small text-secondary">2</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-magnifying-glass"></i> Suche <span class="ms-auto small text-secondary">6</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="#"><i class="fa-solid fa-comments"></i> Chat <span class="ms-auto small text-secondary">5</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="anbieter.html"><i class="fa-solid fa-microchip"></i> Anbieter <span class="ms-auto small text-secondary">3</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="quellen.html"><i class="fa-solid fa-satellite-dish"></i> Quellen <span class="ms-auto small text-secondary">5</span></a>
+              <a class="list-group-item list-group-item-action d-flex align-items-center gap-2" href="umzug.html"><i class="fa-solid fa-truck-ramp-box"></i> Umzug <span class="ms-auto small text-secondary"><i class="fa-solid fa-arrow-right"></i></span></a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Kopfzeile (fest) und Liste der Einstellungen (rollt) -->
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Einstellungen - Fließband</h1>
+            <span class="m-unter">13 Einstellungen &middot; 2 weichen von der Vorgabe ab</span>
+            <button class="m-info" title="Wie der Auftragsläufer arbeitet: Weiterreichen, Parallelität je Stufe, Wiederholungen, Fristen und Pausen. Änderungen wirken sofort auf neu startende Aufträge.">i</button>
+            <span class="m-luecke"></span>
+            <span class="small text-secondary" title="Zuletzt gespeichert um 21:04:12"><i class="fa-solid fa-check text-success"></i> Gespeichert 21:04:12</span>
+            <button class="m-info" title="Es gibt keinen Speichern-Knopf: jede Änderung wird kurz nach der letzten Eingabe im Hintergrund gespeichert. Die Uhrzeit zeigt den letzten Stand.">i</button>
+            <div class="input-group input-group-sm" style="width: 300px">
+              <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+              <input class="form-control" type="search" placeholder="Einstellung suchen" title="Sucht in Titel, Beschreibung und Schlüssel über alle Gruppen" />
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" title="Alle Einstellungen dieser Gruppe auf ihre Vorgabe zurücksetzen (mit Rückfrage)"><i class="fa-solid fa-rotate-left"></i> Gruppe zurücksetzen</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <div class="m-einstellungen">
+              <!-- Allgemein -->
+              <div class="m-parameter">
+                <h6 class="mb-0">Allgemein</h6>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Automatisch weiterreichen <button class="m-info" title="Aus: jede Stufe muss von Hand angestoßen werden (Knopf Band auffüllen im Fließband). An: das Band läuft bis zur Einbettung durch.">i</button></div>
+                  <div class="text-secondary">Nach einer fertigen Stufe wird sofort der Auftrag der nächsten Stufe angelegt.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" id="e-automatik" checked />
+                      <label class="form-check-label" for="e-automatik">an</label>
+                    </div>
+                    <span class="text-secondary">Vorgabe: an</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Parallelität -->
+              <div class="m-parameter">
+                <h6 class="mb-0">Parallelität je Stufe <button class="m-info" title="Wie viele Aufträge einer Stufe gleichzeitig laufen. Die Zahl steht auch im Fließband an jeder Stufe.">i</button></h6>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Parallele Audio-Aufträge</div>
+                  <div class="text-secondary">Wie viele Audios gleichzeitig beschafft werden (Netz und ffmpeg).</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <input class="form-control" type="number" value="2" min="1" max="8" step="1" style="width: 110px" />
+                    <span class="text-secondary">Vorgabe: 2</span>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 1 bis 8</div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Parallele Transkriptionen</div>
+                  <div class="text-secondary">Der Whisper-Dienst nutzt die Grafikeinheit; mehr als 1 bringt nichts.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <input class="form-control" type="number" value="1" min="1" max="2" step="1" style="width: 110px" />
+                    <span class="text-secondary">Vorgabe: 1</span>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 1 bis 2</div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Parallele Korrekturen</div>
+                  <div class="text-secondary">Ein lokales Sprachmodell antwortet nacheinander; bei einem Cloud-Anbieter sind 2 bis 3 sinnvoll.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <input class="form-control" type="number" value="1" min="1" max="6" step="1" style="width: 110px" />
+                    <span class="text-secondary">Vorgabe: 1</span>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 1 bis 6</div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Parallele Stückelungen</div>
+                  <div class="text-secondary">Reine Rechenarbeit, kann breit laufen.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <input class="form-control" type="number" value="4" min="1" max="16" step="1" style="width: 110px" />
+                    <span class="text-secondary">Vorgabe: 4</span>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 1 bis 16</div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Parallele Einbettungen</div>
+                  <div class="text-secondary">Das Einbettungsmodell arbeitet stapelweise; 1 reicht meist.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <input class="form-control" type="number" value="1" min="1" max="4" step="1" style="width: 110px" />
+                    <span class="text-secondary">Vorgabe: 1</span>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 1 bis 4</div>
+                </div>
+              </div>
+
+              <!-- Fehler und Fristen -->
+              <div class="m-parameter">
+                <h6 class="mb-0">Fehler und Fristen <button class="m-info" title="Nichts bricht das Band: ein fehlgeschlagener Auftrag wird wiederholt, ein hängender nach der Frist als Fehler markiert. Beides ist im Fließband unter Fehler sichtbar.">i</button></h6>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Wiederholungen bei Fehlern <button class="m-info" title="Der erste Versuch zählt nicht als Wiederholung: bei 2 Wiederholungen gibt es also bis zu 3 Versuche (im Fließband als Versuch 3 von 3 sichtbar).">i</button></div>
+                  <div class="text-secondary">So oft wird ein fehlgeschlagener Auftrag automatisch erneut versucht.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <input class="form-control" type="number" value="2" min="0" max="10" step="1" style="width: 110px" />
+                    <span class="text-secondary">Vorgabe: 2</span>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 0 bis 10</div>
+                </div>
+              </div>
+
+              <div class="m-einstellung geaendert">
+                <div>
+                  <div class="titel">Frist ohne Lebenszeichen <button class="m-info" title="Jeder laufende Auftrag meldet regelmäßig Fortschritt. Bleibt die Meldung länger als diese Frist aus, gilt der Auftrag als hängend. Lange Transkriptionen brauchen eine großzügige Frist.">i</button></div>
+                  <div class="text-secondary">Meldet sich ein laufender Auftrag so lange nicht, gilt er als hängend und wird als Fehler markiert.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="input-group" style="width: 210px">
+                      <input class="form-control" type="number" value="3600" min="60" max="86400" step="60" />
+                      <span class="input-group-text">Sekunden</span>
+                    </div>
+                    <span class="text-secondary">Vorgabe: 7.200</span>
+                    <button class="btn btn-sm btn-outline-secondary" title="Auf die Vorgabe 7.200 Sekunden zurücksetzen"><i class="fa-solid fa-rotate-left"></i> Zurücksetzen</button>
+                  </div>
+                  <div class="small text-secondary mt-1">Bereich 60 bis 86.400 Sekunden, in Schritten von 60</div>
+                </div>
+              </div>
+
+              <!-- Stufen anhalten -->
+              <div class="m-parameter">
+                <h6 class="mb-0">Stufen anhalten <button class="m-info" title="Eine pausierte Stufe startet keine neuen Aufträge; laufende Aufträge enden noch. Dieselben Schalter stehen im Fließband an jeder Stufe.">i</button></h6>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Stufe Audio pausiert</div>
+                  <div class="text-secondary">Keine neuen Audio-Aufträge starten.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" id="e-pause-audio" />
+                      <label class="form-check-label" for="e-pause-audio">aus</label>
+                    </div>
+                    <span class="text-secondary">Vorgabe: aus</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Stufe Transkription pausiert</div>
+                  <div class="text-secondary">Keine neuen Transkriptionen starten.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" id="e-pause-transkription" />
+                      <label class="form-check-label" for="e-pause-transkription">aus</label>
+                    </div>
+                    <span class="text-secondary">Vorgabe: aus</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="m-einstellung geaendert">
+                <div>
+                  <div class="titel">Stufe Korrektur pausiert</div>
+                  <div class="text-secondary">Keine neuen Korrekturen starten.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" id="e-pause-korrektur" checked />
+                      <label class="form-check-label" for="e-pause-korrektur">an</label>
+                    </div>
+                    <span class="text-secondary">Vorgabe: aus</span>
+                    <button class="btn btn-sm btn-outline-secondary" title="Auf die Vorgabe aus zurücksetzen, die Stufe läuft dann wieder"><i class="fa-solid fa-rotate-left"></i> Zurücksetzen</button>
+                  </div>
+                  <div class="small text-secondary mt-1">Im Fließband: 32 Korrekturen warten, 0 laufen</div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Stufe Stückelung pausiert</div>
+                  <div class="text-secondary">Keine neuen Stückelungen starten.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" id="e-pause-stueckelung" />
+                      <label class="form-check-label" for="e-pause-stueckelung">aus</label>
+                    </div>
+                    <span class="text-secondary">Vorgabe: aus</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="m-einstellung">
+                <div>
+                  <div class="titel">Stufe Einbettung pausiert</div>
+                  <div class="text-secondary">Keine neuen Einbettungen starten.</div>
+                </div>
+                <div>
+                  <div class="eingabe">
+                    <div class="form-check form-switch mb-0">
+                      <input class="form-check-input" type="checkbox" id="e-pause-einbettung" />
+                      <label class="form-check-label" for="e-pause-einbettung">aus</label>
+                    </div>
+                    <span class="text-secondary">Vorgabe: aus</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="small text-secondary mt-2">13 von 13 Einstellungen dieser Gruppe angezeigt. Schlüssel und Grenzen stammen aus dem Register des Backends; was dort nicht steht, gibt es nicht.</div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Frist ohne Lebenszeichen" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a class="aktiv" href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Einstellungen</h2>
+          <p>Jede Einstellung zeigt Titel, Beschreibung, erlaubten Bereich, Einheit und Vorgabe. Es gibt keine versteckten Grenzen: was hier steht, ist alles, was das Programm kennt.</p>
+          <h2>Speichern</h2>
+          <p>Es gibt keinen Speichern-Knopf. Jede Änderung wird kurz nach der letzten Eingabe im Hintergrund gespeichert; die Kopfzeile zeigt die Uhrzeit des letzten Stands. Geänderte Werte sind farbig hinterlegt und tragen einen Knopf <b>Zurücksetzen</b>, der die Vorgabe wiederherstellt.</p>
+          <h2>Fließband</h2>
+          <p><b>Automatisch weiterreichen</b>: Ist der Schalter an, legt jede fertige Stufe den Auftrag der nächsten Stufe an, bis das Video eingebettet ist. Ist er aus, füllt der Knopf <b>Band auffüllen</b> im Fließband den nächsten Schritt von Hand nach.</p>
+          <p><b>Parallelität je Stufe</b>: Wie viele Aufträge einer Stufe gleichzeitig laufen. Transkription und Einbettung teilen sich die Grafikeinheit, deshalb bleibt dort 1 die beste Wahl. Stückelung ist reine Rechenarbeit und darf breit laufen.</p>
+          <p><b>Wiederholungen bei Fehlern</b>: Der erste Versuch zählt nicht mit. Bei 2 Wiederholungen gibt es also bis zu 3 Versuche; danach bleibt der Auftrag mit seiner Fehlermeldung im Fließband stehen und lässt sich von Hand erneut anstoßen.</p>
+          <p><b><mark>Frist ohne Lebenszeichen</mark></b>: Jeder laufende Auftrag meldet regelmäßig Fortschritt. Bleibt die Meldung länger als diese Frist aus, gilt der Auftrag als hängend und wird als Fehler markiert. Lange Videos brauchen bei der Transkription eine großzügige Frist; 3.600 Sekunden reichen für die Erklärserie, für Aufzeichnungen über eine Stunde ist die Vorgabe von 7.200 Sekunden sicherer.</p>
+          <p><b>Stufen anhalten</b>: Eine pausierte Stufe startet keine neuen Aufträge, laufende Aufträge enden noch. Dieselben Schalter stehen im Fließband direkt an jeder Stufe.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

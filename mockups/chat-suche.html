@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Chat, nur suchen</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a class="aktiv" href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Unterhaltungen -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf">
+            <i class="fa-solid fa-comments"></i> Unterhaltungen
+            <button class="btn btn-sm btn-primary ms-auto" title="Neue Unterhaltung"><i class="fa-solid fa-plus"></i> Neu</button>
+          </div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action active" href="#">
+                <div class="fw-semibold text-truncate">Ausbeutung als topologische Kategorie</div>
+                <small class="opacity-75">heute, 21:05 - 1 Nachricht, nur gesucht</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Was meint morf mit Kasualisierung?</div>
+                <small class="text-secondary">heute, 20:44 - 4 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Wettbewerb und Fortschritt</div>
+                <small class="text-secondary">gestern - 6 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Bewusstsein und Wille (mmM#6)</div>
+                <small class="text-secondary">7. September - 2 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Noteninflation an Schulen</div>
+                <small class="text-secondary">2. September - 4 Nachrichten</small>
+              </a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Frage und Suchergebnis ohne Antwort -->
+        <section class="m-chat">
+          <div class="m-ansicht-kopf">
+            <h1>Ausbeutung als topologische Kategorie</h1>
+            <span class="m-unter">Nur gesucht - 12 Stellen gefunden, 9 ausgewählt, noch keine Antwort</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Unterhaltung umbenennen"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-outline-secondary" title="Als Markdown exportieren"><i class="fa-solid fa-file-export"></i> Export</button>
+            <button class="btn btn-sm btn-outline-danger" title="Unterhaltung löschen"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="m-chat-verlauf">
+            <div class="m-nachricht nutzer">
+              <div class="rolle">Du</div>
+              <div class="koerper">
+                <div class="text">Was versteht morf unter Ausbeutung als topologischer Kategorie, und was hat das mit seiner Kritik am Wettbewerb zu tun?</div>
+                <div class="meta"><span>21:05</span> <span><i class="fa-solid fa-magnifying-glass"></i> Nur suchen</span></div>
+              </div>
+            </div>
+
+            <div class="m-nachricht assistent">
+              <div class="rolle" title="Suchergebnis, noch keine Antwort"><i class="fa-solid fa-magnifying-glass"></i></div>
+              <div class="koerper">
+                <div class="text">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title mb-2"><i class="fa-solid fa-magnifying-glass text-secondary"></i> 12 Stellen gefunden</h5>
+                      <p class="card-text">Prüfe die Auswahl rechts und lass dann antworten. Die Antwort entsteht ausschließlich aus den ausgewählten Stellen; abgewählte Stellen bekommt das Sprachmodell nicht zu sehen.</p>
+
+                      <div class="d-flex flex-wrap gap-2 mb-3 small">
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Ausbeutung als topologische Kategorie denken - 3 Stellen"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#374</span> 3 Stellen</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Kapitalismus ist kein Wettbewerb der Ideen - 2 Stellen"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23212%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#212</span> 2 Stellen</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Was der Wettbewerb wirklich verursacht - morf erklärts - 2 Stellen"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%238%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#8</span> 2 Stellen</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung - 1 Stelle"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%237%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#7</span> 1 Stelle</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Das Bewusstsein und den Willen verstehen (mit vielen Quellen) - 1 Stelle"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#6</span> 1 Stelle</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Kritik an der Linken von einem Linken - 1 Stelle"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%231%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#1</span> 1 Stelle</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Weshalb Wettbewerb nicht mit Fortschritt einhergeht - 1 Stelle"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%234%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#4</span> 1 Stelle</span>
+                        <span class="d-inline-flex align-items-center gap-2 border px-2 py-1" title="Noteninflation - ein ignoriertes Problem an Schulen und Universitäten - 1 Stelle"><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%235%3C/text%3E%3C/svg%3E" alt="" /><span class="m-serie">mmM#5</span> 1 Stelle</span>
+                      </div>
+
+                      <div class="d-flex flex-wrap align-items-center gap-2">
+                        <button class="btn btn-primary btn-lg" title="Das Sprachmodell antwortet nur aus den 9 rechts ausgewählten Stellen"><i class="fa-solid fa-paper-plane"></i> Aus 9 ausgewählten Stellen antworten</button>
+                        <button class="btn btn-outline-secondary btn-lg" title="Breite, Genauigkeit oder Filter rechts ändern und dieselbe Frage erneut suchen lassen"><i class="fa-solid fa-sliders"></i> Suche verfeinern</button>
+                        <button class="m-info" title="Erst suchen, dann antworten: So siehst du vorher, worauf die Antwort gestützt wird">i</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="meta">
+                  <span><i class="fa-solid fa-cube"></i> text-embedding-bge-m3</span>
+                  <span><i class="fa-regular fa-clock"></i> 1,3 Sekunden</span>
+                  <span><i class="fa-solid fa-list-check"></i> 48 Kandidaten geprüft, 12 behalten, 8 Videos</span>
+                  <span><i class="fa-solid fa-ranking-star"></i> Cross-Encoder neu bewertet</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-chat-eingabe">
+            <div class="feld">
+              <textarea class="form-control" rows="2" placeholder="Frage an die Bibliothek ... (Umschalt + Eingabe für eine neue Zeile)"></textarea>
+              <button class="btn btn-outline-primary btn-lg text-nowrap" title="Nur suchen: Stellen finden und prüfen, noch nicht antworten"><i class="fa-solid fa-magnifying-glass"></i> Nur suchen</button>
+              <button class="btn btn-primary btn-lg text-nowrap" title="Senden: suchen und sofort antworten lassen"><i class="fa-solid fa-paper-plane"></i> Senden</button>
+            </div>
+            <div class="hinweis">"Nur suchen" findet Stellen, ohne zu antworten. Rechts prüfen und abwählen, dann oben "Aus 9 ausgewählten Stellen antworten". "Senden" sucht und antwortet in einem Zug. <button class="m-info" title="Nur suchen zeigt die Fundstellen zuerst; Senden überspringt die Prüfung">i</button></div>
+          </div>
+        </section>
+
+        <!-- Rechts: Suchparameter (feste Leiste) und Fundstellen -->
+        <aside class="m-seite">
+          <div class="m-seite-kopf"><i class="fa-solid fa-magnifying-glass"></i> Suche und Stellen <button class="m-info ms-auto" title="Hilfe zur Suche">i</button></div>
+          <div class="m-seite-koerper p-0">
+            <div class="m-parameter">
+              <h6>Breite <button class="m-info" title="Wie viele Stellen die Suche einbezieht">i</button></h6>
+              <div class="m-regler">
+                <label>Treffer</label><span class="wert"></span>
+                <input type="range" class="form-range" min="1" max="50" value="12" />
+              </div>
+              <div class="m-regler">
+                <label>Nachbarstücke je Treffer</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="3" value="0" />
+              </div>
+              <div class="m-regler">
+                <label>Höchstens je Video</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="10" value="3" />
+              </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Genauigkeit <button class="m-info" title="Wie streng die Suche filtert">i</button></h6>
+              <div class="m-regler">
+                <label>Mindestähnlichkeit</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="1" step="0.01" value="0.40" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small mb-1">Neu-Bewertung</label>
+                <select class="form-select form-select-sm">
+                  <option>Aus</option>
+                  <option selected>Cross-Encoder (lokal, etwa eine Sekunde)</option>
+                  <option>Sprachmodell (sehr genau, langsam)</option>
+                </select>
+              </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Filter</h6>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small mb-1">Serie</label>
+                  <select class="form-select form-select-sm"><option>Alle</option><option selected>mmM</option><option>gmM</option></select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small mb-1">Zeitraum</label>
+                  <select class="form-select form-select-sm"><option selected>Alle Jahre</option><option>2026</option><option>2025</option><option>2020 bis 2024</option></select>
+                </div>
+              </div>
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" id="videoebene" checked />
+                <label class="form-check-label small" for="videoebene">Videozusammenfassung mitgeben</label>
+              </div>
+              <button class="btn btn-sm btn-outline-primary w-100 mt-2" title="Mit diesen Reglern dieselbe Frage erneut suchen lassen"><i class="fa-solid fa-rotate-right"></i> Erneut suchen</button>
+            </div>
+
+            <div class="p-3">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <h6 class="m-0 small text-uppercase text-secondary text-nowrap">Fundstellen (12)</h6>
+                <button class="m-info" title="Abgewählte Stellen bekommt das Sprachmodell nicht. Das Häkchen schaltet um.">i</button>
+                <span class="ms-auto small text-secondary text-nowrap">9 ausgewählt</span>
+                <div class="btn-group btn-group-sm">
+                  <button class="btn btn-outline-secondary" title="Alle Stellen auswählen"><i class="fa-regular fa-square-check"></i></button>
+                  <button class="btn btn-outline-secondary" title="Alle Stellen abwählen"><i class="fa-regular fa-square"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-1">
+                <div class="kopf">
+                  <span class="nr">1</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Ausbeutung als topologische Kategorie denken</div>
+                    <div class="zeit"><span class="m-serie">mmM#374</span> &middot; 02:10 bis 05:30 &middot; 5. August 2026</div>
+                  </div>
+                </div>
+                <div class="auszug">Ausbeutung ist für mich keine moralische Frage, sondern eine Frage der Lage: Wer sitzt an welcher Stelle im Netz der Abhängigkeiten, und wer kann wen nicht umgehen ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 91%"></span></div><span class="m-wert-zahl">0,91</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 02:10 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 02:10 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=130" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-2">
+                <div class="kopf">
+                  <span class="nr">2</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Ausbeutung als topologische Kategorie denken</div>
+                    <div class="zeit"><span class="m-serie">mmM#374</span> &middot; 08:44 bis 12:02 &middot; 5. August 2026</div>
+                  </div>
+                </div>
+                <div class="auszug">Topologisch heißt: Es geht nicht um Abstände, sondern um Verbindungen. Ob jemand ausgebeutet wird, entscheidet sich daran, ob es einen anderen Weg gibt oder nicht ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 87%"></span></div><span class="m-wert-zahl">0,87</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 08:44 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 08:44 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-3">
+                <div class="kopf">
+                  <span class="nr">3</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Ausbeutung als topologische Kategorie denken</div>
+                    <div class="zeit"><span class="m-serie">mmM#374</span> &middot; 15:20 bis 18:40 &middot; 5. August 2026</div>
+                  </div>
+                </div>
+                <div class="auszug">Der Markt ist dann keine Fläche, auf der sich alle frei bewegen, sondern ein Geflecht mit Engstellen. An den Engstellen sitzt die Macht, und wer dort sitzt, muss gar nichts tun ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 82%"></span></div><span class="m-wert-zahl">0,82</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 15:20 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 15:20 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-4">
+                <div class="kopf">
+                  <span class="nr">4</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23212%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Kapitalismus ist kein Wettbewerb der Ideen</div>
+                    <div class="zeit"><span class="m-serie">mmM#212</span> &middot; 14:02 bis 17:10 &middot; 3. März 2024</div>
+                  </div>
+                </div>
+                <div class="auszug">Ideen konkurrieren nicht, Kapitalstöcke konkurrieren. Die Idee ist nur das Vehikel, und wer das Vehikel nicht besitzt, hängt von dem ab, der es besitzt ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 74%"></span></div><span class="m-wert-zahl">0,74</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 14:02 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 14:02 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-5">
+                <div class="kopf">
+                  <span class="nr">5</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%238%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Was der Wettbewerb wirklich verursacht - morf erklärts</div>
+                    <div class="zeit"><span class="m-serie">mmM#8</span> &middot; 08:05 bis 11:20 &middot; 17. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Im Wettbewerb setzt sich nicht das durch, was gut ist, sondern das, was am meisten Leute zum Zahlen bringt. Das ist keine Wertung, das ist die Mechanik ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 71%"></span></div><span class="m-wert-zahl">0,71</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 08:05 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 08:05 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-6">
+                <div class="kopf">
+                  <span class="nr">6</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%23212%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Kapitalismus ist kein Wettbewerb der Ideen</div>
+                    <div class="zeit"><span class="m-serie">mmM#212</span> &middot; 04:30 bis 07:50 &middot; 3. März 2024</div>
+                  </div>
+                </div>
+                <div class="auszug">Wer das Kapital hat, entscheidet, welche Idee überhaupt eine Chance bekommt. Das ist der Punkt, an dem die Abhängigkeit beginnt, nicht erst beim Lohn ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 66%"></span></div><span class="m-wert-zahl">0,66</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 04:30 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 04:30 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle abgewaehlt" id="stelle-7">
+                <div class="kopf">
+                  <span class="nr">7</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</div>
+                    <div class="zeit"><span class="m-serie">mmM#6</span> &middot; 30:12 bis 33:40 &middot; 14. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Der Wille ist nicht frei, er ist das Ergebnis dessen, was vorher war. Das gilt für den Einzelnen wie für Gruppen, und deshalb ist auch Abhängigkeit nie nur eine Entscheidung ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 62%"></span></div><span class="m-wert-zahl">0,62</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 30:12 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 30:12 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle wieder aufnehmen"><i class="fa-regular fa-square"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-8">
+                <div class="kopf">
+                  <span class="nr">8</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%237%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</div>
+                    <div class="zeit"><span class="m-serie">mmM#7</span> &middot; 09:48 bis 12:30 &middot; 17. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Die Sachen, die wirklich weitergehen, entstehen oft da, wo keiner damit Geld verdienen muss. Da darf etwas kompliziert bleiben ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 58%"></span></div><span class="m-wert-zahl">0,58</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 09:48 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 09:48 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-9">
+                <div class="kopf">
+                  <span class="nr">9</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%231%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Kritik an der Linken von einem Linken</div>
+                    <div class="zeit"><span class="m-serie">mmM#1</span> &middot; 01:05 bis 04:10 &middot; 2. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Die Linke redet über Ausbeutung, als wäre sie ein Gefühl. Sie ist aber ein Verhältnis, und Verhältnisse kann man beschreiben, ohne sich zu empören ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 54%"></span></div><span class="m-wert-zahl">0,54</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 01:05 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 01:05 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle" id="stelle-10">
+                <div class="kopf">
+                  <span class="nr">10</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%234%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Weshalb Wettbewerb nicht mit Fortschritt einhergeht</div>
+                    <div class="zeit"><span class="m-serie">mmM#4</span> &middot; 01:10 bis 04:30 &middot; 6. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Fortschritt wäre: Es wird mehr möglich. Wettbewerb belohnt aber nur, was sich verkaufen lässt, und das sind zwei völlig verschiedene Dinge ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 51%"></span></div><span class="m-wert-zahl">0,51</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 01:10 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 01:10 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle abgewaehlt" id="stelle-11">
+                <div class="kopf">
+                  <span class="nr">11</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%238%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Was der Wettbewerb wirklich verursacht - morf erklärts</div>
+                    <div class="zeit"><span class="m-serie">mmM#8</span> &middot; 01:00 bis 03:50 &middot; 17. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Bevor wir über Wettbewerb reden, kurz zum Begriff selbst: Was heißt es überhaupt, dass zwei Anbieter konkurrieren, und worum konkurrieren sie eigentlich ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 46%"></span></div><span class="m-wert-zahl">0,46</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 01:00 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 01:00 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle wieder aufnehmen"><i class="fa-regular fa-square"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle abgewaehlt" id="stelle-12">
+                <div class="kopf">
+                  <span class="nr">12</span>
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90' viewBox='0 0 160 90'%3E%3Crect width='160' height='90' fill='%23c9d1da'/%3E%3Ctext x='80' y='51' text-anchor='middle' font-family='Barlow, sans-serif' font-size='18' font-weight='600' fill='%2355657a'%3EmmM%235%3C/text%3E%3C/svg%3E" alt="" />
+                  <div>
+                    <div class="titel">Noteninflation - ein ignoriertes Problem an Schulen und Universitäten</div>
+                    <div class="zeit"><span class="m-serie">mmM#5</span> &middot; 00:40 bis 03:05 &middot; 13. November 2020</div>
+                  </div>
+                </div>
+                <div class="auszug">Wenn alle gute Noten bekommen, sagt die Note nichts mehr. Das ist derselbe Mechanismus, nur im Bildungssystem ...</div>
+                <div class="aktionen">
+                  <div class="m-wert"><span style="width: 43%"></span></div><span class="m-wert-zahl">0,43</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 00:40 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 00:40 öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle wieder aufnehmen"><i class="fa-regular fa-square"></i></button>
+                </div>
+              </div>
+
+              <div class="small text-secondary text-center pt-1">12 von 12 Stellen geladen &middot; 36 von 48 Kandidaten verworfen (unter 0,40 oder Grenze je Video)</div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Audiospieler (bleibt über alle Ansichten) -->
+      <footer class="m-spieler">
+        <div>
+          <div class="titel">Ausbeutung als topologische Kategorie denken</div>
+          <div class="unter"><span class="m-serie">mmM#374</span> &middot; Thema: Ausbeutung als Lage im Netz</div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn btn-outline-secondary" title="30 Sekunden zurück"><i class="fa-solid fa-backward"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden zurück"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="btn btn-primary" title="Pause"><i class="fa-solid fa-pause"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
+        </div>
+        <div>
+          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+            <div class="thema" style="left: 0%; width: 9%">Einstieg</div>
+            <div class="thema" style="left: 9%; width: 29%">Ausbeutung als Lage im Netz</div>
+            <div class="thema" style="left: 38%; width: 28%">Was topologisch heißt</div>
+            <div class="thema" style="left: 66%; width: 22%">Engstellen und Macht</div>
+            <div class="thema" style="left: 88%; width: 12%">Schluss</div>
+            <div class="gespielt" style="width: 11%"></div>
+            <div class="marke" style="left: 11%"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="zeiten">02:31 / 22:41</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Nur suchen" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a class="aktiv" href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Fundstellen</h2>
+          <p>Jede Antwort im Chat stützt sich ausschließlich auf Textstellen aus der Bibliothek. Die Fundstellen stehen rechts, sortiert nach Ähnlichkeit zur Frage, jede mit Wert, Video, Folge, Zeitfenster und Sprung ins Audio.</p>
+          <h2>Nur suchen</h2>
+          <p>Der Knopf "<mark>Nur suchen</mark>" neben "Senden" findet die Stellen, ohne das Sprachmodell zu befragen. So siehst du zuerst, worauf eine Antwort gestützt würde, und kannst Stellen abwählen, die nicht zur Frage passen. Erst der Knopf "Aus n ausgewählten Stellen antworten" ruft das Sprachmodell.</p>
+          <h2>Stellen abwählen</h2>
+          <p>Das Häkchen an jeder Stelle schaltet sie ab oder wieder an. Abgewählte Stellen bleiben sichtbar, werden aber blass dargestellt und gehen nicht in die Antwort ein. Die beiden Knöpfe neben der Überschrift wählen alle Stellen auf einmal an oder ab.</p>
+          <h2>Suche verfeinern</h2>
+          <p>Passen die Stellen nicht, ändere Breite, Genauigkeit oder Filter in der Leiste rechts und lass mit "Erneut suchen" dieselbe Frage noch einmal suchen. Mehr Treffer und niedrigere Mindestähnlichkeit machen die Suche breiter, ein höherer Wert und die Neu-Bewertung machen sie strenger.</p>
+          <h2>Kandidaten</h2>
+          <p>Für Neu-Bewertung und Vielfalt holt die Suche mehr Kandidaten, als Treffer gewünscht sind (Einstellung "Kandidaten je Treffer"). Was unter der Mindestähnlichkeit liegt oder die Grenze je Video überschreitet, wird verworfen; die Zahl steht unter der Liste.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

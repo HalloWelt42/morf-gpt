@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Bibliothek</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a class="aktiv" href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <!-- Kopf der Ansicht: Titelzeile und Filterleiste bleiben stehen -->
+          <div class="m-ansicht-kopf flex-wrap">
+            <h1>Bibliothek</h1>
+            <span class="m-unter">664 von 1.491 Videos im Umfang &middot; Quelle TubeVault, zuletzt abgeglichen vor 12 Minuten</span>
+            <button class="m-info" title="Umfang: Nur Videos im Umfang laufen durch das Fließband und stehen dem Chat zur Verfügung. Videos außerhalb erscheinen abgeblendet.">i</button>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Kanal mit der Quelle abgleichen: neue Videos, Dauer und Downloadstand übernehmen"><i class="fa-solid fa-rotate"></i> Quelle abgleichen</button>
+            <button class="btn btn-sm btn-outline-secondary" title="Auswahlregel auf alle Videos anwenden: passende Videos kommen in den Umfang, von Hand gesetzte Ausnahmen bleiben"><i class="fa-solid fa-filter-circle-check"></i> Auswahlregel anwenden</button>
+            <button class="m-info" title="Auswahlregel: Nur Videos, die länger sind als die Mindestdauer (300 Sekunden), werden automatisch in den Umfang aufgenommen; Videoarten im Umfang sind Video und Live. Kürzere Videos und Shorts lassen sich hier von Hand aufnehmen. Einstellbar unter Einstellungen, Quelle und Auswahl.">i</button>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap w-100">
+              <div class="input-group input-group-sm" style="width: 260px">
+                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input class="form-control" type="search" placeholder="Titel oder Beschreibung durchsuchen ..." title="Volltextsuche in Titel und Beschreibung" />
+              </div>
+              <div class="input-group input-group-sm" style="width: 150px">
+                <span class="input-group-text">Serie</span>
+                <select class="form-select" title="Nach Serie filtern"><option selected>Alle</option><option>mmM</option><option>gmM</option><option>Ohne Serie</option></select>
+              </div>
+              <div class="input-group input-group-sm" style="width: 170px">
+                <span class="input-group-text">Stufe</span>
+                <select class="form-select" title="Nach höchster fertiger Stufe filtern"><option selected>Alle</option><option>Entdeckt</option><option>Audio</option><option>Transkribiert</option><option>Korrigiert</option><option>Gestückelt</option><option>Eingebettet</option><option>Mit Fehler</option></select>
+              </div>
+              <div class="input-group input-group-sm" style="width: 190px">
+                <span class="input-group-text">Auswahl</span>
+                <select class="form-select" title="Nur Videos im Umfang, nur Videos außerhalb oder alle"><option>Im Umfang</option><option>Nicht im Umfang</option><option selected>Alle</option></select>
+              </div>
+              <div class="input-group input-group-sm" style="width: 130px">
+                <span class="input-group-text">Typ</span>
+                <select class="form-select" title="Nach Videoart filtern"><option selected>Alle</option><option>Video</option><option>Live</option><option>Shorts</option></select>
+              </div>
+              <div class="input-group input-group-sm" style="width: 240px">
+                <span class="input-group-text" title="Sortierung"><i class="fa-solid fa-arrow-down-wide-short"></i></span>
+                <select class="form-select" title="Sortierung der Liste"><option selected>Zuletzt geändert zuerst</option><option>Datum, neueste zuerst</option><option>Datum, älteste zuerst</option><option>Folge absteigend</option><option>Folge aufsteigend</option><option>Dauer, längste zuerst</option><option>Titel A bis Z</option><option>Stufe, niedrigste zuerst</option></select>
+              </div>
+              <button class="m-info" title="Filter und Sortierung wirken sofort auf die Liste. Zuletzt geändert zuerst zeigt oben, was das Fließband gerade bewegt.">i</button>
+            </div>
+          </div>
+
+          <div class="m-ansicht-koerper d-flex flex-column gap-2" style="overflow: hidden">
+            <!-- Videoliste: Kopfzeile bleibt stehen, Zeilen rollen im Feld -->
+            <div class="m-tabelle-feld flex-grow-1">
+              <table class="table table-hover table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th style="width: 36px"><input class="form-check-input" type="checkbox" title="Alle Zeilen dieser Seite markieren" /></th>
+                    <th style="width: 76px"></th>
+                    <th>Titel</th>
+                    <th style="width: 96px">Serie</th>
+                    <th class="text-end" style="width: 80px">Dauer</th>
+                    <th style="width: 140px">Stufe</th>
+                    <th style="width: 310px">Offener Auftrag</th>
+                    <th style="width: 96px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="gewaehlt">
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" checked /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Wieso passen unsere Geschichten fast nie zur Realität? <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">3. September 2026</small>
+                    </td>
+                    <td><span class="m-serie">mmM#377</span></td>
+                    <td class="text-end">34:05</td>
+                    <td><span class="m-stufe audio"><i class="fa-solid fa-headphones"></i> Audio</span></td>
+                    <td><div class="m-fortschritt laeuft mb-1"><span style="width: 58%"></span></div><small class="text-secondary">Transkription läuft - 19:40 von 34:05</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr class="gewaehlt">
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" checked /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%23376%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Dogtooth-Effekt oder Herrschafts-Alexiphasie? <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">21. August 2026</small>
+                    </td>
+                    <td><span class="m-serie">mmM#376</span></td>
+                    <td class="text-end">24:52</td>
+                    <td><span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span></td>
+                    <td><div class="m-fortschritt laeuft mb-1"><span style="width: 81%"></span></div><small class="text-secondary">Audio läuft - Videostrom 163 von 201 Megabyte</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                    </td>
+                  </tr>
+                  <tr class="gewaehlt">
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" checked /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%23375%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">eine Anekdote aus der Welt der Schamanen <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">15. August 2026</small>
+                    </td>
+                    <td><span class="m-serie">mmM#375</span></td>
+                    <td class="text-end">29:35</td>
+                    <td><span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span></td>
+                    <td><div class="m-fortschritt laeuft mb-1"><span style="width: 12%"></span></div><small class="text-secondary">Audio läuft - ffmpeg wandelt in Mono-AAC</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Ausbeutung als topologische Kategorie denken <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">5. August 2026</small>
+                    </td>
+                    <td><span class="m-serie">mmM#374</span></td>
+                    <td class="text-end">22:41</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td><small class="text-secondary">Kein offener Auftrag &middot; eingebettet vor 1 Minute, 41 Stücke</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%231%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Kritik an der Linken von einem Linken <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">2. November 2020</small>
+                    </td>
+                    <td><span class="m-serie">mmM#1</span></td>
+                    <td class="text-end">6:58</td>
+                    <td><span class="m-stufe gestueckelt"><i class="fa-solid fa-scissors"></i> Gestückelt</span></td>
+                    <td><small class="text-secondary"><i class="fa-regular fa-clock"></i> Einbettung wartet, Platz 2 von 2 &middot; neu gestückelt vor 3 Minuten</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr class="table-danger">
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%23290%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Entropie &amp; Faschismus <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">14. Mai 2025</small>
+                    </td>
+                    <td><span class="m-serie">mmM#290</span></td>
+                    <td class="text-end">41:17</td>
+                    <td><span class="m-stufe transkribiert"><i class="fa-solid fa-closed-captioning"></i> Transkribiert</span></td>
+                    <td><div class="m-fortschritt mb-1"><span style="width: 44%; background: #b3352c"></span></div><small class="text-danger">Korrektur, Block 7 von 16: Sprachmodell: Zeitgrenze von 1.800 Sekunden überschritten (Versuch 3 von 3)</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3Emorf%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">tagesshit: keine Revolution am Horizont - Lernen oder Verstehen? <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">10. September 2026 &middot; neu seit dem letzten Abgleich</small>
+                    </td>
+                    <td><span class="text-secondary">-</span></td>
+                    <td class="text-end">24:11</td>
+                    <td><span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span></td>
+                    <td><small class="text-secondary"><i class="fa-regular fa-clock"></i> Audio wartet, Platz 20 von 21 (Serie zuerst)</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3Emorf%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">durchgeschaut: Clownfiesta Deluxe - Ulf Poschardt &amp; Ricarda Lang <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">8. September 2026 &middot; Livestream &middot; neu seit dem letzten Abgleich</small>
+                    </td>
+                    <td><span class="text-secondary">-</span></td>
+                    <td class="text-end">1:31:07</td>
+                    <td><span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span></td>
+                    <td><small class="text-secondary"><i class="fa-regular fa-clock"></i> Audio wartet, Platz 21 von 21 (Serie zuerst)</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                    </td>
+                  </tr>
+                  <tr class="opacity-50">
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EShorts%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Kritik ist keine Meinung #shorts <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">29. August 2026 &middot; Shorts &middot; <span class="badge text-bg-secondary">Nicht im Umfang</span></small>
+                    </td>
+                    <td><span class="text-secondary">-</span></td>
+                    <td class="text-end">0:52</td>
+                    <td><span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span></td>
+                    <td><small class="text-secondary">Kein Auftrag &middot; kürzer als die Mindestdauer von 300 Sekunden</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%23212%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Kapitalismus ist kein Wettbewerb der Ideen <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">3. März 2024</small>
+                    </td>
+                    <td><span class="m-serie">mmM#212</span></td>
+                    <td class="text-end">26:48</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td><small class="text-secondary">Kein offener Auftrag &middot; eingebettet gestern, 48 Stücke</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%238%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Was der Wettbewerb wirklich verursacht - morf erklärts <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">17. November 2020</small>
+                    </td>
+                    <td><span class="m-serie">mmM#8</span></td>
+                    <td class="text-end">13:54</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td><small class="text-secondary">Kein offener Auftrag &middot; eingebettet vor 3 Tagen, 24 Stücke</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%237%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">17. November 2020</small>
+                    </td>
+                    <td><span class="m-serie">mmM#7</span></td>
+                    <td class="text-end">12:49</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td><small class="text-secondary">Kein offener Auftrag &middot; eingebettet vor 3 Tagen, 22 Stücke</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Das Bewusstsein und den Willen verstehen (mit vielen Quellen) <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">14. November 2020</small>
+                    </td>
+                    <td><span class="m-serie">mmM#6</span></td>
+                    <td class="text-end">42:42</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td><small class="text-secondary">Kein offener Auftrag &middot; eingebettet vor 3 Tagen, 71 Stücke</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input class="form-check-input" type="checkbox" title="Zeile markieren" /></td>
+                    <td><img class="m-mini" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='36'%3E%3Crect%20width='64'%20height='36'%20fill='%238492a3'/%3E%3Ctext%20x='32'%20y='22'%20font-family='sans-serif'%20font-size='10'%20font-weight='700'%20fill='%23ffffff'%20text-anchor='middle'%3EmmM%235%3C/text%3E%3C/svg%3E" alt="" /></td>
+                    <td>
+                      <div class="fw-semibold">Noteninflation - ein ignoriertes Problem an Schulen und Universitäten <a class="text-secondary ms-1" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer" title="Bei YouTube öffnen"><i class="fa-brands fa-youtube"></i></a></div>
+                      <small class="text-secondary">13. November 2020</small>
+                    </td>
+                    <td><span class="m-serie">mmM#5</span></td>
+                    <td class="text-end">11:26</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td><small class="text-secondary">Kein offener Auftrag &middot; eingebettet vor 3 Tagen, 19 Stücke</small></td>
+                    <td class="text-nowrap">
+                      <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                      <button class="btn btn-sm btn-outline-primary" title="Audio abspielen"><i class="fa-solid fa-play"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Stapelaktionen und Seiten -->
+            <div class="d-flex align-items-center gap-2 flex-wrap flex-shrink-0">
+              <span class="fw-semibold">3 markiert:</span>
+              <button class="btn btn-sm btn-outline-primary" title="Markierte Videos in den Umfang aufnehmen; das Fließband legt die Aufträge an"><i class="fa-solid fa-square-plus"></i> In den Umfang aufnehmen</button>
+              <button class="btn btn-sm btn-outline-secondary" title="Markierte Videos aus dem Umfang nehmen; vorhandene Ergebnisse bleiben, es werden keine neuen Aufträge angelegt"><i class="fa-solid fa-square-minus"></i> Aus dem Umfang nehmen</button>
+              <button class="btn btn-sm btn-outline-secondary" title="Markierte Videos im Fließband vor alle wartenden Aufträge stellen"><i class="fa-solid fa-forward-fast"></i> Vorziehen</button>
+              <div class="input-group input-group-sm" style="width: 340px">
+                <button class="btn btn-outline-warning" title="Markierte Videos auf die gewählte Stufe zurücksetzen; spätere Ergebnisse werden verworfen und neu erzeugt"><i class="fa-solid fa-rotate-left"></i> Zurücksetzen auf Stufe</button>
+                <select class="form-select" title="Zielstufe"><option>Entdeckt</option><option>Audio</option><option selected>Transkribiert</option><option>Korrigiert</option><option>Gestückelt</option></select>
+              </div>
+              <button class="m-info" title="Stapelaktionen gelten für alle markierten Zeilen. Zurücksetzen zeigt vorher, welche Transkripte, Korrekturen, Stücke und Vektoren verworfen würden.">i</button>
+              <span class="ms-auto small text-secondary">1 bis 50 von 1.491 Videos &middot; Seite 1 von 30</span>
+              <div class="input-group input-group-sm" style="width: 150px">
+                <span class="input-group-text">Je Seite</span>
+                <select class="form-select" title="Zeilen je Seite"><option>25</option><option selected>50</option><option>100</option><option>200</option></select>
+              </div>
+              <nav aria-label="Seiten">
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item disabled"><a class="page-link" href="#" title="Vorige Seite"><i class="fa-solid fa-chevron-left"></i></a></li>
+                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">4</a></li>
+                  <li class="page-item disabled"><span class="page-link">...</span></li>
+                  <li class="page-item"><a class="page-link" href="#">30</a></li>
+                  <li class="page-item"><a class="page-link" href="#" title="Nächste Seite"><i class="fa-solid fa-chevron-right"></i></a></li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Auswahlregel" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a class="aktiv" href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Bibliothek</h2>
+          <p>Die Bibliothek zeigt alle Videos, die die Quelle kennt. Jede Zeile trägt Vorschaubild, Titel mit Sprung zu YouTube, Serie und Folge, Dauer, die höchste fertige Stufe des Fließbands und den offenen Auftrag, falls gerade einer läuft oder wartet.</p>
+          <h2>Umfang</h2>
+          <p>Nur Videos im Umfang laufen durch das Fließband und stehen dem Chat zur Verfügung. Die Kopfzeile zeigt, wie viele der bekannten Videos im Umfang sind. Videos außerhalb des Umfangs erscheinen abgeblendet mit dem Abzeichen "Nicht im Umfang".</p>
+          <h2><mark>Auswahlregel</mark></h2>
+          <p>Beim Abgleich mit der Quelle entscheidet die <mark>Auswahlregel</mark>, welche Videos automatisch in den Umfang kommen: Videos, die länger sind als die Mindestdauer (Vorgabe 300 Sekunden) und zu den Videoarten im Umfang gehören (Vorgabe Video und Live). Shorts bleiben darum draußen. "Auswahlregel anwenden" wendet die Regel auf alle Videos erneut an; von Hand gesetzte Ausnahmen bleiben erhalten. Die Grenzen stehen unter Einstellungen, Quelle und Auswahl.</p>
+          <h2>Stufen</h2>
+          <p>Entdeckt, Audio, Transkribiert, Korrigiert, Gestückelt, Eingebettet: die Stufe einer Zeile ist die höchste fertige Stufe. Ein Fehler im offenen Auftrag färbt die Zeile rot; die Meldung steht daneben, die Wiederholung läuft im Fließband.</p>
+          <h2>Markieren und Stapelaktionen</h2>
+          <p>Mit den Kästchen links markierst du Zeilen, das Kästchen in der Kopfzeile markiert die ganze Seite. Die Leiste unter der Tabelle wirkt auf alle markierten Zeilen: in den Umfang aufnehmen, aus dem Umfang nehmen, vorziehen oder auf eine Stufe zurücksetzen. Zurücksetzen zeigt vorher, welche Ergebnisse verworfen würden.</p>
+          <h2>Filter und Seiten</h2>
+          <p>Suchfeld, Serie, Stufe, Auswahl und Typ grenzen die Liste ein, die Sortierung ordnet sie. Die Liste lädt seitenweise; die Zeilen je Seite wählst du unten rechts.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

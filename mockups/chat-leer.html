@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Chat</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a class="aktiv" href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Unterhaltungen, die neue ist aktiv -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf">
+            <i class="fa-solid fa-comments"></i> Unterhaltungen
+            <button class="btn btn-sm btn-primary ms-auto" title="Neue Unterhaltung"><i class="fa-solid fa-plus"></i> Neu</button>
+          </div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action active" href="#">
+                <div class="fw-semibold text-truncate">Neue Unterhaltung</div>
+                <small class="opacity-75">gerade eben - noch keine Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Was meint morf mit Kasualisierung?</div>
+                <small class="text-secondary">heute, 20:44 - 4 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Wettbewerb und Fortschritt</div>
+                <small class="text-secondary">gestern - 6 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Bewusstsein und Wille (mmM#6)</div>
+                <small class="text-secondary">7. September - 2 Nachrichten</small>
+              </a>
+              <a class="list-group-item list-group-item-action" href="#">
+                <div class="fw-semibold text-truncate">Noteninflation an Schulen</div>
+                <small class="text-secondary">2. September - 4 Nachrichten</small>
+              </a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Leerzustand und Eingabe -->
+        <section class="m-chat">
+          <div class="m-ansicht-kopf">
+            <h1>Neue Unterhaltung</h1>
+            <button class="m-info" title="Der Name entsteht aus der ersten Frage und lässt sich über den Stift jederzeit ändern">i</button>
+            <span class="m-unter">Noch keine Nachrichten &middot; antwortet mit qwen3-next-80b-a3b-instruct-mlx</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Unterhaltung umbenennen"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-sm btn-outline-danger" title="Unterhaltung verwerfen"><i class="fa-solid fa-trash"></i></button>
+          </div>
+
+          <div class="m-chat-verlauf d-flex flex-column">
+            <div class="m-leer my-auto w-100">
+              <i class="fa-regular fa-comment-dots mx-auto"></i>
+              <h2 class="h4 fw-semibold text-body">Wonach möchtest du die Bibliothek fragen?</h2>
+              <p class="mx-auto" style="max-width: 640px">Stell eine Frage zu den Erklärvideos von morf. morf-gpt sucht die passenden Textstellen, zeigt sie rechts und antwortet ausschließlich daraus - jede Aussage mit Beleg. Oder beginne mit einem Beispiel:</p>
+
+              <div class="d-grid gap-2 mx-auto mt-4" style="max-width: 640px">
+                <button type="button" class="btn btn-outline-secondary btn-lg text-start" data-beispiel title="Frage in das Eingabefeld übernehmen">Was meint morf mit Kasualisierung?</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg text-start" data-beispiel title="Frage in das Eingabefeld übernehmen">Warum belohnt Wettbewerb laut morf keinen Fortschritt?</button>
+                <button type="button" class="btn btn-outline-secondary btn-lg text-start" data-beispiel title="Frage in das Eingabefeld übernehmen">Was heißt es, Ausbeutung als topologische Kategorie zu denken?</button>
+              </div>
+
+              <div class="m-kennzahl text-start mx-auto mt-4" style="max-width: 640px">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="fw-semibold text-body">Stand der Bibliothek</span>
+                  <button class="m-info" title="Nur eingebettete Videos sind für die Suche sichtbar. Der Rest folgt, sobald das Fließband ihn durchgereicht hat">i</button>
+                  <a class="ms-auto small" href="fliessband.html" title="Zum Fließband wechseln">Zum Fließband</a>
+                </div>
+                <div class="m-fortschritt my-2" title="178 von 664 Videos eingebettet"><span style="width: 27%"></span></div>
+                <div class="text-body">178 von 664 Videos eingebettet - die Antwort kennt bislang 9.301 Stellen.</div>
+                <div class="small mt-1">Serie mmM zuerst, zuletzt eingebettet: <span class="m-serie">mmM#374</span> &middot; 3 Aufträge laufen gerade &middot; Einbettung mit text-embedding-bge-m3</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-chat-eingabe">
+            <div class="feld">
+              <textarea class="form-control" rows="2" placeholder="Frage an die Bibliothek ... (Umschalt + Eingabe für eine neue Zeile)"></textarea>
+              <button class="btn btn-primary btn-lg" title="Senden"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+            <div class="hinweis">Die Antwort entsteht ausschließlich aus Textstellen der Bibliothek. Die Leiste rechts bestimmt, wie breit und wie streng gesucht wird.</div>
+          </div>
+        </section>
+
+        <!-- Rechts: Suchparameter (feste Leiste), noch keine Fundstellen -->
+        <aside class="m-seite">
+          <div class="m-seite-kopf"><i class="fa-solid fa-magnifying-glass"></i> Suche und Stellen <button class="m-info ms-auto" title="Hilfe zur Suche">i</button></div>
+          <div class="m-seite-koerper p-0">
+            <div class="m-parameter">
+              <h6>Breite <button class="m-info" title="Wie viele Stellen die Suche einbezieht">i</button></h6>
+              <div class="m-regler">
+                <label>Treffer</label><span class="wert"></span>
+                <input type="range" class="form-range" min="1" max="50" value="8" />
+              </div>
+              <div class="m-regler">
+                <label>Nachbarstücke je Treffer</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="3" value="1" />
+              </div>
+              <div class="m-regler">
+                <label>Höchstens je Video</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="10" value="3" />
+              </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Genauigkeit <button class="m-info" title="Wie streng die Suche filtert">i</button></h6>
+              <div class="m-regler">
+                <label>Mindestähnlichkeit</label><span class="wert"></span>
+                <input type="range" class="form-range" min="0" max="1" step="0.01" value="0.45" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small mb-1">Neu-Bewertung</label>
+                <select class="form-select form-select-sm">
+                  <option>Aus</option>
+                  <option selected>Cross-Encoder (lokal, etwa eine Sekunde)</option>
+                  <option>Sprachmodell (sehr genau, langsam)</option>
+                </select>
+              </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Filter</h6>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small mb-1">Serie</label>
+                  <select class="form-select form-select-sm"><option>Alle</option><option selected>mmM</option><option>gmM</option></select>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small mb-1">Zeitraum</label>
+                  <select class="form-select form-select-sm"><option selected>Alle Jahre</option><option>2026</option><option>2025</option><option>2020 bis 2024</option></select>
+                </div>
+              </div>
+              <div class="form-check form-switch mt-2">
+                <input class="form-check-input" type="checkbox" id="videoebene" checked />
+                <label class="form-check-label small" for="videoebene">Videozusammenfassung mitgeben</label>
+              </div>
+            </div>
+
+            <div class="p-3">
+              <div class="d-flex align-items-center mb-2">
+                <h6 class="m-0 small text-uppercase text-secondary">Fundstellen</h6>
+                <span class="ms-auto small text-secondary">Werte der letzten Unterhaltung</span>
+              </div>
+              <div class="m-leer py-4 px-2">
+                <i class="fa-solid fa-magnifying-glass mx-auto"></i>
+                <div class="fw-semibold text-body">Noch keine Suche</div>
+                <div class="small mt-1">Mit der ersten Frage erscheinen hier die Textstellen, aus denen die Antwort entsteht - mit Wert, Video, Zeitfenster und Sprung ins Audio.</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Kein Video im Spiel: Spieler leer -->
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a class="aktiv" href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Chat</h2>
+          <p>Eine Unterhaltung beginnt mit einer Frage. morf-gpt bettet die Frage mit demselben Modell ein, das den Index gebaut hat, sucht in der Bibliothek die passendsten Textstellen und lässt das Sprachmodell ausschließlich daraus antworten. Jede Aussage trägt eine Nummer, die auf die belegende Stelle zeigt.</p>
+          <h2>Neue Unterhaltung</h2>
+          <p>Der Name entsteht aus der ersten Frage und lässt sich über den Stift ändern. Die Beispielfragen übernehmen ihren Text in das Eingabefeld; du kannst ihn vor dem Senden anpassen. Umschalt + Eingabe setzt eine neue Zeile, Eingabe sendet.</p>
+          <h2>Stand der Bibliothek</h2>
+          <p>Nur eingebettete Videos sind durchsuchbar. Der Hinweis unter den Beispielen zeigt, wie viele Videos das Fließband schon durchgereicht hat. Fehlt ein Thema in der Antwort, lohnt ein Blick auf das Fließband: vielleicht wartet das Video noch auf Transkription oder Korrektur.</p>
+          <h2>Suchleiste</h2>
+          <p>Rechts steht die feste Leiste mit Breite und Genauigkeit. Eine neue Unterhaltung übernimmt die Werte der letzten; Änderungen gelten ab der nächsten Frage. Nach der ersten Frage erscheinen darunter die Fundstellen, die du abwählen und mit "Neu antworten" gezielt eingrenzen kannst.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Nur Anschauung: eine Beispielfrage wandert in das Eingabefeld.
+      document.addEventListener("DOMContentLoaded", () => {
+        const feld = document.querySelector(".m-chat-eingabe textarea");
+        document.querySelectorAll("[data-beispiel]").forEach((k) => {
+          k.addEventListener("click", () => {
+            feld.value = k.textContent.trim();
+            feld.focus();
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

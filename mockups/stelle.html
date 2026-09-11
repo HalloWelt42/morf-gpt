@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Textstelle</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      /* Seitenspezifika (Vorschlag für app.css, siehe Bericht) */
+      .m-stueck-text { font-size: 1.05rem; line-height: 1.6; resize: vertical; }
+      .m-ansicht-kopf.zweizeilig, .m-seite-kopf.zweizeilig { min-height: 66px; }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a class="aktiv" href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: das Stück im Bearbeitungsmodus -->
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf zweizeilig">
+            <a class="btn btn-sm btn-outline-secondary" href="stellen.html" title="Zurück zur Liste der Textstellen"><i class="fa-solid fa-arrow-left"></i> Zurück</a>
+            <div style="min-width: 0">
+              <h1 class="text-truncate">Stück 4 von 11 - Wieso passen unsere Geschichten fast nie zur Realität? | mmM#377</h1>
+              <span class="m-unter"><i class="fa-regular fa-clock"></i> 09:12 bis 12:40 &middot; Thema: Geschichten als Vereinfachung &middot; <span class="badge text-bg-warning">wird bearbeitet</span></span>
+            </div>
+            <span class="m-luecke"></span>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Zwischen den Stücken blättern">
+              <a class="btn btn-outline-secondary" href="stelle.html" title="Voriges Stück (3 von 11)"><i class="fa-solid fa-chevron-left"></i></a>
+              <a class="btn btn-outline-secondary" href="stelle.html" title="Nächstes Stück (5 von 11)"><i class="fa-solid fa-chevron-right"></i></a>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" title="Im eigenen Spieler ab 09:12 abspielen"><i class="fa-solid fa-play"></i> Ab 09:12</button>
+            <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 09:12 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=552" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+            <button class="btn btn-sm btn-outline-secondary" title="Stück an der Schreibmarke in zwei Stücke teilen"><i class="fa-solid fa-scissors"></i> Teilen</button>
+            <button class="m-info" title="Hilfe zum Bearbeiten einer Textstelle">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <label class="fw-semibold mb-0" for="stueck-text">Text des Stücks</label>
+              <button class="m-info" title="Nur Wortlaut und Form ändern. Leere Zeilen trennen Absätze. Zeitfenster und Thema stammen aus der Korrektur und werden hier nicht mitbearbeitet.">i</button>
+              <span class="ms-auto small text-secondary">Zuletzt gespeichert: 9. September 2026, 21:52</span>
+            </div>
+            <textarea id="stueck-text" class="form-control m-stueck-text" rows="18" spellcheck="true">Und genau da fängt das Problem an. Wir erzählen nicht, weil die Welt eine Geschichte ist, sondern weil unser Kopf ohne Geschichte nichts festhalten kann. Eine Erzählung ist das Format, in dem wir Erfahrung überhaupt erst speichern und weitergeben können. Das ist keine Schwäche, das ist die Bedingung dafür, dass wir uns überhaupt an irgendetwas erinnern, das länger als ein paar Sekunden zurückliegt. Was macht eine Geschichte eigentlich? Sie braucht jemanden, der handelt. Sie braucht einen Grund, warum er handelt. Und sie braucht ein Ende, an dem klar ist, was das Ganze bedeutet hat. Held, Motiv und Auflösung. Wenn eines davon fehlt, empfinden wir das nicht als Geschichte, sondern als Aufzählung. Und Aufzählungen vergessen wir sofort wieder, egal wie wichtig der Inhalt war.
+
+Die Realität hat aber keinen dieser drei Bestandteile. Es gibt keinen Helden, es gibt Millionen Leute, die alle gleichzeitig irgendetwas tun, und keiner davon überblickt das Ganze. Es gibt keinen einzelnen Grund, es gibt Bedingungen, die sich gegenseitig verstärken oder abschwächen, und die meisten davon hat nie jemand entschieden. Und es gibt kein Ende. Eine Wirtschaftskrise hört nicht auf, weil die Moral gezogen wurde, sie geht in die nächste Lage über, und die hat schon wieder andere Beteiligte. Wenn wir jetzt eine Geschichte über die Realität erzählen, dann müssen wir also etwas tun, das man ehrlicherweise Fälschung nennen müsste: Wir suchen uns eine Person aus, der wir die Handlung zuschreiben. Wir suchen uns aus den hundert Bedingungen die eine aus, die sich am besten als Grund erzählen lässt. Und wir schneiden an der Stelle ab, an der es für uns nach einem Ende aussieht. Das Ergebnis ist eine Vereinfachung, und zwar nicht eine, die man später wieder auffalten könnte, sondern eine, die die Struktur des Ereignisses ersetzt hat. Die Geschichte steht dann nicht mehr für das Ereignis, sie steht an seiner Stelle.
+
+Das ist übrigens auch der Grund, warum sich zwei Leute über dasselbe Ereignis so heftig streiten können, obwohl beide die gleichen Fakten kennen. Sie streiten nicht über Fakten. Sie streiten darüber, wen sie zum Helden gemacht haben, welche Bedingung sie zum Grund erklärt haben und wo sie das Ende gesetzt haben. Drei Entscheidungen, die keiner von beiden bewusst getroffen hat, und die trotzdem alles bestimmen, was danach kommt. Und keine dieser drei Entscheidungen steht irgendwo in den Fakten drin. Ich will das an einem Beispiel zeigen, das jeder kennt: der Gründer, der in einer Garage angefangen hat. Die Geschichte hat einen Helden, ein Motiv, nämlich die Vision, und ein Ende, nämlich den Erfolg. Was sie weglässt: die zwanzig anderen Garagen, in denen dasselbe passiert ist und die keiner kennt, weil es dort nicht geklappt hat. Die Geschichte erzählt nicht, was passiert ist, sondern was übrig geblieben ist, nachdem der Zufall aussortiert hat. Und damit sind wir beim nächsten Punkt: der Rolle des Zufalls, die in fast jeder Erzählung, die wir einander vorsetzen, vollständig fehlt.</textarea>
+            <div class="d-flex flex-wrap align-items-center gap-3 mt-2 small text-secondary">
+              <span><b class="text-body">3.012</b> Zeichen, Ziel 3.000 <button class="m-info" title="Zielgröße eines Stücks (Einstellung, 800 bis 8.000 Zeichen). Ein Stück darf abweichen; das Einbettungsmodell verträgt bis etwa 8.000 Zeichen.">i</button></span>
+              <span>Überlappung vor <b class="text-body">402</b> / nach <b class="text-body">388</b> <button class="m-info" title="Die ersten 402 Zeichen wiederholen ganze Sätze vom Ende des Vorgängers, die letzten 388 Zeichen stehen auch am Anfang des Nachfolgers. So endet kein Gedanke am Schnitt.">i</button></span>
+              <span class="ms-auto"><i class="fa-solid fa-triangle-exclamation text-warning"></i> Änderungen noch nicht gespeichert</span>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+              <button class="btn btn-primary" title="Text speichern und den Vektor dieses Stücks neu berechnen"><i class="fa-solid fa-floppy-disk"></i> Speichern und neu einbetten</button>
+              <button class="btn btn-outline-secondary" title="Änderungen verwerfen und den gespeicherten Text wiederherstellen"><i class="fa-solid fa-xmark"></i> Verwerfen</button>
+              <span class="small text-secondary ms-2">Beim Speichern wird nur dieses Stück neu eingebettet; Nachbarn, Zeitfenster und Thema bleiben unverändert.</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rechts: Nachbarn, Einbettungsstand, Herkunft -->
+        <aside class="m-seite">
+          <div class="m-seite-kopf zweizeilig"><i class="fa-solid fa-link"></i> Zusammenhang <button class="m-info ms-auto" title="Nachbarstücke, Einbettungsstand und Herkunft dieses Stücks">i</button></div>
+          <div class="m-seite-koerper p-0">
+            <div class="m-parameter">
+              <h6>Vorgänger <button class="m-info" title="Das Stück davor im selben Video. Sein Ende wird in diesem Stück wiederholt (Überlappung vor).">i</button></h6>
+              <div class="m-stelle mb-0">
+                <div class="kopf">
+                  <span class="nr">3</span>
+                  <div>
+                    <div class="titel">Stück 3 von 11</div>
+                    <div class="zeit">05:50 bis 09:37 &middot; Thema: Warum wir überhaupt erzählen</div>
+                  </div>
+                </div>
+                <div class="auszug">... Das ist keine Schwäche, das ist die Bedingung dafür, dass wir uns überhaupt an irgendetwas erinnern, das länger als ein paar Sekunden zurückliegt.</div>
+                <div class="aktionen">
+                  <span class="small text-secondary flex-grow-1">endet mit den 402 Zeichen, mit denen dieses Stück beginnt</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 05:50 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" href="stelle.html" title="Zu Stück 3 springen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Stück 3 und dieses Stück zu einem zusammenlegen"><i class="fa-solid fa-object-group"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-parameter">
+              <h6>Nachfolger <button class="m-info" title="Das Stück danach im selben Video. Es beginnt mit dem Ende dieses Stücks (Überlappung nach).">i</button></h6>
+              <div class="m-stelle mb-0">
+                <div class="kopf">
+                  <span class="nr">5</span>
+                  <div>
+                    <div class="titel">Stück 5 von 11</div>
+                    <div class="zeit">12:16 bis 15:44 &middot; Thema: Die Rolle des Zufalls</div>
+                  </div>
+                </div>
+                <div class="auszug">Was sie weglässt: die zwanzig anderen Garagen, in denen dasselbe passiert ist und die keiner kennt, weil es dort nicht geklappt hat. Die Geschichte erzählt nicht, was passiert ist, sondern was übrig geblieben ist, nachdem der Zufall aussortiert hat. Und damit sind wir beim nächsten Punkt: der Rolle des Zufalls, die in fast jeder Erzählung, die wir einander vorsetzen, vollständig fehlt.</div>
+                <div class="aktionen">
+                  <span class="small text-secondary flex-grow-1">beginnt mit den letzten 388 Zeichen dieses Stücks</span>
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 12:16 abspielen"><i class="fa-solid fa-play"></i></button>
+                  <a class="btn btn-sm btn-outline-secondary" href="stelle.html" title="Zu Stück 5 springen"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  <button class="btn btn-sm btn-outline-secondary" title="Dieses Stück und Stück 5 zu einem zusammenlegen"><i class="fa-solid fa-object-group"></i></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="m-parameter">
+              <h6>Einbettung <button class="m-info" title="Der Vektor, mit dem die Suche dieses Stück findet. Er gehört zum gespeicherten Text; nach einer Textänderung wird er beim Speichern neu berechnet.">i</button></h6>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> eingebettet</span>
+                <span class="small text-secondary">passt zum gespeicherten Text</span>
+              </div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Anbieter</span><span class="fw-semibold text-end">LM Studio (lokal)</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Modell</span><span class="fw-semibold text-end">text-embedding-bge-m3</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Dimension</span><span class="fw-semibold text-end">1024</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Zeitpunkt</span><span class="fw-semibold text-end">9. September 2026, 21:58</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Dauer</span><span class="fw-semibold text-end">0,4 Sekunden</span></div>
+              <div class="small py-1">
+                <span class="text-secondary">Kontextkopf <button class="m-info" title="Der Einbettungstext beginnt mit Videotitel und Thema, damit die Suche den Zusammenhang kennt (Einstellung Kontextkopf einbetten).">i</button></span>
+                <div class="text-truncate" title="Video: Wieso passen unsere Geschichten fast nie zur Realität? | Thema: Geschichten als Vereinfachung">Video: Wieso passen unsere Geschichten fast nie zur Realität? | Thema: Geschichten als Vereinfachung</div>
+              </div>
+              <button class="btn btn-sm btn-outline-primary mt-2" title="Vektor dieses Stücks neu berechnen, ohne den Text zu ändern"><i class="fa-solid fa-rotate"></i> Neu einbetten</button>
+            </div>
+
+            <div class="m-parameter">
+              <h6>Herkunft <button class="m-info" title="Woher der Text stammt: Video, Korrekturlauf und die Absätze der Korrektur, aus denen dieses Stück geschnitten wurde.">i</button></h6>
+              <div class="d-flex gap-2 align-items-start mb-2">
+                <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='36' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%238492a3'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%23ffffff'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" />
+                <div style="min-width: 0">
+                  <div class="fw-semibold small">Wieso passen unsere Geschichten fast nie zur Realität?</div>
+                  <div class="small text-secondary"><span class="m-serie">mmM#377</span> &middot; 3. September 2026 &middot; 34:05</div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Korrektur vom</span><span class="fw-semibold text-end">9. September 2026, 21:47</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Modell</span><span class="fw-semibold text-end text-truncate" title="qwen3-next-80b-a3b-instruct-mlx">qwen3-next-80b-a3b-instruct-mlx</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Ähnlichkeit zum Rohtext</span><span class="fw-semibold text-end">0,93 &middot; 0 Blöcke verworfen</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1 border-bottom"><span class="text-secondary">Absätze</span><span class="fw-semibold text-end">5 bis 7</span></div>
+              <div class="d-flex justify-content-between gap-2 small py-1"><span class="text-secondary">Stückelung vom</span><span class="fw-semibold text-end">9. September 2026, 21:51</span></div>
+              <div class="d-flex flex-wrap gap-2 mt-2">
+                <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Video mit Transkript, Korrektur und allen Stücken öffnen"><i class="fa-solid fa-film"></i> Video</a>
+                <a class="btn btn-sm btn-outline-secondary" href="video-vergleich.html" title="Rohtext und Korrektur der Absätze 5 bis 7 nebeneinander"><i class="fa-solid fa-code-compare"></i> Vergleich</a>
+                <a class="btn btn-sm btn-outline-secondary" href="video.html" title="Absätze 5 bis 7 im korrigierten Transkript zeigen"><i class="fa-solid fa-align-left"></i> Absätze</a>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <!-- Audiospieler (bleibt über alle Ansichten) -->
+      <footer class="m-spieler">
+        <div>
+          <div class="titel">Wieso passen unsere Geschichten fast nie zur Realität?</div>
+          <div class="unter"><span class="m-serie">mmM#377</span> &middot; Thema: Geschichten als Vereinfachung</div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn btn-outline-secondary" title="30 Sekunden zurück"><i class="fa-solid fa-backward"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden zurück"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="btn btn-primary" title="Pause"><i class="fa-solid fa-pause"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
+        </div>
+        <div>
+          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+            <div class="thema" style="left: 0%; width: 6%">Einstieg</div>
+            <div class="thema" style="left: 6%; width: 21%">Warum wir überhaupt erzählen</div>
+            <div class="thema" style="left: 27%; width: 10%">Geschichten als Vereinfachung</div>
+            <div class="thema" style="left: 37%; width: 20%">Die Rolle des Zufalls</div>
+            <div class="thema" style="left: 57%; width: 24%">Systeme statt Helden</div>
+            <div class="thema" style="left: 81%; width: 19%">Was daraus folgt</div>
+            <div class="gespielt" style="width: 28%"></div>
+            <div class="marke" style="left: 28%"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="zeiten">09:31 / 34:05</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="https://youtu.be/xxxxxxxxxxx?t=571" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Überlappung" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a class="aktiv" href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Textstelle bearbeiten</h2>
+          <p>Ein Stück ist ein Ausschnitt aus dem korrigierten Transkript eines Videos. Die Suche findet Stücke, und das Sprachmodell bekommt sie als Belege. Diese Seite zeigt ein einzelnes Stück mit allem, was dazugehört, und lässt dich seinen Text ändern.</p>
+          <h2>Text ändern</h2>
+          <p>Ändere nur Wortlaut und Form, etwa einen Hörfehler, den die Korrektur übersehen hat. Leere Zeilen trennen Absätze. Zeitfenster und Thema stammen aus der Korrektur und bleiben stehen; ein anderer Schnitt gehört in das Video (neu stückeln) oder in die Knöpfe Teilen und Zusammenlegen.</p>
+          <h2>Zähler unter dem Text</h2>
+          <p><b>Zeichen und Ziel</b>: Die Zielgröße eines Stücks ist eine Einstellung (Vorgabe 3.000, erlaubt 800 bis 8.000 Zeichen). Ein Stück darf davon abweichen; das Einbettungsmodell verträgt bis etwa 8.000 Zeichen.</p>
+          <p><b><mark>Überlappung</mark> vor und nach</b>: Damit kein Gedanke am Schnitt verloren geht, wiederholt jedes Stück ganze Sätze vom Ende des Vorgängers, und sein eigenes Ende steht auch am Anfang des Nachfolgers. Die Zahlen sagen, wie viele Zeichen das jeweils sind. Änderst du den überlappenden Text nur hier, unterscheiden sich die Kopien; die Suche entdoppelt Nachbarn an den Überlappungen trotzdem.</p>
+          <h2>Speichern und neu einbetten</h2>
+          <p>Speichern schreibt den Text und berechnet sofort den Vektor dieses einen Stücks neu, mit demselben Modell, das den Index gebaut hat. Nachbarn werden nicht angefasst. <b>Verwerfen</b> stellt den gespeicherten Text wieder her.</p>
+          <h2>Vorgänger und Nachfolger</h2>
+          <p>Rechts stehen das Stück davor und das Stück danach im selben Video, jeweils mit Zeitfenster, Thema und einem gekürzten Auszug. Von dort springst du zum Nachbarn, spielst ihn ab oder legst ihn mit diesem Stück zusammen.</p>
+          <h2>Einbettungsstand</h2>
+          <p>Zeigt Anbieter, Modell, Dimension und Zeitpunkt des Vektors. <b>Neu einbetten</b> berechnet ihn ohne Textänderung neu, zum Beispiel nach einem Modellwechsel. Die Suche fragt immer mit dem Modell, das den Index gebaut hat.</p>
+          <h2>Herkunft</h2>
+          <p>Jedes Stück führt zur Quelle zurück: zum Video mit Originaldaten, zum Korrekturlauf mit Modell und Ähnlichkeit zum Rohtext und zu den Absätzen der Korrektur, aus denen es geschnitten wurde. Der Sprung zu YouTube öffnet das Video an der Sekunde des Zeitfensters.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

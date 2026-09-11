@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Quellen</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      /* Vorschlag für app.css: Kartenkopf und -fuß folgen dem Thema (Bootstrap-Thema hat $card-cap-bg fest hell) */
+      .card { --bs-card-bg: var(--m-flaeche); --bs-card-cap-bg: var(--m-flaeche-2); --bs-card-border-color: var(--m-rand); }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a class="aktiv" href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Navigation der Einstellungen -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf"><i class="fa-solid fa-sliders"></i> Einstellungen</div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action" href="einstellungen.html"><i class="fa-solid fa-gear fa-fw me-2"></i>Allgemein</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#band"><i class="fa-solid fa-diagram-next fa-fw me-2"></i>Fließband</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#audio"><i class="fa-solid fa-headphones fa-fw me-2"></i>Audio</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#transkription"><i class="fa-solid fa-closed-captioning fa-fw me-2"></i>Transkription</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#korrektur"><i class="fa-solid fa-spell-check fa-fw me-2"></i>Korrektur</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#stueckelung"><i class="fa-solid fa-scissors fa-fw me-2"></i>Stückelung</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#einbettung"><i class="fa-solid fa-cube fa-fw me-2"></i>Einbettung</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#suche"><i class="fa-solid fa-magnifying-glass fa-fw me-2"></i>Suche</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#chat"><i class="fa-solid fa-comments fa-fw me-2"></i>Chat</a>
+              <a class="list-group-item list-group-item-action" href="anbieter.html"><i class="fa-solid fa-microchip fa-fw me-2"></i>Anbieter</a>
+              <a class="list-group-item list-group-item-action active" href="quellen.html"><i class="fa-solid fa-satellite-dish fa-fw me-2"></i>Quellen</a>
+              <a class="list-group-item list-group-item-action" href="umzug.html"><i class="fa-solid fa-truck-ramp-box fa-fw me-2"></i>Umzug</a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Quellen -->
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Quellen</h1>
+            <span class="m-unter">1 Quelle &middot; 1.491 Videos im Kanal &middot; 664 im Umfang &middot; zuletzt abgeglichen vor 12 Minuten</span>
+            <span class="m-luecke"></span>
+            <a class="btn btn-sm btn-primary" href="#neue-quelle" title="Zum Formular für eine neue Quelle springen"><i class="fa-solid fa-plus"></i> Neue Quelle</a>
+            <button class="m-info" title="Hilfe zu Quellen: Woher die Videos kommen und welche aufgenommen werden">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <div class="d-flex flex-column gap-3" style="max-width: 1200px">
+
+              <!-- Bestehende Quelle -->
+              <div class="card">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-satellite-dish"></i>
+                  <b>morf (TubeVault)</b>
+                  <span class="badge text-bg-success" title="Die Quelle hat beim letzten Abgleich in 38 Millisekunden geantwortet">erreichbar</span>
+                  <span class="ms-auto small text-secondary">Kennung der Quelle: 4f9c2e7a8b1d4c53</span>
+                </div>
+                <div class="card-body">
+                  <div class="row g-4">
+                    <div class="col-lg-5">
+                      <dl class="row mb-0">
+                        <dt class="col-sm-5 fw-semibold">Typ</dt>
+                        <dd class="col-sm-7">TubeVault</dd>
+                        <dt class="col-sm-5 fw-semibold">Basisadresse</dt>
+                        <dd class="col-sm-7"><span class="font-monospace">http://192.168.178.49:8031</span></dd>
+                        <dt class="col-sm-5 fw-semibold">Kanalkennung</dt>
+                        <dd class="col-sm-7"><span class="font-monospace">UCw1QkG8h3Zt7XyPq2nR5vLd</span></dd>
+                        <dt class="col-sm-5 fw-semibold">Kanalname</dt>
+                        <dd class="col-sm-7">morf</dd>
+                        <dt class="col-sm-5 fw-semibold">Zuletzt abgeglichen</dt>
+                        <dd class="col-sm-7 mb-0">vor 12 Minuten <span class="text-secondary">(1.491 Videos, 2 neu, 664 im Umfang)</span></dd>
+                      </dl>
+                    </div>
+                    <div class="col-lg-7">
+                      <div class="m-kennzahlen">
+                        <div class="m-kennzahl"><div class="wert">1.491</div><div class="titel">Videos im Kanal</div></div>
+                        <div class="m-kennzahl"><div class="wert">790</div><div class="titel">in der Quelle heruntergeladen</div></div>
+                        <div class="m-kennzahl"><div class="wert">664</div><div class="titel">im Umfang der Bibliothek</div></div>
+                        <div class="m-kennzahl"><div class="wert">2</div><div class="titel">neu beim letzten Abgleich</div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 mt-4 mb-2">
+                    <h6 class="m-0 small text-uppercase text-secondary">Regeln für die Aufnahme</h6>
+                    <button class="m-info" title="Beim Abgleich entscheiden diese Regeln, welche Videos des Kanals automatisch in den Umfang kommen. Einzelne Videos lassen sich in der Bibliothek jederzeit von Hand aufnehmen oder ausschließen.">i</button>
+                  </div>
+                  <table class="table table-sm align-middle mb-0">
+                    <thead>
+                      <tr><th style="width: 40%">Regel</th><th style="width: 25%">Wert</th><th>Bereich und Vorgabe</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Mindestdauer eines Videos <button class="m-info" title="Nur Videos, die länger sind als dieser Wert, werden automatisch in den Umfang aufgenommen. Kürzere lassen sich in der Videoliste von Hand aufnehmen.">i</button></td>
+                        <td class="fw-semibold">300 Sekunden</td>
+                        <td class="text-secondary">0 bis 36.000 Sekunden, Vorgabe 300</td>
+                      </tr>
+                      <tr>
+                        <td>Videoarten im Umfang <button class="m-info" title="Welche Arten die Quelle liefert und automatisch aufgenommen werden (Shorts sind ohnehin kurz).">i</button></td>
+                        <td class="fw-semibold">Video, Livestream</td>
+                        <td class="text-secondary">Video, Livestream, Short; Vorgabe Video und Livestream</td>
+                      </tr>
+                      <tr>
+                        <td>Nur bereits heruntergeladene Videos <button class="m-info" title="Wenn an, werden nur Videos aufgenommen, die in der Quelle schon als Datei vorliegen.">i</button></td>
+                        <td class="fw-semibold"><i class="fa-solid fa-toggle-on text-success"></i> an</td>
+                        <td class="text-secondary">an oder aus, Vorgabe an</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="card-footer d-flex align-items-center gap-2">
+                  <button class="btn btn-sm btn-primary" title="Kanal jetzt mit der Quelle abgleichen und neue Videos nach den Regeln aufnehmen"><i class="fa-solid fa-rotate"></i> Jetzt abgleichen</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Zeigt, welche Kanalvideos nach den Regeln aufgenommen würden, ohne etwas zu ändern"><i class="fa-solid fa-eye"></i> Vorschau</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Name, Basisadresse, Kanalkennung und Regeln ändern"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                  <span class="small text-secondary ms-2">Der Abgleich läuft als Auftrag der Art "Quelle abgleichen" im Fließband.</span>
+                  <span class="ms-auto"></span>
+                  <button class="btn btn-sm btn-outline-danger" title="Quelle entfernen. Videos, Texte und Vektoren bleiben in der Bibliothek; nur der Abgleich endet."><i class="fa-solid fa-trash"></i> Entfernen</button>
+                </div>
+              </div>
+
+              <!-- Neue Quelle -->
+              <div class="card" id="neue-quelle">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-plus"></i>
+                  <b>Neue Quelle</b>
+                  <button class="m-info" title="Eine Quelle ist ein Dienst, der die Videos eines Kanals samt Metadaten und Dateien bereithält. Erst Kanal prüfen, dann die Vorschau ansehen, dann anlegen.">i</button>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3">
+                    <div class="col-md-3">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <label class="form-label m-0" for="q-typ">Typ</label>
+                        <button class="m-info" title="Art der Videoquelle. Zurzeit gibt es TubeVault; weitere Typen erscheinen hier, sobald sie umgesetzt sind.">i</button>
+                      </div>
+                      <select class="form-select" id="q-typ"><option selected>TubeVault</option></select>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label mb-1" for="q-name">Name</label>
+                      <input class="form-control" id="q-name" value="morf" placeholder="Anzeigename der Quelle" />
+                    </div>
+                    <div class="col-md-3">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <label class="form-label m-0" for="q-adresse">Basisadresse</label>
+                        <button class="m-info" title="Adresse des TubeVault-Backends samt Port, ohne Pfad. Von hier aus werden Kanalvideos, Dauer und Downloadstand gelesen.">i</button>
+                      </div>
+                      <input class="form-control" id="q-adresse" value="http://192.168.178.49:8031" placeholder="http://rechner:port" />
+                    </div>
+                    <div class="col-md-3">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <label class="form-label m-0" for="q-kanal">Kanalkennung</label>
+                        <button class="m-info" title="Kennung des Kanals, wie TubeVault sie führt (bei YouTube-Kanälen die Kennung, die mit UC beginnt).">i</button>
+                      </div>
+                      <input class="form-control" id="q-kanal" value="UCw1QkG8h3Zt7XyPq2nR5vLd" placeholder="UC ..." />
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 mt-3">
+                    <button class="btn btn-outline-primary" title="Fragt die Quelle nach dem Kanal und zeigt, was sie liefert. Es wird nichts gespeichert."><i class="fa-solid fa-magnifying-glass"></i> Kanal prüfen</button>
+                    <span class="small text-secondary">Fragt die Quelle nach dem Kanal, ändert nichts.</span>
+                  </div>
+
+                  <div class="alert alert-success d-flex align-items-start gap-3 mt-3 mb-0">
+                    <i class="fa-solid fa-circle-check fs-4"></i>
+                    <div>
+                      <div class="fw-semibold">Kanal gefunden: morf, 1.491 Videos</div>
+                      <div class="small">790 heruntergeladen &middot; neuestes Video "tagesshit: keine Revolution am Horizont - Lernen oder Verstehen?" vom 10. September 2026 &middot; Antwort in 38 Millisekunden</div>
+                      <div class="small mt-1">Mit den Regeln unten würden 664 Videos aufgenommen. Die Vorschau darunter zeigt den Stand je Video.</div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 mt-4 mb-2">
+                    <h6 class="m-0 small text-uppercase text-secondary">Regeln für die Aufnahme</h6>
+                    <button class="m-info" title="Diese Regeln gelten für diese Quelle bei jedem Abgleich. Sie lassen sich später unter Bearbeiten ändern.">i</button>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <label class="form-label m-0" for="q-dauer">Mindestdauer eines Videos</label>
+                        <button class="m-info" title="Nur Videos, die länger sind als dieser Wert, werden automatisch in den Umfang aufgenommen. Kürzere lassen sich in der Videoliste von Hand aufnehmen.">i</button>
+                      </div>
+                      <div class="input-group">
+                        <input type="number" class="form-control" id="q-dauer" value="300" min="0" max="36000" step="30" />
+                        <span class="input-group-text">Sekunden</span>
+                      </div>
+                      <div class="form-text">0 bis 36.000 Sekunden in Schritten von 30, Vorgabe 300</div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="form-label m-0">Videoarten im Umfang</span>
+                        <button class="m-info" title="Welche Arten die Quelle liefert und automatisch aufgenommen werden (Shorts sind ohnehin kurz).">i</button>
+                      </div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox" id="q-art-video" checked /><label class="form-check-label" for="q-art-video">Video</label></div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox" id="q-art-live" checked /><label class="form-check-label" for="q-art-live">Livestream</label></div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox" id="q-art-short" /><label class="form-check-label" for="q-art-short">Short</label></div>
+                      <div class="form-text">Vorgabe: Video und Livestream</div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="form-label m-0">Nur bereits heruntergeladene Videos</span>
+                        <button class="m-info" title="Wenn an, werden nur Videos aufgenommen, die in der Quelle schon als Datei vorliegen.">i</button>
+                      </div>
+                      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="q-nur-dl" checked /><label class="form-check-label" for="q-nur-dl">an</label></div>
+                      <div class="form-text">Vorgabe: an. Aus bedeutet: auch Videos aufnehmen, die die Quelle erst noch herunterladen muss.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-footer d-flex align-items-center gap-2">
+                  <button class="btn btn-primary" title="Quelle speichern, Kanal abgleichen und die Videos nach den Regeln in den Umfang aufnehmen"><i class="fa-solid fa-check"></i> Quelle anlegen und Videos übernehmen</button>
+                  <button class="btn btn-outline-secondary" title="Eingaben verwerfen">Verwerfen</button>
+                  <span class="small text-secondary ms-2">Nach dem Anlegen legt das Fließband für jedes aufgenommene Video den Auftrag "Audio beschaffen" an.</span>
+                </div>
+              </div>
+
+              <!-- Vorschau der Kanalvideos -->
+              <div class="d-flex flex-column" style="min-height: 0">
+                <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                  <h6 class="m-0"><i class="fa-solid fa-eye"></i> Vorschau der Kanalvideos</h6>
+                  <button class="m-info" title="Zeigt jedes Video des Kanals mit dem Stand in der Quelle und ob es nach den Regeln aufgenommen würde. Nichts wird geändert, bis die Quelle angelegt oder abgeglichen wird.">i</button>
+                  <span class="small text-secondary">Regeln angewendet: 664 von 1.491 würden aufgenommen, 827 nicht &middot; neueste zuerst</span>
+                  <span class="ms-auto"></span>
+                  <select class="form-select form-select-sm" style="width: 190px" title="Nach Ergebnis der Regeln filtern"><option selected>Alle Videos</option><option>Nur aufgenommene</option><option>Nur ausgeschlossene</option></select>
+                  <select class="form-select form-select-sm" style="width: 150px" title="Nach Art filtern"><option selected>Alle Arten</option><option>Video</option><option>Livestream</option><option>Short</option></select>
+                </div>
+                <div class="m-tabelle-feld" style="max-height: 420px">
+                  <table class="table table-hover table-sm align-middle">
+                    <thead>
+                      <tr>
+                        <th style="width: 80px"></th>
+                        <th>Titel</th>
+                        <th style="width: 170px">Datum</th>
+                        <th style="width: 90px">Dauer</th>
+                        <th style="width: 110px">Art</th>
+                        <th style="width: 150px">Heruntergeladen <button class="m-info" title="Ob die Quelle das Video schon als Datei hat. Ohne Datei kann kein Audio beschafft werden.">i</button></th>
+                        <th style="width: 250px">Würde aufgenommen <button class="m-info" title="Ergebnis der Regeln: Mindestdauer, Videoart und ob nur heruntergeladene Videos zählen.">i</button></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3EVideo%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">tagesshit: keine Revolution am Horizont - Lernen oder Verstehen?</div><small class="text-secondary">keine Serie</small></td>
+                        <td class="text-secondary">10. September 2026</td>
+                        <td class="text-secondary">24:11</td>
+                        <td>Video</td>
+                        <td><i class="fa-solid fa-circle-check text-success"></i> ja</td>
+                        <td><span class="badge text-bg-success">ja</span></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3ELive%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">durchgeschaut: Clownfiesta Deluxe - Ulf Poschardt &amp; Ricarda Lang</div><small class="text-secondary">keine Serie</small></td>
+                        <td class="text-secondary">8. September 2026</td>
+                        <td class="text-secondary">1:31:07</td>
+                        <td>Livestream</td>
+                        <td><i class="fa-regular fa-circle text-secondary"></i> nein</td>
+                        <td><span class="badge text-bg-secondary">nein</span> <small class="text-secondary ms-1">nicht heruntergeladen</small></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3EmmM%23377%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">Wieso passen unsere Geschichten fast nie zur Realität? | mmM#377</div><span class="m-serie">mmM#377</span></td>
+                        <td class="text-secondary">3. September 2026</td>
+                        <td class="text-secondary">34:05</td>
+                        <td>Video</td>
+                        <td><i class="fa-solid fa-circle-check text-success"></i> ja</td>
+                        <td><span class="badge text-bg-success">ja</span></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3EShort%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">Kurz gesagt: Erklären ist nicht Überzeugen</div><small class="text-secondary">keine Serie</small></td>
+                        <td class="text-secondary">2. September 2026</td>
+                        <td class="text-secondary">0:58</td>
+                        <td>Short</td>
+                        <td><i class="fa-regular fa-circle text-secondary"></i> nein</td>
+                        <td><span class="badge text-bg-secondary">nein</span> <small class="text-secondary ms-1">Art Short, kürzer als 300 Sekunden</small></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3ELive%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">Livestream: Fragen und Antworten zum Sommer</div><small class="text-secondary">keine Serie</small></td>
+                        <td class="text-secondary">28. August 2026</td>
+                        <td class="text-secondary">2:04:30</td>
+                        <td>Livestream</td>
+                        <td><i class="fa-solid fa-circle-check text-success"></i> ja</td>
+                        <td><span class="badge text-bg-success">ja</span></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3EmmM%23376%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">Dogtooth-Effekt oder Herrschafts-Alexiphasie? | mmM#376</div><span class="m-serie">mmM#376</span></td>
+                        <td class="text-secondary">21. August 2026</td>
+                        <td class="text-secondary">24:52</td>
+                        <td>Video</td>
+                        <td><i class="fa-solid fa-circle-check text-success"></i> ja</td>
+                        <td><span class="badge text-bg-success">ja</span></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3EmmM%23375%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">eine Anekdote aus der Welt der Schamanen | mmM#375</div><span class="m-serie">mmM#375</span></td>
+                        <td class="text-secondary">15. August 2026</td>
+                        <td class="text-secondary">29:35</td>
+                        <td>Video</td>
+                        <td><i class="fa-solid fa-circle-check text-success"></i> ja</td>
+                        <td><span class="badge text-bg-success">ja</span></td>
+                      </tr>
+                      <tr>
+                        <td><img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 36'%3E%3Crect width='64' height='36' fill='%23b9c3cf'/%3E%3Ctext x='32' y='22' font-family='sans-serif' font-size='9' font-weight='700' text-anchor='middle' fill='%231b2735'%3EmmM%23374%3C/text%3E%3C/svg%3E" alt="" /></td>
+                        <td><div class="text-truncate" style="max-width: 440px">Ausbeutung als topologische Kategorie denken | mmM#374</div><span class="m-serie">mmM#374</span></td>
+                        <td class="text-secondary">5. August 2026</td>
+                        <td class="text-secondary">22:41</td>
+                        <td>Video</td>
+                        <td><i class="fa-solid fa-circle-check text-success"></i> ja</td>
+                        <td><span class="badge text-bg-success">ja</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="d-flex align-items-center gap-2 mt-2">
+                  <span class="small text-secondary">8 von 1.491 geladen</span>
+                  <span class="ms-auto"></span>
+                  <button class="btn btn-sm btn-outline-secondary" title="Die nächsten 50 Videos der Vorschau laden"><i class="fa-solid fa-angles-down"></i> Weitere 50 laden</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Mindestdauer" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a class="aktiv" href="#">Quellen</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Quellen</h2>
+          <p>Eine Quelle ist der Dienst, aus dem morf-gpt die Videos eines Kanals bezieht: Titel, Beschreibung, Datum, Dauer, Vorschaubild und die Datei selbst. Zurzeit ist das TubeVault auf dem Pi. Die Bibliothek merkt sich zu jedem Video die Originaladresse bei YouTube, damit jede Textstelle zurückführbar bleibt.</p>
+          <h2>Kanal prüfen</h2>
+          <p>Bevor eine Quelle angelegt wird, fragt "Kanal prüfen" den Dienst nach dem Kanal. Die Antwort zeigt den Kanalnamen, die Zahl der Videos und wie viele davon schon heruntergeladen sind. Es wird nichts gespeichert.</p>
+          <h2>Regeln für die Aufnahme</h2>
+          <p><b><mark>Mindestdauer</mark> eines Videos</b>: Nur Videos, die länger sind als dieser Wert, werden automatisch in den Umfang aufgenommen. Kürzere lassen sich in der Videoliste von Hand aufnehmen. Bereich 0 bis 36.000 Sekunden, Vorgabe 300.</p>
+          <p><b>Videoarten im Umfang</b>: Welche Arten die Quelle liefert und automatisch aufgenommen werden. Shorts sind ohnehin kurz und fallen meist schon an der Mindestdauer.</p>
+          <p><b>Nur bereits heruntergeladene Videos</b>: Wenn an, werden nur Videos aufgenommen, die in der Quelle schon als Datei vorliegen. Ohne Datei kann das Fließband kein Audio beschaffen.</p>
+          <h2>Vorschau</h2>
+          <p>Die Vorschau zeigt jedes Video des Kanals mit dem Stand in der Quelle und ob es nach den Regeln aufgenommen würde. So siehst du vor dem Anlegen, was in die Bibliothek käme. Erst "Quelle anlegen und Videos übernehmen" ändert etwas.</p>
+          <h2>Abgleich</h2>
+          <p>"Jetzt abgleichen" holt den aktuellen Stand des Kanals und nimmt neue Videos nach den Regeln auf. Der Abgleich läuft als Auftrag im Fließband und erscheint dort im Protokoll.</p>
+          <h2>Entfernen</h2>
+          <p>Wird eine Quelle entfernt, endet nur der Abgleich. Videos, Texte und Vektoren bleiben in der Bibliothek erhalten.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

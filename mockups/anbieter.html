@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Anbieter</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <!-- Seitenspezifisch (Vorschlag für app.css): Karten themenfest über die m-Variablen -->
+    <style>
+      .card { --bs-card-bg: var(--m-flaeche); --bs-card-border-color: var(--m-rand); --bs-card-cap-bg: var(--m-flaeche-2); }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a class="aktiv" href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Links: Navigation der Einstellungen (Gruppen aus dem Register, dann Verwaltung) -->
+        <aside class="m-seite links">
+          <div class="m-seite-kopf"><i class="fa-solid fa-sliders"></i> Einstellungen</div>
+          <div class="m-seite-koerper p-0">
+            <div class="px-3 pt-3 pb-1 small text-uppercase text-secondary fw-semibold">Grenzen und Vorgaben</div>
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#quelle"><i class="fa-solid fa-satellite-dish fa-fw me-1"></i> Quelle und Auswahl</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#band"><i class="fa-solid fa-diagram-next fa-fw me-1"></i> Fließband</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#audio"><i class="fa-solid fa-headphones fa-fw me-1"></i> Audio</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#transkription"><i class="fa-solid fa-closed-captioning fa-fw me-1"></i> Transkription</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#korrektur"><i class="fa-solid fa-spell-check fa-fw me-1"></i> Korrektur</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#stueckelung"><i class="fa-solid fa-scissors fa-fw me-1"></i> Stückelung</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#einbettung"><i class="fa-solid fa-cube fa-fw me-1"></i> Einbettung</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#suche"><i class="fa-solid fa-magnifying-glass fa-fw me-1"></i> Suche</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html#chat"><i class="fa-solid fa-comments fa-fw me-1"></i> Chat</a>
+            </div>
+            <div class="px-3 pt-3 pb-1 small text-uppercase text-secondary fw-semibold">Verwaltung</div>
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action active" href="anbieter.html"><i class="fa-solid fa-microchip fa-fw me-1"></i> Anbieter</a>
+              <a class="list-group-item list-group-item-action" href="quellen.html"><i class="fa-solid fa-satellite-dish fa-fw me-1"></i> Quellen</a>
+              <a class="list-group-item list-group-item-action" href="umzug.html"><i class="fa-solid fa-truck-ramp-box fa-fw me-1"></i> Umzug der Bibliothek</a>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mitte: Anbieter -->
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Anbieter</h1>
+            <span class="m-unter">4 Anbieter &middot; 2 Sprachmodelle &middot; 2 Einbettungen &middot; alle 3 Rollen belegt</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-primary" title="Neuen Anbieter anlegen (Sprachmodell oder Einbettung)"><i class="fa-solid fa-plus"></i> Neuer Anbieter</button>
+            <button class="m-info" title="Hilfe zu Anbietern und Rollen">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <div class="mx-auto" style="max-width: 1120px">
+
+              <!-- Rollen -->
+              <div class="card mb-3">
+                <div class="card-header d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-user-tag"></i> <b>Rollen</b>
+                  <button class="m-info" title="Jede Rolle zeigt auf genau einen aktiven Anbieter. Die Zuweisung gilt sofort für neue Aufträge und Antworten.">i</button>
+                  <span class="ms-auto small text-secondary">Nichts ist fest verdrahtet: jede Rolle wählt ihren Anbieter hier.</span>
+                </div>
+                <div class="card-body">
+                  <div class="row g-3 align-items-center mb-3">
+                    <div class="col-lg-3">
+                      <label class="form-label mb-0 fw-semibold" for="rolle-chat">Chat-Antworten <button class="m-info" title="Sprachmodell, das im Chat ausschließlich aus den ausgewählten Textstellen antwortet.">i</button></label>
+                      <div class="small text-secondary">Antwortet belegt aus Textstellen</div>
+                    </div>
+                    <div class="col-lg-5">
+                      <select class="form-select form-select-sm" id="rolle-chat" title="Anbieter für Chat-Antworten">
+                        <option selected>LM Studio - Chat (qwen3-next-80b-a3b-instruct-mlx@4bit)</option>
+                        <option>Hetzner-Inferenz - Qwen3.6 35B (Qwen/Qwen3.6-35B-A3B-FP8)</option>
+                      </select>
+                    </div>
+                    <div class="col-lg-4 small text-secondary"><span class="m-status-punkt"></span>Modell geladen &middot; Probe: Antwort in 1,8 Sekunden</div>
+                  </div>
+                  <div class="row g-3 align-items-center mb-3">
+                    <div class="col-lg-3">
+                      <label class="form-label mb-0 fw-semibold" for="rolle-korrektur">Korrektur der Transkripte <button class="m-info" title="Sprachmodell, das die Rohtranskripte blockweise korrigiert. Der Abweichungswächter (Einstellungen, Korrektur) schützt den Inhalt.">i</button></label>
+                      <div class="small text-secondary">Blockweise, mit Abweichungswächter 0,80</div>
+                    </div>
+                    <div class="col-lg-5">
+                      <select class="form-select form-select-sm" id="rolle-korrektur" title="Anbieter für die Korrektur">
+                        <option selected>LM Studio - Chat (qwen3-next-80b-a3b-instruct-mlx@4bit)</option>
+                        <option>Hetzner-Inferenz - Qwen3.6 35B (Qwen/Qwen3.6-35B-A3B-FP8)</option>
+                      </select>
+                    </div>
+                    <div class="col-lg-4 small text-secondary"><span class="m-status-punkt"></span>Modell geladen &middot; Stufe Korrektur derzeit angehalten (Fließband)</div>
+                  </div>
+                  <div class="row g-3 align-items-center">
+                    <div class="col-lg-3">
+                      <label class="form-label mb-0 fw-semibold" for="rolle-einbettung">Einbettung (Index und Suche) <button class="m-info" title="Baut die Vektoren und befragt sie. Ein Wechsel erzeugt einen neuen Einbettungslauf je Stück; die Suche fragt immer mit dem Modell, das den Index gebaut hat.">i</button></label>
+                      <div class="small text-secondary">Wechsel erzeugt einen neuen Einbettungslauf</div>
+                    </div>
+                    <div class="col-lg-5">
+                      <select class="form-select form-select-sm" id="rolle-einbettung" title="Anbieter für die Einbettung">
+                        <option selected>LM Studio - bge-m3 (text-embedding-bge-m3, 1024 Dimensionen)</option>
+                        <option>Lokal - bge-m3 (fastembed) (BAAI/bge-m3, 1024 Dimensionen)</option>
+                      </select>
+                    </div>
+                    <div class="col-lg-4 small text-secondary"><span class="m-status-punkt"></span>1024 Dimensionen &middot; Index: 9.301 Vektoren aus diesem Modell</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center mb-2 mt-4">
+                <h6 class="m-0 small text-uppercase text-secondary">Angelegte Anbieter (4)</h6>
+                <button class="m-info ms-2" title="Prüfen fragt nur die Erreichbarkeit und die Modellliste ab (kostenlos). Probe senden macht einen echten kurzen Aufruf: eine Frage an das Sprachmodell oder ein Satz an die Einbettung.">i</button>
+                <span class="ms-auto small text-secondary">Sortiert nach Art, dann nach Anlagedatum</span>
+              </div>
+
+              <!-- Anbieter 1: LM Studio - Chat -->
+              <div class="card mb-3">
+                <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+                  <span class="m-status-punkt" title="Erreichbar, Modell geladen"></span>
+                  <b>LM Studio - Chat</b>
+                  <span class="small text-secondary">LM Studio (lokal) &middot; Sprachmodell</span>
+                  <span class="badge text-bg-primary" title="Zugewiesene Rolle">Chat</span>
+                  <span class="badge text-bg-primary" title="Zugewiesene Rolle">Korrektur</span>
+                  <span class="ms-auto d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-secondary" title="Erreichbarkeit und geladene Modelle abfragen"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Kurze Frage an das Modell senden und die Antwortzeit messen"><i class="fa-solid fa-vial"></i> Probe senden</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Anbieter bearbeiten"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                    <button class="btn btn-sm btn-outline-warning" title="Deaktivieren - die Rollen Chat und Korrektur müssen zuvor auf einen anderen Anbieter zeigen"><i class="fa-solid fa-power-off"></i> Deaktivieren</button>
+                  </span>
+                </div>
+                <div class="card-body py-2">
+                  <div class="row g-3">
+                    <div class="col-lg-4"><div class="small text-secondary">Basisadresse</div><span class="font-monospace">http://127.0.0.1:1234/v1</span></div>
+                    <div class="col-lg-4"><div class="small text-secondary">Modell</div><span class="font-monospace">qwen3-next-80b-a3b-instruct-mlx@4bit</span></div>
+                    <div class="col-lg-2"><div class="small text-secondary">Schlüssel</div><span class="text-secondary">keiner nötig</span></div>
+                    <div class="col-lg-2"><div class="small text-secondary">Zuletzt geprüft</div>vor 2 Minuten &middot; Modell geladen</div>
+                  </div>
+                </div>
+                <div class="card-footer small d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-circle-check text-success"></i>
+                  <span><b>Probe:</b> Antwort in 1,8 Sekunden: Ja, ich bin bereit.</span>
+                  <span class="ms-auto text-secondary">qwen3-next-80b-a3b-instruct-mlx@4bit &middot; heute 21:03</span>
+                </div>
+              </div>
+
+              <!-- Anbieter 2: Hetzner-Inferenz (Bearbeiten ausgeklappt) -->
+              <div class="card mb-3">
+                <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+                  <span class="m-status-punkt" title="Erreichbar"></span>
+                  <b>Hetzner-Inferenz - Qwen3.6 35B</b>
+                  <span class="small text-secondary">OpenAI-kompatibler Dienst &middot; Sprachmodell</span>
+                  <span class="small text-secondary">keiner Rolle zugewiesen</span>
+                  <span class="ms-auto d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-secondary" title="Erreichbarkeit und Modellliste abfragen"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Kurze Frage an das Modell senden und die Antwortzeit messen"><i class="fa-solid fa-vial"></i> Probe senden</button>
+                    <button class="btn btn-sm btn-secondary" title="Bearbeiten (Formular ist geöffnet)"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                    <button class="btn btn-sm btn-outline-warning" title="Anbieter deaktivieren; er bleibt angelegt und kann später wieder aktiviert werden"><i class="fa-solid fa-power-off"></i> Deaktivieren</button>
+                  </span>
+                </div>
+                <div class="card-body py-2">
+                  <div class="row g-3">
+                    <div class="col-lg-4"><div class="small text-secondary">Basisadresse</div><span class="font-monospace">https://inference.hetzner.com/api/v1</span></div>
+                    <div class="col-lg-4"><div class="small text-secondary">Modell</div><span class="font-monospace">Qwen/Qwen3.6-35B-A3B-FP8</span></div>
+                    <div class="col-lg-2">
+                      <div class="small text-secondary">Schlüssel <button class="m-info" title="Im Verwaltungsbereich lesbar (Auge deckt auf), im Protokoll immer maskiert.">i</button></div>
+                      <span class="d-inline-flex align-items-center gap-1" data-schluessel="hz-inf-7Qm3kLp9Xa2VbN8cRt4sYw6Fd1Hg5Jwrw7" data-maskiert="********wrw7">
+                        <span class="font-monospace" data-wert>********wrw7</span>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-1" data-aufdecken title="Schlüssel aufdecken"><i class="fa-solid fa-eye"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-1" title="Schlüssel in die Zwischenablage kopieren"><i class="fa-regular fa-copy"></i></button>
+                      </span>
+                    </div>
+                    <div class="col-lg-2"><div class="small text-secondary">Zuletzt geprüft</div>vor 14 Minuten &middot; erreichbar</div>
+                  </div>
+                </div>
+
+                <!-- Bearbeiten-Formular -->
+                <div class="card-body border-top">
+                  <div class="d-flex align-items-center gap-2 mb-3">
+                    <h6 class="m-0"><i class="fa-solid fa-pen"></i> Anbieter bearbeiten</h6>
+                    <span class="small text-secondary">Änderungen gelten nach dem Speichern für neue Aufträge und Antworten.</span>
+                  </div>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label small mb-1" for="f-name">Name</label>
+                      <input class="form-control form-control-sm" id="f-name" value="Hetzner-Inferenz - Qwen3.6 35B" />
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label small mb-1" for="f-typ">Typ <button class="m-info" title="LM Studio: lokal, Modellzustand abfragbar. OpenAI-kompatibler Dienst: jede Adresse mit /v1-Schnittstelle und Schlüssel. fastembed: Einbettung im Backend ohne Dienst.">i</button></label>
+                      <select class="form-select form-select-sm" id="f-typ">
+                        <option>LM Studio (lokal)</option>
+                        <option selected>OpenAI-kompatibler Dienst</option>
+                        <option>Lokale Einbettung (fastembed)</option>
+                      </select>
+                    </div>
+                    <div class="col-md-3">
+                      <label class="form-label small mb-1" for="f-art">Art <button class="m-info" title="Sprachmodell dient den Rollen Chat und Korrektur, Einbettung der Rolle Einbettung.">i</button></label>
+                      <select class="form-select form-select-sm" id="f-art">
+                        <option selected>Sprachmodell</option>
+                        <option>Einbettung</option>
+                      </select>
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label small mb-1" for="f-basis">Basisadresse <button class="m-info" title="Wurzel der Schnittstelle bis einschließlich /v1 oder /api/v1. Modelle und Antworten werden darunter angefragt.">i</button></label>
+                      <input class="form-control form-control-sm font-monospace" id="f-basis" value="https://inference.hetzner.com/api/v1" />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small mb-1" for="f-schluessel">Schlüssel <button class="m-info" title="Leer lassen, damit der gespeicherte Schlüssel (********wrw7) unverändert bleibt.">i</button></label>
+                      <div class="input-group input-group-sm">
+                        <input class="form-control font-monospace" id="f-schluessel" type="password" placeholder="unverändert lassen" />
+                        <button class="btn btn-outline-secondary" data-passwort="f-schluessel" title="Eingabe anzeigen oder verdecken"><i class="fa-solid fa-eye"></i></button>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <label class="form-label small mb-1" for="f-modell">Modell <button class="m-info" title="Modelle laden fragt die Liste beim Anbieter ab. Ohne Liste lässt sich die Kennung auch von Hand eintragen.">i</button></label>
+                      <div class="input-group input-group-sm">
+                        <select class="form-select font-monospace" id="f-modell">
+                          <option selected>Qwen/Qwen3.6-35B-A3B-FP8</option>
+                          <option>Qwen/Qwen3.5-122B-A10B-FP8</option>
+                          <option>Qwen/Qwen3.5-397B-A17B-FP8</option>
+                        </select>
+                        <button class="btn btn-outline-secondary" title="Modellliste vom Anbieter abfragen"><i class="fa-solid fa-rotate"></i> Modelle laden</button>
+                      </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                      <span class="small text-secondary"><i class="fa-solid fa-circle-check text-success"></i> 3 Modelle geladen, vor 14 Minuten</span>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2 mt-3">
+                    <button class="btn btn-sm btn-primary" title="Änderungen speichern"><i class="fa-solid fa-floppy-disk"></i> Speichern</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Formular schließen, nichts ändern">Abbrechen</button>
+                    <button class="btn btn-sm btn-outline-danger ms-auto" title="Anbieter endgültig entfernen (nur möglich, solange keine Rolle darauf zeigt)"><i class="fa-solid fa-trash"></i> Löschen</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Anbieter 3: LM Studio - bge-m3 -->
+              <div class="card mb-3">
+                <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+                  <span class="m-status-punkt" title="Erreichbar, Modell geladen"></span>
+                  <b>LM Studio - bge-m3</b>
+                  <span class="small text-secondary">LM Studio (lokal) &middot; Einbettung</span>
+                  <span class="badge text-bg-primary" title="Zugewiesene Rolle">Einbettung</span>
+                  <span class="ms-auto d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-secondary" title="Erreichbarkeit und geladene Modelle abfragen"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Einen Satz einbetten und die Dauer messen"><i class="fa-solid fa-vial"></i> Probe senden</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Anbieter bearbeiten"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                    <button class="btn btn-sm btn-outline-warning" title="Deaktivieren - die Rolle Einbettung muss zuvor auf einen anderen Anbieter zeigen"><i class="fa-solid fa-power-off"></i> Deaktivieren</button>
+                  </span>
+                </div>
+                <div class="card-body py-2">
+                  <div class="row g-3">
+                    <div class="col-lg-4"><div class="small text-secondary">Basisadresse</div><span class="font-monospace">http://127.0.0.1:1234/v1</span></div>
+                    <div class="col-lg-4"><div class="small text-secondary">Modell</div><span class="font-monospace">text-embedding-bge-m3</span></div>
+                    <div class="col-lg-2"><div class="small text-secondary">Dimension <button class="m-info" title="Länge der Vektoren. Die Datenbank ist auf 1024 ausgelegt; ein Modell mit anderer Dimension braucht eine Migration.">i</button></div>1024</div>
+                    <div class="col-lg-2"><div class="small text-secondary">Zuletzt geprüft</div>vor 2 Minuten &middot; Modell geladen</div>
+                  </div>
+                </div>
+                <div class="card-footer small d-flex align-items-center gap-2">
+                  <i class="fa-solid fa-circle-check text-success"></i>
+                  <span><b>Probe:</b> Vektor mit 1024 Dimensionen in 0,3 Sekunden.</span>
+                  <span class="ms-auto text-secondary">text-embedding-bge-m3 &middot; heute 21:03</span>
+                </div>
+              </div>
+
+              <!-- Anbieter 4: Lokal - bge-m3 (fastembed) -->
+              <div class="card mb-3">
+                <div class="card-header d-flex align-items-center gap-2 flex-wrap">
+                  <span class="m-status-punkt" title="Bereit"></span>
+                  <b>Lokal - bge-m3 (fastembed)</b>
+                  <span class="small text-secondary">Lokale Einbettung (fastembed) &middot; Einbettung</span>
+                  <span class="small text-secondary">keiner Rolle zugewiesen</span>
+                  <span class="ms-auto d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-secondary" title="Prüfen, ob das Modell im Modellverzeichnis liegt"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Einen Satz einbetten und die Dauer messen"><i class="fa-solid fa-vial"></i> Probe senden</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Anbieter bearbeiten"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                    <button class="btn btn-sm btn-outline-warning" title="Anbieter deaktivieren; er bleibt angelegt und kann später wieder aktiviert werden"><i class="fa-solid fa-power-off"></i> Deaktivieren</button>
+                  </span>
+                </div>
+                <div class="card-body py-2">
+                  <div class="row g-3">
+                    <div class="col-lg-4"><div class="small text-secondary">Basisadresse</div><span class="text-secondary">keine, rechnet im Backend (ONNX, Prozessor)</span></div>
+                    <div class="col-lg-4"><div class="small text-secondary">Modell</div><span class="font-monospace">BAAI/bge-m3</span> <span class="small text-secondary">&middot; 2,2 Gigabyte im Modellverzeichnis</span></div>
+                    <div class="col-lg-2"><div class="small text-secondary">Dimension</div>1024</div>
+                    <div class="col-lg-2"><div class="small text-secondary">Zuletzt geprüft</div>vor 2 Minuten &middot; bereit</div>
+                  </div>
+                </div>
+                <div class="card-footer small text-secondary">
+                  <i class="fa-solid fa-circle-info"></i> Für den Betrieb ohne LM Studio, zum Beispiel nach dem Umzug der Bibliothek auf einen Server. Gleiche Dimension wie der bestehende Index, aber ein Wechsel erzeugt trotzdem einen neuen Einbettungslauf.
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Probe senden" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a class="aktiv" href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Anbieter</h2>
+          <p>Ein Anbieter ist ein Sprachmodell oder ein Einbettungsmodell samt Adresse, Schlüssel und Modellkennung. Drei Rollen greifen darauf zu: Chat-Antworten, Korrektur der Transkripte und Einbettung. Jede Rolle zeigt auf genau einen aktiven Anbieter; nichts ist fest verdrahtet.</p>
+          <h2>Typen</h2>
+          <p><b>LM Studio (lokal)</b>: läuft auf diesem Rechner, der Modellzustand (geladen oder nicht) ist abfragbar. <b>OpenAI-kompatibler Dienst</b>: jede Adresse mit /v1-Schnittstelle und Schlüssel, zum Beispiel die Hetzner-Inferenz. <b>Lokale Einbettung (fastembed)</b>: rechnet im Backend, braucht keinen laufenden Dienst.</p>
+          <h2>Prüfen und Probe senden</h2>
+          <p><b>Prüfen</b> fragt nur die Erreichbarkeit und die Modellliste ab; das kostet nichts. <b><mark>Probe senden</mark></b> macht einen echten kurzen Aufruf: eine Frage an das Sprachmodell ("Bist du bereit?") oder ein Satz an die Einbettung. Das Ergebnis mit Dauer steht danach unter der Karte.</p>
+          <h2>Schlüssel</h2>
+          <p>Schlüssel sind hier im Verwaltungsbereich lesbar (das Auge deckt auf), im Protokoll immer maskiert. Beim Bearbeiten lässt ein leeres Feld den gespeicherten Schlüssel unverändert.</p>
+          <h2>Einbettung wechseln</h2>
+          <p>Die Suche fragt immer mit dem Modell, das den Index gebaut hat. Ein Wechsel des Einbettungsanbieters erzeugt darum einen neuen Einbettungslauf über alle Stücke. Die Dimension der Vektoren ist eine Eigenschaft der Datenbank (1024 für bge-m3); ein Modell mit anderer Dimension braucht eine Migration.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anschauungs-Verhalten dieser Seite: Schlüssel aufdecken. Gehört bei Übernahme nach mockup.js. -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("[data-schluessel]").forEach((feld) => {
+          const knopf = feld.querySelector("[data-aufdecken]");
+          const wert = feld.querySelector("[data-wert]");
+          knopf.addEventListener("click", () => {
+            const offen = wert.textContent !== feld.dataset.schluessel;
+            wert.textContent = offen ? feld.dataset.schluessel : feld.dataset.maskiert;
+            knopf.title = offen ? "Schlüssel verdecken" : "Schlüssel aufdecken";
+            knopf.querySelector("i").className = offen ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+          });
+        });
+        document.querySelectorAll("[data-passwort]").forEach((knopf) => {
+          knopf.addEventListener("click", () => {
+            const eingabe = document.getElementById(knopf.dataset.passwort);
+            eingabe.type = eingabe.type === "password" ? "text" : "password";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

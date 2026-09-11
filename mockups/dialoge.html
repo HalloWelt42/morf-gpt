@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Dialoge und Meldungen</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <style>
+      /* Seitenspezifika, Vorschlag für app.css (siehe Bericht) */
+      body:has(.m-spieler.leer) .m-meldungen { bottom: 14px; }
+      .modal-content textarea.form-control { font-size: var(--m-dialog-schrift); line-height: 1.55; }
+      .pagination { --bs-pagination-border-radius: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a class="aktiv" href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <!-- Die Ansicht ist der Bezugsrahmen des Dialogs: Kopfleiste und Spieler bleiben bedienbar -->
+        <section class="m-ansicht position-relative">
+          <div class="m-ansicht-kopf">
+            <h1>Bibliothek</h1>
+            <span class="m-unter">664 von 1.491 Videos im Umfang &middot; Serie mmM, älteste zuerst</span>
+            <span class="m-luecke"></span>
+            <input class="form-control form-control-sm" style="width: 240px" placeholder="Titel oder Beschreibung durchsuchen ..." title="Volltextsuche in Titel und Beschreibung" />
+            <select class="form-select form-select-sm w-auto" title="Serie"><option>Alle Serien</option><option selected>mmM</option><option>gmM</option></select>
+            <select class="form-select form-select-sm w-auto" title="Umfang"><option>Alle Videos</option><option selected>Im Umfang</option><option>Nicht im Umfang</option></select>
+            <select class="form-select form-select-sm w-auto" title="Sortierung"><option>Neueste zuerst</option><option selected>Älteste zuerst</option><option>Nach Folge</option></select>
+            <button class="btn btn-sm btn-outline-secondary" title="Kanal mit der Quelle abgleichen und neue Videos aufnehmen"><i class="fa-solid fa-rotate"></i> Quelle abgleichen</button>
+            <button class="m-info" title="Hilfe zur Bibliothek">i</button>
+          </div>
+
+          <div class="m-ansicht-koerper">
+            <!-- Hintergrund: die Bibliotheksliste, für diesen Schaukasten auf 6 Zeilen gekürzt -->
+            <div class="m-tabelle-feld">
+              <table class="table table-hover table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th style="width: 76px"></th>
+                    <th>Titel</th>
+                    <th style="width: 90px">Serie</th>
+                    <th style="width: 160px">Datum</th>
+                    <th style="width: 80px" class="text-end">Dauer</th>
+                    <th style="width: 140px">Stufe <button class="m-info" title="Höchste fertige Stufe des Fließbands für dieses Video">i</button></th>
+                    <th style="width: 80px" class="text-end">Stücke</th>
+                    <th style="width: 120px"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="gewaehlt">
+                    <td><img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%231%3C/text%3E%3C/svg%3E" /></td>
+                    <td class="text-truncate" style="max-width: 420px">Kritik an der Linken von einem Linken</td>
+                    <td><span class="m-serie">mmM#1</span></td>
+                    <td class="text-secondary">2. November 2020</td>
+                    <td class="text-end">6:58</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td class="text-end">11</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-secondary" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                      <button class="btn btn-sm btn-outline-danger active" title="Auf eine frühere Stufe zurücksetzen"><i class="fa-solid fa-rotate-left"></i></button>
+                      <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%234%3C/text%3E%3C/svg%3E" /></td>
+                    <td class="text-truncate" style="max-width: 420px">Weshalb Wettbewerb nicht mit Fortschritt einhergeht</td>
+                    <td><span class="m-serie">mmM#4</span></td>
+                    <td class="text-secondary">6. November 2020</td>
+                    <td class="text-end">9:12</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td class="text-end">15</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-secondary" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Auf eine frühere Stufe zurücksetzen"><i class="fa-solid fa-rotate-left"></i></button>
+                      <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%235%3C/text%3E%3C/svg%3E" /></td>
+                    <td class="text-truncate" style="max-width: 420px">Noteninflation - ein ignoriertes Problem an Schulen und Universitäten</td>
+                    <td><span class="m-serie">mmM#5</span></td>
+                    <td class="text-secondary">13. November 2020</td>
+                    <td class="text-end">11:37</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td class="text-end">19</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-secondary" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Auf eine frühere Stufe zurücksetzen"><i class="fa-solid fa-rotate-left"></i></button>
+                      <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%236%3C/text%3E%3C/svg%3E" /></td>
+                    <td class="text-truncate" style="max-width: 420px">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</td>
+                    <td><span class="m-serie">mmM#6</span></td>
+                    <td class="text-secondary">14. November 2020</td>
+                    <td class="text-end">42:42</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td class="text-end">74</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-secondary" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Auf eine frühere Stufe zurücksetzen"><i class="fa-solid fa-rotate-left"></i></button>
+                      <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%237%3C/text%3E%3C/svg%3E" /></td>
+                    <td class="text-truncate" style="max-width: 420px">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</td>
+                    <td><span class="m-serie">mmM#7</span></td>
+                    <td class="text-secondary">17. November 2020</td>
+                    <td class="text-end">12:49</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td class="text-end">22</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-secondary" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Auf eine frühere Stufe zurücksetzen"><i class="fa-solid fa-rotate-left"></i></button>
+                      <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%238%3C/text%3E%3C/svg%3E" /></td>
+                    <td class="text-truncate" style="max-width: 420px">Was der Wettbewerb wirklich verursacht - morf erklärts</td>
+                    <td><span class="m-serie">mmM#8</span></td>
+                    <td class="text-secondary">17. November 2020</td>
+                    <td class="text-end">13:54</td>
+                    <td><span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></td>
+                    <td class="text-end">24</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-secondary" title="Video öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary" title="Auf eine frühere Stufe zurücksetzen"><i class="fa-solid fa-rotate-left"></i></button>
+                      <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 mt-2">
+              <span class="text-secondary small">Seite 1 von 8 &middot; 50 je Seite &middot; Schaukasten: Liste auf 6 Zeilen gekürzt</span>
+              <nav class="ms-auto" aria-label="Seiten">
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item disabled"><a class="page-link" href="#" title="Vorherige Seite"><i class="fa-solid fa-chevron-left"></i></a></li>
+                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item disabled"><span class="page-link">...</span></li>
+                  <li class="page-item"><a class="page-link" href="#">8</a></li>
+                  <li class="page-item"><a class="page-link" href="#" title="Nächste Seite"><i class="fa-solid fa-chevron-right"></i></a></li>
+                </ul>
+              </nav>
+            </div>
+
+            <!-- Zweiter Dialog als Beispiel im Fluss (nicht geöffnet) -->
+            <div class="card mt-4">
+              <div class="card-header d-flex align-items-center gap-2">
+                <i class="fa-solid fa-window-restore"></i> <b>Dialog: Stück bearbeiten</b>
+                <span class="ms-auto text-secondary small">Beispiel im Fluss, nicht geöffnet</span>
+              </div>
+              <div class="card-body p-4 bg-body-secondary">
+                <div class="modal-content mx-auto" style="max-width: 960px">
+                  <div class="modal-header">
+                    <h5 class="modal-title"><i class="fa-solid fa-pen"></i> Stück bearbeiten</h5>
+                    <button class="m-info ms-2" title="Text eines Stücks ändern; das Zeitfenster folgt den Absätzen, die Einbettung wird danach neu erzeugt">i</button>
+                    <button type="button" class="btn-close" title="Schließen" aria-label="Schließen"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                      <img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%237%3C/text%3E%3C/svg%3E" />
+                      <div>
+                        <div class="fw-semibold">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</div>
+                        <div class="text-secondary"><span class="m-serie">mmM#7</span> &middot; Stück 3 von 22 &middot; 03:12 bis 06:40 &middot; <span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span></div>
+                      </div>
+                      <div class="ms-auto d-flex gap-1">
+                        <button class="btn btn-sm btn-outline-secondary" title="Vorheriges Stück (2 von 22)"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary" title="Nächstes Stück (4 von 22)"><i class="fa-solid fa-chevron-right"></i></button>
+                        <button class="btn btn-sm btn-outline-primary" title="Ab 03:12 abspielen"><i class="fa-solid fa-play"></i></button>
+                      </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                      <div class="col-md-6">
+                        <label class="form-label mb-1">Thema <button class="m-info" title="Abschnitt aus der Themenaufschlüsselung der Korrektur; steht im Kontextkopf des Einbettungstexts">i</button></label>
+                        <select class="form-select">
+                          <option>Einstieg</option>
+                          <option selected>Was Kasualisierung bedeutet</option>
+                          <option>Beispiel Strategiespiele</option>
+                          <option>Folgen für Fortschritt</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label mb-1">Zeitfenster <button class="m-info" title="Ergibt sich aus den Absätzen, die im Text stehen; wird nach dem Speichern neu berechnet">i</button></label>
+                        <div class="form-control bg-body-secondary">03:12 bis 06:40 &middot; aus den Absätzen, nicht von Hand änderbar</div>
+                      </div>
+                    </div>
+
+                    <label class="form-label mb-1" for="stueck-text">Text <button class="m-info" title="Ganze Sätze am Anfang und Ende sind die Überlappung mit den Nachbarstücken; sie gehören zu diesem Stück">i</button></label>
+                    <textarea class="form-control" id="stueck-text" rows="11">Kasualisierung heißt für mich: Man nimmt ein Produkt, das Tiefe hatte, und schleift alles ab, was Einarbeitung verlangt. Nicht, weil es besser wird, sondern weil dann mehr Leute zahlen. Das ist erst einmal keine moralische Kategorie, das ist eine Beschreibung dessen, was passiert, wenn ein Anbieter die größtmögliche Zahl beiläufiger Nutzer erreichen will.
+
+Der Punkt ist: Die anspruchsvolle Nutzung verschwindet nicht, weil sie schlecht wäre. Sie verschwindet, weil es zu wenige sind. Und wer zu wenige ist, zahlt zu wenig. Das ist die ganze Rechnung. Ich habe das zuerst bei Spielen gesehen, dann bei Software, und irgendwann fällt einem auf, dass das überall gilt, wo ein Markt entscheidet, was weiterentwickelt wird.
+
+Man kann sich das an einem Strategiespiel klarmachen, dessen Nachfolger Regeln abbaute, um mehr Käufer zu erreichen. Der Nachfolger war erfolgreicher. Er war aber nicht besser, er war zugänglicher. Und das sind zwei völlig verschiedene Dinge, die im Wettbewerb ständig verwechselt werden.</textarea>
+                    <div class="d-flex align-items-center gap-3 mt-2 text-secondary small">
+                      <span>1.011 Zeichen</span>
+                      <span>Zielgröße 3.000 Zeichen (800 bis 8.000)</span>
+                      <span>Überlappung vor 400, nach 400 Zeichen</span>
+                    </div>
+
+                    <div class="form-check form-switch mt-3">
+                      <input class="form-check-input" type="checkbox" id="neu-einbetten" checked />
+                      <label class="form-check-label" for="neu-einbetten">Nach dem Speichern neu einbetten</label>
+                      <button class="m-info ms-1" title="Der alte Vektor (text-embedding-bge-m3, 1024 Dimensionen) wird ersetzt; bis dahin findet die Suche den alten Text">i</button>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-outline-secondary me-auto" title="Am Cursor in zwei Stücke teilen (nur an einer Satzgrenze)"><i class="fa-solid fa-scissors"></i> Am Cursor teilen</button>
+                    <button class="btn btn-outline-secondary" title="Mit dem nächsten Stück (4 von 22) zusammenlegen"><i class="fa-solid fa-object-group"></i> Mit nächstem zusammenlegen</button>
+                    <button class="btn btn-outline-secondary">Abbrechen</button>
+                    <button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Speichern</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Offener Dialog: Auf Stufe zurücksetzen (statisch, deckt die Ansicht ab) -->
+          <div class="modal-backdrop show position-absolute w-100 h-100"></div>
+          <div class="modal d-block position-absolute" style="display: block" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="dialog-zuruecksetzen-titel">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="dialog-zuruecksetzen-titel"><i class="fa-solid fa-rotate-left"></i> Auf Stufe zurücksetzen</h5>
+                  <button class="m-info ms-2" title="Ein Video auf eine frühere Stufe des Fließbands zurückstellen; alles danach wird gelöscht und neu erzeugt">i</button>
+                  <button type="button" class="btn-close" title="Schließen" aria-label="Schließen"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <img class="m-mini" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%23b9c3cf'/%3E%3Ctext x='80' y='51' font-family='sans-serif' font-size='17' font-weight='600' text-anchor='middle' fill='%23ffffff'%3EmmM%231%3C/text%3E%3C/svg%3E" />
+                    <div>
+                      <div class="fw-semibold">Kritik an der Linken von einem Linken</div>
+                      <div class="text-secondary"><span class="m-serie">mmM#1</span> &middot; 2. November 2020 &middot; 6:58 &middot; zurzeit <span class="m-stufe eingebettet"><i class="fa-solid fa-cube"></i> Eingebettet</span> &middot; 11 Stücke, 11 Einbettungen</div>
+                    </div>
+                  </div>
+                  <p>Alles, was nach der gewählten Zielstufe entstanden ist, wird gelöscht. Was bis zur Zielstufe vorhanden ist, bleibt unverändert; von dort reicht das Fließband das Video wieder weiter.</p>
+
+                  <div class="row g-4">
+                    <div class="col-lg-7">
+                      <h6 class="text-uppercase text-secondary small mb-2">Zielstufe <button class="m-info" title="Die Stufe, auf der das Video danach steht; je früher, desto mehr wird neu erzeugt">i</button></h6>
+                      <div class="border">
+                        <div class="list-group list-group-flush">
+                          <label class="list-group-item d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="zielstufe" value="gestueckelt" />
+                            <span>
+                              <span class="m-stufe gestueckelt"><i class="fa-solid fa-scissors"></i> Gestückelt</span> <span class="fw-semibold ms-1">nur neu einbetten</span>
+                              <span class="d-block text-secondary">Die Einbettungen werden gelöscht und neu erzeugt. Stücke, Korrektur und Transkript bleiben. Sinnvoll nach einem Wechsel des Einbettungsmodells.</span>
+                            </span>
+                          </label>
+                          <label class="list-group-item d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="zielstufe" value="korrigiert" />
+                            <span>
+                              <span class="m-stufe korrigiert"><i class="fa-solid fa-spell-check"></i> Korrigiert</span> <span class="fw-semibold ms-1">neu stückeln und einbetten</span>
+                              <span class="d-block text-secondary">Stücke und Einbettungen werden gelöscht. Korrektur und Transkript bleiben. Sinnvoll nach geänderter Zielgröße oder Überlappung.</span>
+                            </span>
+                          </label>
+                          <label class="list-group-item d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="zielstufe" value="transkribiert" checked />
+                            <span>
+                              <span class="m-stufe transkribiert"><i class="fa-solid fa-closed-captioning"></i> Transkribiert</span> <span class="fw-semibold ms-1">neu korrigieren</span>
+                              <span class="d-block text-secondary">Korrektur, Stücke und Einbettungen werden gelöscht; das Sprachmodell korrigiert den Rohtext erneut. Das Transkript bleibt. Sinnvoll bei schlechter Korrektur oder neuem Korrekturmodell.</span>
+                            </span>
+                          </label>
+                          <label class="list-group-item d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="zielstufe" value="audio" />
+                            <span>
+                              <span class="m-stufe audio"><i class="fa-solid fa-headphones"></i> Audio</span> <span class="fw-semibold ms-1">neu transkribieren</span>
+                              <span class="d-block text-secondary">Auch das Transkript wird gelöscht; Whisper transkribiert die vorhandene Audiodatei erneut. Sinnvoll bei Hörfehlern im Rohtext.</span>
+                            </span>
+                          </label>
+                          <label class="list-group-item d-flex gap-3">
+                            <input class="form-check-input flex-shrink-0 mt-1" type="radio" name="zielstufe" value="entdeckt" />
+                            <span>
+                              <span class="m-stufe entdeckt"><i class="fa-solid fa-satellite-dish"></i> Entdeckt</span> <span class="fw-semibold ms-1">komplett neu beschaffen</span>
+                              <span class="d-block text-secondary">Alles wird gelöscht, auch die Audiodatei. Nur die Metadaten der Quelle und das Vorschaubild bleiben.</span>
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                      <h6 class="text-uppercase text-secondary small mb-2">Folgen für dieses Video <button class="m-info" title="Vorschau: was gelöscht wird, was bleibt und welche Aufträge danach angelegt werden">i</button></h6>
+
+                      <div data-folgen="gestueckelt" hidden>
+                        <table class="table table-sm mb-2">
+                          <tbody>
+                            <tr><td class="text-danger" style="width: 24px"><i class="fa-solid fa-trash"></i></td><td>Einbettungen</td><td class="text-secondary">11 werden gelöscht (text-embedding-bge-m3, 1024 Dimensionen)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Stücke</td><td class="text-secondary">11 bleiben (30.890 Zeichen)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Korrektur</td><td class="text-secondary">bleibt (13 Blöcke, 4 Themen, Kurzzusammenfassung)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Transkript</td><td class="text-secondary">bleibt (Whisper Large V3, 96 Segmente)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Audio</td><td class="text-secondary">bleibt (3,3 Megabyte, Mono-AAC)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Unterhaltungen</td><td class="text-secondary">keine verweist auf Stellen dieses Videos</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="text-secondary"><i class="fa-solid fa-diagram-next"></i> Danach wird angelegt: Auftrag Einbettung.</div>
+                      </div>
+
+                      <div data-folgen="korrigiert" hidden>
+                        <table class="table table-sm mb-2">
+                          <tbody>
+                            <tr><td class="text-danger" style="width: 24px"><i class="fa-solid fa-trash"></i></td><td>Einbettungen</td><td class="text-secondary">11 werden gelöscht (text-embedding-bge-m3, 1024 Dimensionen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Stücke</td><td class="text-secondary">11 werden gelöscht (30.890 Zeichen)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Korrektur</td><td class="text-secondary">bleibt (13 Blöcke, 4 Themen, Kurzzusammenfassung)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Transkript</td><td class="text-secondary">bleibt (Whisper Large V3, 96 Segmente)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Audio</td><td class="text-secondary">bleibt (3,3 Megabyte, Mono-AAC)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Unterhaltungen</td><td class="text-secondary">keine verweist auf Stellen dieses Videos</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="text-secondary"><i class="fa-solid fa-diagram-next"></i> Danach wird angelegt: Auftrag Stückelung, dann Einbettung.</div>
+                      </div>
+
+                      <div data-folgen="transkribiert">
+                        <table class="table table-sm mb-2">
+                          <tbody>
+                            <tr><td class="text-danger" style="width: 24px"><i class="fa-solid fa-trash"></i></td><td>Einbettungen</td><td class="text-secondary">11 werden gelöscht (text-embedding-bge-m3, 1024 Dimensionen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Stücke</td><td class="text-secondary">11 werden gelöscht (30.890 Zeichen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Korrektur</td><td class="text-secondary">wird gelöscht (13 Blöcke, 4 Themen, Kurzzusammenfassung)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Transkript</td><td class="text-secondary">bleibt (Whisper Large V3, 96 Segmente)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Audio</td><td class="text-secondary">bleibt (3,3 Megabyte, Mono-AAC)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Unterhaltungen</td><td class="text-secondary">keine verweist auf Stellen dieses Videos</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="text-secondary"><i class="fa-solid fa-diagram-next"></i> Danach wird angelegt: Auftrag Korrektur, dann Stückelung und Einbettung.</div>
+                      </div>
+
+                      <div data-folgen="audio" hidden>
+                        <table class="table table-sm mb-2">
+                          <tbody>
+                            <tr><td class="text-danger" style="width: 24px"><i class="fa-solid fa-trash"></i></td><td>Einbettungen</td><td class="text-secondary">11 werden gelöscht (text-embedding-bge-m3, 1024 Dimensionen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Stücke</td><td class="text-secondary">11 werden gelöscht (30.890 Zeichen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Korrektur</td><td class="text-secondary">wird gelöscht (13 Blöcke, 4 Themen, Kurzzusammenfassung)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Transkript</td><td class="text-secondary">wird gelöscht (Whisper Large V3, 96 Segmente)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Audio</td><td class="text-secondary">bleibt (3,3 Megabyte, Mono-AAC)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Unterhaltungen</td><td class="text-secondary">keine verweist auf Stellen dieses Videos</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="text-secondary"><i class="fa-solid fa-diagram-next"></i> Danach wird angelegt: Auftrag Transkription, dann Korrektur, Stückelung und Einbettung.</div>
+                      </div>
+
+                      <div data-folgen="entdeckt" hidden>
+                        <table class="table table-sm mb-2">
+                          <tbody>
+                            <tr><td class="text-danger" style="width: 24px"><i class="fa-solid fa-trash"></i></td><td>Einbettungen</td><td class="text-secondary">11 werden gelöscht (text-embedding-bge-m3, 1024 Dimensionen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Stücke</td><td class="text-secondary">11 werden gelöscht (30.890 Zeichen)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Korrektur</td><td class="text-secondary">wird gelöscht (13 Blöcke, 4 Themen, Kurzzusammenfassung)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Transkript</td><td class="text-secondary">wird gelöscht (Whisper Large V3, 96 Segmente)</td></tr>
+                            <tr><td class="text-danger"><i class="fa-solid fa-trash"></i></td><td>Audio</td><td class="text-secondary">wird gelöscht (3,3 Megabyte, Mono-AAC)</td></tr>
+                            <tr><td class="text-success"><i class="fa-solid fa-check"></i></td><td>Unterhaltungen</td><td class="text-secondary">keine verweist auf Stellen dieses Videos</td></tr>
+                          </tbody>
+                        </table>
+                        <div class="text-secondary"><i class="fa-solid fa-diagram-next"></i> Danach wird angelegt: Auftrag Audio, dann alle weiteren Stufen.</div>
+                      </div>
+
+                      <div class="form-check form-switch mt-3 mb-0">
+                        <input class="form-check-input" type="checkbox" id="weiterreichen" checked />
+                        <label class="form-check-label" for="weiterreichen">Danach automatisch weiterreichen</label>
+                        <button class="m-info ms-1" title="Nach einer fertigen Stufe wird sofort der Auftrag der nächsten Stufe angelegt. Aus: das Video bleibt auf der Zielstufe stehen, bis du es von Hand weiterreichst.">i</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <span class="me-auto text-secondary small">Lässt sich nicht rückgängig machen; die Stufen werden neu erzeugt.</span>
+                  <button class="btn btn-outline-secondary">Abbrechen</button>
+                  <button class="btn btn-danger"><i class="fa-solid fa-rotate-left"></i> Zurücksetzen</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <!-- Meldungen unten rechts -->
+    <div class="m-meldungen">
+      <div class="m-meldung d-flex gap-2 align-items-start">
+        <i class="fa-solid fa-circle-info mt-1" style="color: var(--m-akzent)"></i>
+        <div class="flex-grow-1">
+          <div>Einstellung gespeichert</div>
+          <small class="text-secondary">Zielgröße eines Stücks: 3.000 Zeichen &middot; vor 20 Sekunden</small>
+        </div>
+        <button type="button" class="btn-close" title="Meldung schließen" aria-label="Meldung schließen"></button>
+      </div>
+      <div class="m-meldung gut d-flex gap-2 align-items-start">
+        <i class="fa-solid fa-circle-check text-success mt-1"></i>
+        <div class="flex-grow-1">
+          <div>Auftrag angelegt: Transkription mmM#376</div>
+          <small class="text-secondary">Fließband, Stufe Transkription &middot; vor 6 Sekunden</small>
+        </div>
+        <button type="button" class="btn-close" title="Meldung schließen" aria-label="Meldung schließen"></button>
+      </div>
+      <div class="m-meldung fehler d-flex gap-2 align-items-start">
+        <i class="fa-solid fa-triangle-exclamation text-danger mt-1"></i>
+        <div class="flex-grow-1">
+          <div>Whisper-Worker nicht erreichbar (127.0.0.1:10033)</div>
+          <small class="text-secondary">Transkription mmM#376 wartet; nächster Versuch in 60 Sekunden &middot; gerade eben</small>
+          <div class="mt-1"><a class="small" href="fliessband.html">Fließband öffnen</a></div>
+        </div>
+        <button type="button" class="btn-close" title="Meldung schließen" aria-label="Meldung schließen"></button>
+      </div>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Zurücksetzen" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a class="aktiv" href="#">Bibliothek</a>
+          <a href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Auf Stufe <mark>zurücksetzen</mark></h2>
+          <p>Jedes Video steht auf einer Stufe des Fließbands: entdeckt, audio, transkribiert, korrigiert, gestückelt, eingebettet. Beim <mark>Zurücksetzen</mark> wählst du die Zielstufe; alles, was danach entstanden ist, wird gelöscht und vom Band neu erzeugt.</p>
+          <p><b>Zielstufe</b>: Je früher die Stufe, desto mehr wird neu gemacht. Für ein neues Einbettungsmodell reicht "Gestückelt", für eine bessere Korrektur brauchst du "Transkribiert".</p>
+          <p><b>Folgen</b>: Die rechte Spalte zeigt vorab, was gelöscht wird, was bleibt und welche Aufträge angelegt werden. Unterhaltungen, die auf Stellen dieses Videos verweisen, verlieren ihre Verweise; der Dialog nennt sie.</p>
+          <p><b>Danach automatisch weiterreichen</b>: Legt sofort den Auftrag der nächsten Stufe an; das Video läuft bis zur Einbettung durch. Ohne den Schalter bleibt es auf der Zielstufe stehen.</p>
+          <h2>Stück bearbeiten</h2>
+          <p>Du änderst den Text eines Stücks. Das Zeitfenster ergibt sich aus den Absätzen, die im Text stehen, und wird nach dem Speichern neu berechnet. Die Überlappung mit den Nachbarstücken bleibt Teil des Stücks. Nach dem Speichern wird das Stück neu eingebettet, sonst würde die Suche den alten Text finden.</p>
+          <p><b>Teilen</b> schneidet am Cursor, aber nur an einer Satzgrenze. <b>Zusammenlegen</b> verbindet das Stück mit dem nächsten und entfernt die doppelte Überlappung.</p>
+          <h2>Meldungen</h2>
+          <p>Meldungen erscheinen unten rechts. Bestätigungen und Hinweise verschwinden nach einigen Sekunden von selbst, Fehler bleiben stehen, bis du sie schließt, und führen mit einem Link zur betroffenen Stelle.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Anschauungs-Verhalten: die Vorschau der Folgen folgt der gewählten Zielstufe
+      document.addEventListener("DOMContentLoaded", () => {
+        const bloecke = document.querySelectorAll("[data-folgen]");
+        document.querySelectorAll("input[name=zielstufe]").forEach((radio) => {
+          radio.addEventListener("change", () => {
+            bloecke.forEach((block) => (block.hidden = block.dataset.folgen !== radio.value));
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

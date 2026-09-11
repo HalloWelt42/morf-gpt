@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Textstellen</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+    <!-- Seitenspezifika, Vorschlag für app.css (siehe Bericht) -->
+    <style>
+      .m-leiste { flex: none; display: flex; align-items: flex-end; gap: 12px; padding: 8px 18px; background: var(--m-flaeche); border-bottom: 1px solid var(--m-rand); }
+      .m-leiste.unten { align-items: center; border-bottom: 0; border-top: 1px solid var(--m-rand); }
+      .m-stelle.gewaehlt { border-color: var(--m-akzent); box-shadow: inset 0 0 0 1px var(--m-akzent); }
+      .m-seite.breit { width: 600px; }
+      .pagination { --bs-pagination-border-radius: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a class="aktiv" href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <section class="m-ansicht">
+          <!-- Kopf der Ansicht (bleibt stehen) -->
+          <div class="m-ansicht-kopf">
+            <h1>Textstellen</h1>
+            <span class="m-unter">33.812 Stücke aus 180 Videos</span>
+            <span class="m-luecke"></span>
+            <button class="btn btn-sm btn-outline-secondary" title="Für alle Stücke ohne Vektor einen Einbettungsauftrag anlegen (2 Videos warten)"><i class="fa-solid fa-cube"></i> Fehlende einbetten</button>
+            <button class="m-info" title="Hilfe zu den Textstellen">i</button>
+          </div>
+
+          <!-- Filterleiste (bleibt stehen) -->
+          <div class="m-leiste">
+            <div style="width: 300px">
+              <label class="form-label small mb-1" for="suche">Volltextsuche <button class="m-info" title="Sucht im Text der Stücke nach Wortformen (Wille, Willen, willentlich). Das ist keine Ähnlichkeitssuche wie im Chat.">i</button></label>
+              <div class="d-flex gap-1">
+                <input class="form-control form-control-sm" id="suche" value="Wille" placeholder="Wort oder Wortfolge ..." />
+                <button class="btn btn-sm btn-outline-secondary" title="Suche leeren"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+            <div style="width: 130px">
+              <label class="form-label small mb-1" for="serie">Serie</label>
+              <select class="form-select form-select-sm" id="serie"><option selected>Alle</option><option>mmM</option><option>gmM</option><option>ohne Serie</option></select>
+            </div>
+            <div style="width: 320px">
+              <label class="form-label small mb-1" for="video">Video <button class="m-info" title="Nur Videos, die schon gestückelt sind (180 von 664)">i</button></label>
+              <select class="form-select form-select-sm" id="video">
+                <option selected>Alle Videos (180)</option>
+                <option>mmM#374 Ausbeutung als topologische Kategorie denken</option>
+                <option>mmM#373 Warum Erklärungen nicht überzeugen</option>
+                <option>mmM#372 Der Preis der Eindeutigkeit</option>
+                <option>mmM#212 Kapitalismus ist kein Wettbewerb der Ideen</option>
+                <option>mmM#8 Was der Wettbewerb wirklich verursacht - morf erklärts</option>
+                <option>mmM#7 Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</option>
+                <option>mmM#6 Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</option>
+                <option>mmM#1 Kritik an der Linken von einem Linken</option>
+              </select>
+            </div>
+            <div style="width: 220px">
+              <label class="form-label small mb-1" for="thema">Thema <button class="m-info" title="Themen stammen aus der Aufschlüsselung der Korrektur; jedes Stück trägt das Thema seines Zeitfensters">i</button></label>
+              <select class="form-select form-select-sm" id="thema">
+                <option selected>Alle Themen</option>
+                <option>Der Wille als Bericht</option>
+                <option>Experimente zum Entschluss</option>
+                <option>Was Bewusstsein nicht ist</option>
+                <option>Was Kasualisierung bedeutet</option>
+                <option>Die Mechanik des Wettbewerbs</option>
+              </select>
+            </div>
+            <div style="width: 220px">
+              <label class="form-label small mb-1" for="sortierung">Sortierung</label>
+              <select class="form-select form-select-sm" id="sortierung">
+                <option selected>Relevanz zur Suche</option>
+                <option>Video-Datum, neueste zuerst</option>
+                <option>Video-Datum, älteste zuerst</option>
+                <option>Reihenfolge im Video</option>
+                <option>Größe, größte zuerst</option>
+                <option>Größe, kleinste zuerst</option>
+              </select>
+            </div>
+            <div class="form-check form-switch mb-1">
+              <input class="form-check-input" type="checkbox" id="ohne-einbettung" />
+              <label class="form-check-label small" for="ohne-einbettung">nur ohne Einbettung <button class="m-info" title="Zeigt nur Stücke, für die mit dem aktiven Einbettungsmodell (text-embedding-bge-m3) noch kein Vektor vorliegt">i</button></label>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary ms-auto" title="Alle Filter zurücksetzen"><i class="fa-solid fa-filter-circle-xmark"></i> Zurücksetzen</button>
+          </div>
+
+          <!-- Körper: links Liste (rollt), rechts das gewählte Stück -->
+          <div class="d-flex flex-grow-1" style="min-height: 0">
+            <div class="d-flex flex-column flex-grow-1" style="min-width: 0; min-height: 0">
+              <div class="m-ansicht-koerper">
+
+                <div class="m-stelle gewaehlt">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</div>
+                      <div class="zeit"><span class="m-serie">mmM#6</span> &middot; <b>Stück 4 von 11</b> &middot; 11:05 bis 15:20 &middot; Thema: Der Wille als Bericht &middot; 14. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Das heißt aber nicht, dass Bewusstsein nichts tut. Es heißt nur, dass es nicht das tut, was wir ihm zuschreiben. Wir erleben es als Ursache, und es ist, soweit man das überhaupt messen kann, eher ein Bericht über etwas, das schon passiert ist. Ein Bericht kommt immer nach dem Ereignis, sonst wäre es kein Bericht. Und genau da fängt das Missverständnis an, das ich heute auseinandernehmen will. Und mit dem <mark>Willen</mark> ist es genauso. Wenn ich sage, ich habe mich entschieden, dann beschreibe ich einen Zustand, der schon eingetreten ist. Die Entscheidung war vorher da, ich bekomme sie nur nachgereicht, und weil sie mir nachgereicht wird, fühlt sie sich an, als hätte ich sie gerade erst getroffen.</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.826 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 11:05 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 11:05 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=665" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</div>
+                      <div class="zeit"><span class="m-serie">mmM#6</span> &middot; <b>Stück 5 von 11</b> &middot; 14:52 bis 19:10 &middot; Thema: Experimente zum Entschluss &middot; 14. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Was ihr lest, mit wem ihr redet, worauf ihr euch einlasst und was ihr euch immer wieder anschaut, das verändert, was ihr später wollen werdet. Das ist der Hebel, und er ist größer, als die meisten glauben. Nicht der <mark>Wille</mark>, sondern die Bedingungen, unter denen er entsteht. Darauf komme ich gleich zurück, wenn wir uns die Experimente genauer anschauen, denn da steckt der eigentlich brauchbare Teil. Also: Ein Proband sitzt vor einer Uhr mit einem laufenden Punkt und soll sich merken, wo der Punkt stand, als er den Entschluss gespürt hat, die Hand zu bewegen ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">3.014 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 14:52 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 14:52 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=892" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</div>
+                      <div class="zeit"><span class="m-serie">mmM#6</span> &middot; <b>Stück 3 von 11</b> &middot; 07:40 bis 11:31 &middot; Thema: Was Bewusstsein nicht ist &middot; 14. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Man verwechselt Bewusstsein gern mit Aufmerksamkeit, und Aufmerksamkeit mit <mark>Willen</mark>. Das sind drei verschiedene Dinge, und wenn man sie zusammenwirft, kommt man zu Sätzen, die schön klingen und nichts erklären. Aufmerksamkeit kann man messen, die wandert, die lässt sich lenken, von außen sogar leichter als von innen. Bewusstsein ist das, was übrig bleibt, wenn man fragt, wie es sich anfühlt, dass da gerade etwas gelenkt wird ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.958 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 07:40 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 07:40 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=460" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%231%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Kritik an der Linken von einem Linken</div>
+                      <div class="zeit"><span class="m-serie">mmM#1</span> &middot; <b>Stück 2 von 3</b> &middot; 02:30 bis 05:10 &middot; Thema: Wollen und Können &middot; 2. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Der gute <mark>Wille</mark> ist da, das bestreite ich gar nicht. Aber guter <mark>Wille</mark> ist kein Programm. Wenn ich frage, wie das konkret gehen soll, bekomme ich Haltung zurück, keine Mechanik. Und Haltung ist genau das, was der Gegenseite völlig egal ist, weil sie mit Mechanik arbeitet. Ich will hier nicht spotten, ich will das Problem benennen: Wer nur will, aber nicht weiß wie, überlässt das Wie den anderen ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.764 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 02:30 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 02:30 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=150" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%23373%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Warum Erklärungen nicht überzeugen</div>
+                      <div class="zeit"><span class="m-serie">mmM#373</span> &middot; <b>Stück 2 von 8</b> &middot; 02:50 bis 06:35 &middot; Thema: Einsicht ersetzt keinen Willen &middot; 24. Juli 2026</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Ihr kennt das: Ihr erklärt jemandem etwas, er nickt, er hat es verstanden, und er macht trotzdem weiter wie vorher. Das ist kein Fehler in der Erklärung. Einsicht und <mark>Wille</mark> laufen über zwei verschiedene Wege, und der zweite ist der langsamere. Eine Erklärung ändert, was jemand weiß. Sie ändert nicht, was jemand gewohnt ist. Und Gewohnheit ist die Form, in der der <mark>Wille</mark> im Alltag auftritt ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">3.041 Zeichen</small>
+                    <span class="badge text-bg-warning" title="Einbettungsauftrag wartet (Stufe Einbettung, 1 parallel)">Einbettung fehlt</span>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 02:50 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 02:50 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=170" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%23372%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Der Preis der Eindeutigkeit</div>
+                      <div class="zeit"><span class="m-serie">mmM#372</span> &middot; <b>Stück 6 von 7</b> &middot; 15:02 bis 18:40 &middot; Thema: Entscheiden ohne Gewissheit &middot; 11. Juli 2026</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Eindeutigkeit ist bequem, weil sie den <mark>Willen</mark> entlastet. Wenn klar ist, was richtig ist, muss ich nichts mehr wollen, ich muss nur noch folgen. Deswegen sind eindeutige Antworten so beliebt und so teuer: Sie kosten die Fähigkeit, mit offenen Lagen umzugehen. Und offene Lagen sind der Normalfall, nicht die Ausnahme ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.452 Zeichen</small>
+                    <span class="badge text-bg-warning" title="Einbettungsauftrag wartet (Stufe Einbettung, 1 parallel)">Einbettung fehlt</span>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 15:02 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 15:02 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=902" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%237%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Wenn Märkte sogar dem Fortschritt entgegenwirken: Kasualisierung</div>
+                      <div class="zeit"><span class="m-serie">mmM#7</span> &middot; <b>Stück 2 von 4</b> &middot; 03:12 bis 06:40 &middot; Thema: Was Kasualisierung bedeutet &middot; 17. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Kasualisierung heißt für mich: Man nimmt ein Produkt, das Tiefe hatte, und schleift alles ab, was Einarbeitung verlangt. Nicht, weil es besser wird, sondern weil dann mehr Leute zahlen. Da ist kein böser <mark>Wille</mark> im Spiel, das ist das Ärgerliche daran. Niemand sitzt da und sagt, wir machen das jetzt schlechter. Es passiert, weil jede einzelne Entscheidung für sich genommen vernünftig aussieht ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.996 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 03:12 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 03:12 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=192" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%23212%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Kapitalismus ist kein Wettbewerb der Ideen</div>
+                      <div class="zeit"><span class="m-serie">mmM#212</span> &middot; <b>Stück 5 von 6</b> &middot; 14:02 bis 17:10 &middot; Thema: Kapital statt Ideen &middot; 3. März 2024</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Ideen konkurrieren nicht, Kapitalstöcke konkurrieren. Die Idee ist nur das Vehikel. Ob jemand das will oder nicht, spielt keine Rolle, und das ist der Punkt, an dem die Rede vom guten oder schlechten <mark>Willen</mark> der Unternehmer ins Leere läuft. Wer mit dem größeren Stock kommt, setzt seine Idee durch, auch wenn sie die schlechtere ist ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.910 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 14:02 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 14:02 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=842" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%238%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Was der Wettbewerb wirklich verursacht - morf erklärts</div>
+                      <div class="zeit"><span class="m-serie">mmM#8</span> &middot; <b>Stück 3 von 5</b> &middot; 08:05 bis 11:20 &middot; Thema: Die Mechanik des Wettbewerbs &middot; 17. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Im Wettbewerb setzt sich nicht das durch, was gut ist, sondern das, was am meisten Leute zum Zahlen bringt. Das ist keine Wertung, das ist die Mechanik. Und Mechanik fragt nicht nach dem <mark>Willen</mark> der Beteiligten. Ihr könnt den besten <mark>Willen</mark> der Welt haben und geht trotzdem unter, wenn nebenan jemand billiger ist ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">3.020 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 08:05 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 08:05 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=485" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%234%3C/text%3E%3C/svg%3E" alt="" />
+                    <div class="flex-grow-1" style="min-width: 0">
+                      <div class="titel">Weshalb Wettbewerb nicht mit Fortschritt einhergeht</div>
+                      <div class="zeit"><span class="m-serie">mmM#4</span> &middot; <b>Stück 1 von 4</b> &middot; 00:00 bis 03:40 &middot; Thema: Einstieg &middot; 6. November 2020</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Fortschritt wäre: Es wird mehr möglich. Wettbewerb belohnt aber nur, was sich verkaufen lässt, und das sind zwei völlig verschiedene Dinge. Man kann mit dem besten <mark>Willen</mark> nichts daran ändern, dass ein Markt keine Richtung kennt, nur Nachfrage. Das ist heute mein Thema, und ich fange mit einem Beispiel an, das jeder kennt ...</div>
+                  <div class="aktionen">
+                    <small class="text-secondary">2.880 Zeichen</small>
+                    <small class="text-secondary"><i class="fa-solid fa-cube"></i> bge-m3 vorhanden</small>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-primary" title="Ab 00:00 abspielen"><i class="fa-solid fa-play"></i></button>
+                    <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="https://youtu.be/xxxxxxxxxxx" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+                    <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Seitenzahlen (bleiben stehen) -->
+              <div class="m-leiste unten">
+                <span class="small text-secondary">1.204 Stücke passen zu "Wille" &middot; 1 bis 10 angezeigt</span>
+                <nav class="ms-auto" aria-label="Seiten">
+                  <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#" title="Vorherige Seite"><i class="fa-solid fa-chevron-left"></i></a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">4</a></li>
+                    <li class="page-item"><a class="page-link" href="#">5</a></li>
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                    <li class="page-item"><a class="page-link" href="#">121</a></li>
+                    <li class="page-item"><a class="page-link" href="#" title="Nächste Seite"><i class="fa-solid fa-chevron-right"></i></a></li>
+                  </ul>
+                </nav>
+                <select class="form-select form-select-sm" style="width: 120px" title="Stücke je Seite"><option selected>10 je Seite</option><option>25 je Seite</option><option>50 je Seite</option></select>
+              </div>
+            </div>
+
+            <!-- Rechts: das gewählte Stück in voller Länge -->
+            <aside class="m-seite breit">
+              <div class="m-seite-kopf">
+                <i class="fa-solid fa-file-lines"></i> Stück 4 von 11
+                <button class="m-info" title="Das links gewählte Stück in voller Länge, mit Überlappung zu den Nachbarn">i</button>
+                <span class="ms-auto"></span>
+                <button class="btn btn-sm btn-outline-secondary" title="Vorheriges Stück (3) wählen"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" title="Nächstes Stück (5) wählen"><i class="fa-solid fa-chevron-right"></i></button>
+                <a class="btn btn-sm btn-outline-secondary" title="Textstelle mit Kontext öffnen" href="stelle.html"><i class="fa-solid fa-up-right-from-square"></i></a>
+              </div>
+
+              <div class="m-parameter">
+                <h6>Herkunft</h6>
+                <div class="d-flex gap-2 align-items-start">
+                  <img class="m-mini" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='90'%3E%3Crect width='160' height='90' fill='%238492a3'/%3E%3Ctext x='80' y='53' font-family='sans-serif' font-size='22' fill='%23ffffff' text-anchor='middle'%3EmmM%236%3C/text%3E%3C/svg%3E" alt="" />
+                  <div class="flex-grow-1" style="min-width: 0">
+                    <a class="fw-semibold text-decoration-none" href="video.html" title="Video in der Bibliothek öffnen">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</a>
+                    <div class="small text-secondary"><span class="m-serie">mmM#6</span> &middot; 14. November 2020 &middot; 42:42</div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between small mt-2"><span class="text-secondary">Zeitfenster</span><span>11:05 bis 15:20 (4 Minuten 15 Sekunden)</span></div>
+                <div class="d-flex justify-content-between small"><span class="text-secondary">Thema</span><span>Der Wille als Bericht</span></div>
+                <div class="d-flex justify-content-between small"><span class="text-secondary">Zeichen</span><span>2.826</span></div>
+                <div class="d-flex justify-content-between small"><span class="text-secondary">Überlappung</span><span>395 vor (Stück 3), 399 nach (Stück 5)</span></div>
+                <div class="d-flex justify-content-between small"><span class="text-secondary">Einbettung</span><span><i class="fa-solid fa-cube"></i> text-embedding-bge-m3, 1024 Dimensionen, 5. September 2026</span></div>
+                <div class="d-flex gap-2 mt-2">
+                  <button class="btn btn-sm btn-outline-primary" title="Ab 11:05 im eigenen Spieler abspielen"><i class="fa-solid fa-play"></i> Ab 11:05 abspielen</button>
+                  <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube ab 11:05 öffnen" href="https://youtu.be/xxxxxxxxxxx?t=665" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i> YouTube</a>
+                </div>
+              </div>
+
+              <div class="m-parameter">
+                <h6>Aktionen <button class="m-info" title="Text ändern, teilen, zusammenlegen oder neu einbetten. Nach Bearbeiten, Teilen und Zusammenlegen gilt der Vektor als veraltet und wird neu berechnet.">i</button></h6>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-sm btn-outline-primary" title="Text des Stücks bearbeiten; die Einbettung wird danach als veraltet markiert"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Das Stück an der Cursorposition in zwei Stücke teilen, immer an einer Satzgrenze"><i class="fa-solid fa-scissors"></i> Teilen bei Cursor</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Dieses Stück mit Stück 5 zu einem Stück zusammenlegen; die Überlappung wird entdoppelt"><i class="fa-solid fa-object-group"></i> Mit nächstem zusammenlegen</button>
+                  <button class="btn btn-sm btn-outline-secondary" title="Vektor für dieses Stück mit dem aktiven Einbettungsmodell neu berechnen"><i class="fa-solid fa-cube"></i> Neu einbetten</button>
+                </div>
+                <div class="small text-secondary mt-2"><i class="fa-solid fa-i-cursor"></i> Cursor im Text: Zeichen 2.040, Absatz ab 13:44, nach "nicht ihr Anfang."</div>
+              </div>
+
+              <div class="m-seite-koerper">
+                <div class="small text-secondary mb-2">
+                  <span style="background: var(--m-akzent-hell)">&nbsp;Hell hinterlegt&nbsp;</span> = Überlappung: der Anfang wiederholt das Ende von Stück 3 (395 Zeichen), das Ende kehrt am Anfang von Stück 5 wieder (399 Zeichen).
+                  <button class="m-info" title="Die Überlappung besteht aus ganzen Sätzen, damit kein Gedanke am Schnitt verloren geht. Bei der Suche werden Nachbarn an der Überlappung entdoppelt.">i</button>
+                </div>
+
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 11:05 abspielen">11:05</span>
+                  <div><span style="background: var(--m-akzent-hell)">Das heißt aber nicht, dass Bewusstsein nichts tut. Es heißt nur, dass es nicht das tut, was wir ihm zuschreiben. Wir erleben es als Ursache, und es ist, soweit man das überhaupt messen kann, eher ein Bericht über etwas, das schon passiert ist. Ein Bericht kommt immer nach dem Ereignis, sonst wäre es kein Bericht. Und genau da fängt das Missverständnis an, das ich heute auseinandernehmen will.</span> Und mit dem Willen ist es genauso. Wenn ich sage, ich habe mich entschieden, dann beschreibe ich einen Zustand, der schon eingetreten ist. Die Entscheidung war vorher da, ich bekomme sie nur nachgereicht, und weil sie mir nachgereicht wird, fühlt sie sich an, als hätte ich sie gerade erst getroffen.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 11:58 abspielen">11:58</span>
+                  <div>Das klingt erst einmal bedrohlich, weil unser ganzes Reden über Verantwortung darauf aufbaut, dass da jemand am Anfang steht, der hätte anders können. Aber schaut euch an, was ihr wirklich macht, wenn ihr etwas wollt. Ihr wollt nicht erst und handelt dann. Ihr merkt, dass ihr wollt, während ihr schon dabei seid. Der Wille ist der Name für die Richtung, in die es gerade läuft, nicht der Motor, der die Richtung vorgibt. Das ist kein Wortspiel, das ist der Befund.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 12:51 abspielen">12:51</span>
+                  <div>Die Quellen dazu packe ich wie immer in die Beschreibung, das sind nicht meine Einfälle. Es gibt seit den Achtzigern Experimente, bei denen man Leute einen Knopf drücken lässt und sie sagen sollen, wann sie den Entschluss gespürt haben. Der Entschluss kommt in der Messung später als das, was im Gehirn schon angelaufen ist. Man kann über die Methodik streiten, und das haben viele getan, zu Recht übrigens, aber die Grundrichtung hat sich in Wiederholungen gehalten. Was sich nicht gehalten hat, ist die große Deutung, die man in den Neunzigern daraus gemacht hat.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 13:44 abspielen">13:44</span>
+                  <div>Was folgt daraus? Nicht, dass ihr nichts entscheidet. Sondern dass das Entscheiden nicht da sitzt, wo ihr es vermutet. Es sitzt in dem, was ihr vorher aufgenommen habt, in dem, was ihr gelernt habt, in dem, worauf ihr geachtet habt und worauf nicht. Der Wille ist das Ergebnis dieser ganzen Geschichte, nicht ihr Anfang.<i class="fa-solid fa-i-cursor text-primary" title="Cursor: hier würde geteilt"></i> Und deswegen ist die Frage, ob der Wille frei ist, schlecht gestellt. Frei wovon denn? Von der eigenen Geschichte? Das wäre kein freier Wille, das wäre ein Wille ohne Besitzer.</div>
+                </div>
+                <div class="m-absatz">
+                  <span class="zeit" title="Ab 14:38 abspielen">14:38</span>
+                  <div>Ich glaube, die ehrlichere Frage ist, wie viel von dieser Geschichte ihr selbst gestalten könnt. Und da wird es interessant, weil das nämlich geht. Nicht im Moment der Entscheidung, aber lange davor. <span style="background: var(--m-akzent-hell)">Was ihr lest, mit wem ihr redet, worauf ihr euch einlasst und was ihr euch immer wieder anschaut, das verändert, was ihr später wollen werdet. Das ist der Hebel, und er ist größer, als die meisten glauben. Nicht der Wille, sondern die Bedingungen, unter denen er entsteht. Darauf komme ich gleich zurück, wenn wir uns die Experimente genauer anschauen, denn da steckt der eigentlich brauchbare Teil.</span></div>
+                </div>
+
+                <h6 class="small text-uppercase text-secondary mt-4 mb-2">Nachbarn <button class="m-info" title="Vorheriges und nächstes Stück desselben Videos; die Suche kann Nachbarn automatisch mitgeben">i</button></h6>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <span class="nr">3</span>
+                    <div>
+                      <div class="titel">Vorheriges: Stück 3 von 11</div>
+                      <div class="zeit">07:40 bis 11:31 &middot; Thema: Was Bewusstsein nicht ist &middot; 2.958 Zeichen</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Ende des Stücks (wird in Stück 4 wiederholt): ... Wir erleben es als Ursache, und es ist, soweit man das überhaupt messen kann, eher ein Bericht über etwas, das schon passiert ist. Ein Bericht kommt immer nach dem Ereignis, sonst wäre es kein Bericht. Und genau da fängt das Missverständnis an, das ich heute auseinandernehmen will.</div>
+                  <div class="aktionen">
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-secondary" title="Stück 3 wählen"><i class="fa-solid fa-chevron-left"></i> Wählen</button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Stück 3 mit diesem Stück zusammenlegen"><i class="fa-solid fa-object-group"></i></button>
+                  </div>
+                </div>
+
+                <div class="m-stelle">
+                  <div class="kopf">
+                    <span class="nr">5</span>
+                    <div>
+                      <div class="titel">Nächstes: Stück 5 von 11</div>
+                      <div class="zeit">14:52 bis 19:10 &middot; Thema: Experimente zum Entschluss &middot; 3.014 Zeichen</div>
+                    </div>
+                  </div>
+                  <div class="auszug">Anfang des Stücks (aus Stück 4 wiederholt): Was ihr lest, mit wem ihr redet, worauf ihr euch einlasst und was ihr euch immer wieder anschaut, das verändert, was ihr später wollen werdet. Das ist der Hebel, und er ist größer, als die meisten glauben ...</div>
+                  <div class="aktionen">
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-sm btn-outline-secondary" title="Stück 5 wählen">Wählen <i class="fa-solid fa-chevron-right"></i></button>
+                    <button class="btn btn-sm btn-outline-secondary" title="Stück 5 mit diesem Stück zusammenlegen"><i class="fa-solid fa-object-group"></i></button>
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <!-- Audiospieler (bleibt über alle Ansichten) -->
+      <footer class="m-spieler">
+        <div>
+          <div class="titel">Das Bewusstsein und den Willen verstehen (mit vielen Quellen)</div>
+          <div class="unter"><span class="m-serie">mmM#6</span> &middot; Thema: Der Wille als Bericht</div>
+        </div>
+        <div class="knoepfe">
+          <button class="btn btn-outline-secondary" title="30 Sekunden zurück"><i class="fa-solid fa-backward"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden zurück"><i class="fa-solid fa-backward-step"></i></button>
+          <button class="btn btn-primary" title="Abspielen"><i class="fa-solid fa-play"></i></button>
+          <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
+          <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
+        </div>
+        <div>
+          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+            <div class="thema" style="left: 0%; width: 12%">Einstieg</div>
+            <div class="thema" style="left: 12%; width: 14%">Was Bewusstsein nicht ist</div>
+            <div class="thema" style="left: 26%; width: 10%">Der Wille als Bericht</div>
+            <div class="thema" style="left: 36%; width: 22%">Experimente zum Entschluss</div>
+            <div class="thema" style="left: 58%; width: 22%">Quellen und Einwände</div>
+            <div class="thema" style="left: 80%; width: 20%">Verantwortung ohne Anfang</div>
+            <div class="gespielt" style="width: 26%"></div>
+            <div class="marke" style="left: 26%"></div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <span class="zeiten">11:05 / 42:42</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="https://youtu.be/xxxxxxxxxxx?t=665" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Hilfe: freischwebendes Fenster -->
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." value="Überlappung" /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Suche: Breite und Genauigkeit</a>
+          <a href="#">Fundstellen</a>
+          <a href="#">Audiospieler</a>
+          <a href="#">Bibliothek</a>
+          <a class="aktiv" href="#">Textstellen</a>
+          <a href="#">Fließband</a>
+          <a href="#">Anbieter</a>
+          <a href="#">Einstellungen</a>
+          <a href="#">Umzug der Bibliothek</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Textstellen</h2>
+          <p>Nach der Korrektur wird jedes Video in Stücke von etwa 3.000 Zeichen geschnitten, immer an Satzgrenzen. Diese Stücke sind das, was die Suche findet und was das Sprachmodell im Chat zu lesen bekommt. Hier siehst du alle Stücke der Bibliothek, kannst sie durchsuchen, prüfen und bei Bedarf von Hand nachbessern.</p>
+          <h2>Filter</h2>
+          <p><b>Volltextsuche</b>: Sucht im Text der Stücke nach Wortformen. Das ist eine andere Suche als im Chat: Dort zählt die Bedeutung, hier das Wort.</p>
+          <p><b>Serie, Video, Thema</b>: Grenzen die Liste ein. Das Thema stammt aus der Aufschlüsselung der Korrektur; jedes Stück trägt das Thema seines Zeitfensters.</p>
+          <p><b>Nur ohne Einbettung</b>: Zeigt Stücke, für die mit dem aktiven Einbettungsmodell noch kein Vektor vorliegt. Solche Stücke findet die Suche im Chat nicht.</p>
+          <h2>Überlappung</h2>
+          <p>Jedes Stück wiederholt am Anfang die letzten Sätze des vorigen Stücks (Vorgabe: 400 Zeichen). Diese <mark>Überlappung</mark> ist rechts hell hinterlegt. Sie sorgt dafür, dass ein Gedanke nicht am Schnitt verloren geht. Die Suche entdoppelt Nachbarn an dieser Stelle, es entsteht also kein doppelter Text in der Antwort.</p>
+          <h2>Bearbeiten, Teilen, Zusammenlegen</h2>
+          <p><b>Bearbeiten</b> öffnet den Text zum Ändern. <b>Teilen bei Cursor</b> macht aus einem Stück zwei, immer an einer Satzgrenze. <b>Mit nächstem zusammenlegen</b> verbindet zwei Nachbarn zu einem Stück und entfernt die doppelte Überlappung. Nach jeder dieser Änderungen gilt der Vektor des Stücks als veraltet und wird neu berechnet.</p>
+          <h2>Neu einbetten</h2>
+          <p>Berechnet den Vektor eines Stücks mit dem aktiven Einbettungsmodell neu. Für ein ganzes Video geht das in der Bibliothek, für alle fehlenden Vektoren über "Fehlende einbetten" im Kopf dieser Ansicht.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -50,10 +50,7 @@ class Einstellungen(BaseSettings):
     def datenbank_url(self) -> str:
         if self.db_url:
             return self.db_url
-        return (
-            f"postgresql+asyncpg://{self.db_nutzer}:{self.db_passwort}"
-            f"@{self.db_host}:{self.db_port}/{self.db_name}"
-        )
+        return f"postgresql+asyncpg://{self.db_nutzer}:{self.db_passwort}@{self.db_host}:{self.db_port}/{self.db_name}"
 
     @property
     def datenbank_url_sync(self) -> str:
