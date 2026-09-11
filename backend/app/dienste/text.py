@@ -6,6 +6,8 @@ was aus einem Modell in die Bibliothek oder in eine Antwort fließt, läuft hier
 
 from __future__ import annotations
 
+import re
+
 _ERSATZ: dict[str, str] = {
     "—": "-",  # Geviertstrich
     "–": "-",  # Halbgeviertstrich
@@ -34,3 +36,40 @@ def gerade(text: str) -> str:
         if alt in text:
             text = text.replace(alt, neu)
     return text
+
+
+# Schriftblöcke, die in deutschen (oder englischen) Antworten nichts verloren haben.
+# Sprachmodelle in niedriger Quantisierung streuen gelegentlich einzelne Zeichen daraus
+# ein ("weil er认为 in ..."). Griechisch und Mathematik bleiben erlaubt.
+_FREMDE_SCHRIFT = re.compile(
+    "["
+    "\u0400-\u052F"  # Kyrillisch
+    "\u0590-\u06FF"  # Hebräisch, Arabisch
+    "\u0900-\u0DFF"  # indische Schriften
+    "\u0E00-\u0E7F"  # Thai
+    "\u1100-\u11FF"  # Hangul-Jamo
+    "\u2E80-\u2FDF"  # CJK-Radikale
+    "\u3000-\u30FF"  # CJK-Zeichensetzung, Hiragana, Katakana
+    "\u3100-\u31FF"  # Bopomofo, Hangul-Kompatibilität
+    "\u3400-\u4DBF"  # CJK-Erweiterung A
+    "\u4E00-\u9FFF"  # CJK-Ideogramme
+    "\uA960-\uA97F"  # Hangul-Jamo Erweiterung
+    "\uAC00-\uD7FF"  # Hangul-Silben
+    "\uF900-\uFAFF"  # CJK-Kompatibilität
+    "\uFF00-\uFFEF"  # Vollbreite Formen
+    "\U00020000-\U0003134F"  # CJK-Erweiterungen B bis G
+    "]+"
+)
+_DOPPELTE_LEERZEICHEN = re.compile(r"[ \t]{2,}")
+
+
+def nur_lateinisch(text: str) -> str:
+    """Entfernt Zeichen fremder Schriften (chinesisch, kyrillisch, arabisch ...)."""
+    if not _FREMDE_SCHRIFT.search(text):
+        return text
+    return _DOPPELTE_LEERZEICHEN.sub(" ", _FREMDE_SCHRIFT.sub("", text))
+
+
+def bereinige(text: str) -> str:
+    """Alles, was aus einem Sprachmodell kommt: gerade Zeichen und nur lateinische Schrift."""
+    return nur_lateinisch(gerade(text))

@@ -16,7 +16,7 @@ from math import ceil
 from typing import Any
 
 from ..anbieter.basis import AnbieterFehler, Antwortparameter, SprachmodellAnbieter
-from ..text import gerade
+from ..text import bereinige
 from . import bloecke as blockmodul
 from . import prompts, waechter
 
@@ -271,8 +271,8 @@ async def korrigiere(
             prompts.korrektur_nachrichten(block.text),
             Antwortparameter(temperatur=p.temperatur, max_tokens=max_tokens_fuer(block.zeichen), zeitgrenze_s=p.zeitgrenze_s),
         )
-        pruefung = waechter.pruefe_block(block.text, gerade(antwort.text), p.mindest_aehnlichkeit)
-        vorschlag = waechter.bereinige_antwort(gerade(antwort.text)) if pruefung.verworfen else ""
+        pruefung = waechter.pruefe_block(block.text, bereinige(antwort.text), p.mindest_aehnlichkeit)
+        vorschlag = waechter.bereinige_antwort(bereinige(antwort.text)) if pruefung.verworfen else ""
         ergebnis.bloecke.append(
             Blockergebnis(
                 index=block.index,
@@ -301,7 +301,7 @@ async def korrigiere(
                 ),
             )
             ergebnis.themen, ergebnis.zusammenfassung = themen_aus_antwort(
-                gerade(antwort.text), ergebnis.absaetze[0].start_s, ergebnis.absaetze[-1].end_s
+                bereinige(antwort.text), ergebnis.absaetze[0].start_s, ergebnis.absaetze[-1].end_s
             )
             await schreibe(f"{len(ergebnis.themen)} Themen, Zusammenfassung mit {len(ergebnis.zusammenfassung)} Zeichen", "info")
         except (AnbieterFehler, ValueError) as e:

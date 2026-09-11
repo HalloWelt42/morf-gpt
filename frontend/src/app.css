@@ -73,6 +73,7 @@ body {
   display: grid;
   grid-template-rows: var(--m-kopf-h) 1fr auto;
   grid-template-areas: "kopf" "inhalt" "spieler";
+  overflow: hidden; /* nichts darf das Dokument über die Höhe hinaus wachsen lassen */
 }
 .m-kopf {
   grid-area: kopf;
@@ -145,6 +146,7 @@ body {
   padding: 0 16px;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
 }
 .m-status-punkt {
   width: 9px;
@@ -181,6 +183,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .m-ansicht-kopf {
   flex: none;
@@ -200,6 +203,16 @@ body {
 .m-ansicht-kopf .m-unter {
   color: var(--m-text-2);
   font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.m-ansicht-kopf h1 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 .m-ansicht-kopf .m-luecke {
   flex: 1;
@@ -222,6 +235,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--m-flaeche);
   border-left: 1px solid var(--m-rand);
 }
@@ -414,6 +428,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .m-chat-verlauf {
   flex: 1;

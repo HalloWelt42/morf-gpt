@@ -163,9 +163,12 @@
     nurSucheErgebnis = false;
     laeuft = true;
     hervor = null;
-    const nutzer: Nachricht = { id: `tmp-${Date.now()}`, rolle: "nutzer", inhalt: f, stellen: [], parameter: {}, modell: "", dauer_ms: null, tokens_ein: null, tokens_aus: null, fehler: "", erstellt: new Date().toISOString() };
-    const antwort: Nachricht = { ...nutzer, id: `tmp-a-${Date.now()}`, rolle: "assistent", inhalt: "", streamt: true };
-    verlauf = [...verlauf, nutzer, antwort];
+    const nutzerRoh: Nachricht = { id: `tmp-${Date.now()}`, rolle: "nutzer", inhalt: f, stellen: [], parameter: {}, modell: "", dauer_ms: null, tokens_ein: null, tokens_aus: null, fehler: "", erstellt: new Date().toISOString() };
+    const antwortRoh: Nachricht = { ...nutzerRoh, id: `tmp-a-${Date.now()}`, rolle: "assistent", inhalt: "", streamt: true };
+    verlauf = [...verlauf, nutzerRoh, antwortRoh];
+    // Nur Schreibzugriffe über die reaktiven Stellvertreter im Verlauf werden gerendert.
+    const nutzer = verlauf[verlauf.length - 2];
+    const antwort = verlauf[verlauf.length - 1];
     await tick();
     nachUnten();
     abbrechen = postStrom(

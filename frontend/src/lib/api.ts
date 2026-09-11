@@ -75,8 +75,21 @@ export function postStrom(
   koerper: unknown,
   empfaenger: (e: SseEreignis) => void,
   fertig: (fehler?: Error) => void,
+  inaktivitaetMs = 120000,
 ): () => void {
   const steuerung = new AbortController();
+  // Wächter: kommt länger als inaktivitaetMs nichts (auch kein Ping), gilt die
+  // Verbindung als verloren - sonst bliebe die Oberfläche ewig bei "antwortet ...".
+  let waechter: number | null = null;
+  let verloren = false;
+  const waechterNeu = () => {
+    if (waechter) window.clearTimeout(waechter);
+    waechter = window.setTimeout(() => {
+      verloren = true;
+      steuerung.abort();
+    }, inaktivitaetMs);
+  };
+  waechterNeu();
   (async () => {
     try {
       const antwort = await fetch(`/api${pfad}`, {
@@ -108,6 +121,7 @@ export function postStrom(
       for (;;) {
         const { value, done } = await leser.read();
         if (done) break;
+        waechterNeu();
         puffer += dekoder.decode(value, { stream: true });
         let idx: number;
         while ((idx = puffer.indexOf("\n")) >= 0) {
@@ -121,8 +135,11 @@ export function postStrom(
       abschliessen();
       fertig();
     } catch (e) {
-      if ((e as Error).name === "AbortError") fertig();
-      else fertig(e as Error);
+      if ((e as Error).name === "AbortError") {
+        fertig(verloren ? new Error("Keine Antwort mehr vom Backend - Verbindung verloren") : undefined);
+      } else fertig(e as Error);
+    } finally {
+      if (waechter) window.clearTimeout(waechter);
     }
   })();
   return () => steuerung.abort();

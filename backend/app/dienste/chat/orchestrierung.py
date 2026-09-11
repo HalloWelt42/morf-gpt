@@ -22,7 +22,7 @@ from ..anbieter.basis import AnbieterFehler, Antwortparameter
 from ..einstellungen import dienst as einstellungen_dienst
 from ..suche.retrieval import Suche, Suchergebnis, Suchparameter
 from ..suche.retrieval import suche as standard_suche
-from ..text import gerade
+from ..text import bereinige
 from . import prompts
 
 log = logging.getLogger(__name__)
@@ -113,7 +113,7 @@ class Orchestrierung:
                     modell = delta.modell or modell
                     tokens_ein, tokens_aus = delta.tokens_ein, delta.tokens_aus
                     break
-                stueck = gerade(delta.text)
+                stueck = bereinige(delta.text)
                 text_teile.append(stueck)
                 yield {"art": "delta", "text": stueck}
 
