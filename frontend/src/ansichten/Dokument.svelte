@@ -222,7 +222,7 @@
             {#each d.abschnitte as a (a.id)}
               <button class="m-kapitel-eintrag ebene-{a.ebene}" class:aktiv={aktiverAbschnitt === a.reihenfolge} onclick={() => springe(a.reihenfolge)} title="Zum Abschnitt in der Leseansicht springen; die Zahl ist die Anzahl seiner Stücke">
                 <span class="text-truncate">{a.titel || `Abschnitt ${a.reihenfolge}`}</span>
-                <span class="badge text-bg-light ms-auto" title="Stücke in diesem Abschnitt">{a.chunks_anzahl}</span>
+                <span class="badge bg-secondary-subtle text-body ms-auto" title="Stücke in diesem Abschnitt">{a.chunks_anzahl}</span>
               </button>
             {/each}
           </div>

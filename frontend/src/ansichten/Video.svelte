@@ -346,7 +346,7 @@
                 {#if v.datei_pfad}<dt class="col-sm-4 fw-normal text-secondary">Datei</dt><dd class="col-sm-8"><code>{v.datei_pfad}</code></dd>{/if}
                 <dt class="col-sm-4 fw-normal text-secondary">Quelle</dt><dd class="col-sm-8">{#if v.quelle_typ === "lokal"}lokale Datei aus dem Verzeichnis der Quelle{:else if !v.quelle_id}ohne Quelle{:else}{v.quelle_heruntergeladen ? "in der Quelle als Datei vorhanden" : "in der Quelle nicht heruntergeladen"}{/if} &middot; {v.ausgewaehlt ? "im Umfang" : "nicht im Umfang"}{v.auswahl_manuell ? " (von Hand entschieden)" : ""}</dd>
                 {#if v.felder_manuell.length}<dt class="col-sm-4 fw-normal text-secondary">Von Hand gepflegt</dt><dd class="col-sm-8">{v.felder_manuell.map((f) => FELD_TITEL[f] ?? f).join(", ")} <button class="btn btn-sm btn-link p-0 align-baseline" title="Der nächste Abgleich übernimmt wieder die Werte der Quelle" onclick={handpflegeAufheben}>aufheben</button> <InfoKnopf anker="pflege" /></dd>{/if}
-                {#if v.schlagworte.length}<dt class="col-sm-4 fw-normal text-secondary">Schlagworte</dt><dd class="col-sm-8">{#each v.schlagworte as s}<span class="badge text-bg-light me-1">{s}</span>{/each}</dd>{/if}
+                {#if v.schlagworte.length}<dt class="col-sm-4 fw-normal text-secondary">Schlagworte</dt><dd class="col-sm-8">{#each v.schlagworte as s}<span class="badge bg-secondary-subtle text-body me-1">{s}</span>{/each}</dd>{/if}
               </dl>
               {/if}
             </div>

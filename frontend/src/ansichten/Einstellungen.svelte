@@ -75,6 +75,21 @@
     );
   }
 
+  function vorgabeText(e: Einstellung): string {
+    if (e.typ === "schalter") return e.vorgabe ? "an" : "aus";
+    if (e.typ === "auswahl") return e.auswahl.find((o) => o.wert === e.vorgabe)?.titel ?? String(e.vorgabe);
+    return String(e.vorgabe);
+  }
+
+  // Ganzzahlen mit höchstens zehn möglichen Werten werden als Stufen gezeigt, nicht als Zahlenfeld.
+  function stufen(e: Einstellung): number[] | null {
+    if (e.typ !== "ganzzahl" || e.minimum === null || e.maximum === null) return null;
+    const schritt = e.schritt ?? 1;
+    const anzahl = Math.floor((e.maximum - e.minimum) / schritt) + 1;
+    if (anzahl < 2 || anzahl > 10) return null;
+    return Array.from({ length: anzahl }, (_, i) => e.minimum! + i * schritt);
+  }
+
   async function zuruecksetzen(e: Einstellung): Promise<void> {
     try {
       const neu = await api.del<Einstellung>(`/einstellungen/${e.schluessel}`);
@@ -142,12 +157,18 @@
                 <div class="col-lg-7">
                   <div class="fw-semibold">{e.titel} {#if woerter.length}<span class="badge text-bg-secondary ms-1">{e.gruppe_titel}</span>{/if}</div>
                   <div class="text-secondary">{e.beschreibung}</div>
-                  {#if e.minimum !== null || e.maximum !== null}
-                    <div class="small text-secondary mt-1">Bereich {e.minimum ?? "-"} bis {e.maximum ?? "-"}{e.einheit ? ` ${e.einheit}` : ""}</div>
-                  {/if}
+                  <div class="small text-secondary mt-1">
+                    <span title="So steht der Wert, wenn nichts geändert wurde">Vorgabe {vorgabeText(e)}</span>
+                    {#if e.minimum !== null || e.maximum !== null}
+                      <span class="ms-3">Bereich {e.minimum ?? "-"} bis {e.maximum ?? "-"}{e.einheit ? ` ${e.einheit}` : ""}</span>
+                    {/if}
+                  </div>
                 </div>
                 <div class="col-lg-5">
                   <div class="d-flex align-items-center gap-2 justify-content-lg-end">
+                    {#if e.geaendert}
+                      <button class="btn btn-sm btn-outline-secondary text-nowrap" title="Auf die Vorgabe zurücksetzen" onclick={() => zuruecksetzen(e)}><i class="fa-solid fa-rotate-left"></i></button>
+                    {/if}
                     {#if e.typ === "schalter"}
                       <div class="form-check form-switch fs-5 mb-0">
                         <input class="form-check-input" type="checkbox" role="switch" id="e-{e.schluessel}" checked={Boolean(e.wert)} onchange={(ev) => setze(e, (ev.target as HTMLInputElement).checked)} title={e.beschreibung} />
@@ -157,17 +178,20 @@
                       <select class="form-select" style="max-width: 320px" value={String(e.wert)} onchange={(ev) => setze(e, (ev.target as HTMLSelectElement).value)} title={e.beschreibung}>
                         {#each e.auswahl as o (o.wert)}<option value={o.wert}>{o.titel}</option>{/each}
                       </select>
+                    {:else if stufen(e)}
+                      <div class="btn-group m-stufenwahl" role="group" aria-label={e.titel}>
+                        {#each stufen(e) ?? [] as st (st)}
+                          <button type="button" class="btn btn-sm btn-outline-secondary" class:active={Number(e.wert) === st} onclick={() => setze(e, st)} title="{e.titel}: {st}{e.einheit ? ` ${e.einheit}` : ""}">{st}</button>
+                        {/each}
+                      </div>
+                      {#if e.einheit}<span class="text-secondary small">{e.einheit}</span>{/if}
                     {:else if e.typ === "zahl" || e.typ === "ganzzahl"}
-                      <div class="input-group" style="max-width: 240px">
+                      <div class="input-group m-zahlfeld">
                         <input class="form-control text-end" type="number" value={e.wert as number} min={e.minimum ?? undefined} max={e.maximum ?? undefined} step={e.schritt ?? (e.typ === "ganzzahl" ? 1 : 0.01)} onchange={(ev) => zahlEingabe(e, ev)} title={e.beschreibung} />
                         {#if e.einheit}<span class="input-group-text">{e.einheit}</span>{/if}
                       </div>
                     {:else}
                       <input class="form-control" style="max-width: 360px" value={String(e.wert ?? "")} onchange={(ev) => setze(e, (ev.target as HTMLInputElement).value)} title={e.beschreibung} />
-                    {/if}
-                    <span class="small text-secondary text-nowrap" title="Vorgabe">Vorgabe: {e.typ === "schalter" ? (e.vorgabe ? "an" : "aus") : e.typ === "auswahl" ? (e.auswahl.find((o) => o.wert === e.vorgabe)?.titel ?? String(e.vorgabe)) : String(e.vorgabe)}</span>
-                    {#if e.geaendert}
-                      <button class="btn btn-sm btn-outline-secondary text-nowrap" title="Auf die Vorgabe zurücksetzen" onclick={() => zuruecksetzen(e)}><i class="fa-solid fa-rotate-left"></i></button>
                     {/if}
                   </div>
                 </div>

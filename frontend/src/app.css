@@ -1083,6 +1083,25 @@ body {
   --bs-nav-link-color: var(--m-text-2);
   --bs-nav-link-hover-color: var(--m-akzent);
 }
+/* Kartenköpfe und Eingabefelder folgen dem Thema; Bootstrap setzt die Kopffläche und die
+   Feldränder sonst fest hell (im Dunkelmodus helle Fläche mit heller Schrift). */
+:root .card {
+  --bs-card-cap-bg: var(--m-flaeche-2);
+  --bs-card-cap-color: var(--m-text);
+  --bs-card-border-color: var(--m-rand);
+}
+.form-control,
+.form-select,
+.input-group-text {
+  border-color: var(--m-rand-stark);
+}
+/* Einstellungen: Zahlenfelder schmal (der Wert ist kurz), kleine Bereiche als Stufenknöpfe */
+.m-zahlfeld {
+  width: 11rem;
+}
+.m-stufenwahl .btn {
+  min-width: 2.4rem;
+}
 .form-check-input {
   border-radius: 0;
 }
