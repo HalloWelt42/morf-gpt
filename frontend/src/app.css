@@ -961,6 +961,19 @@ body {
   padding: 5px 8px;
   text-align: left;
 }
+.m-hilfe-artikel img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--m-rand-stark);
+  margin: 10px 0 4px;
+}
+.m-hilfe-artikel img + em {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--m-text-2);
+  margin-bottom: 12px;
+}
 .m-hilfe-artikel mark.tref {
   background: #ffe58a;
   color: #1b2735;
@@ -1046,6 +1059,17 @@ body {
 .list-group-item,
 .progress {
   border-radius: 0;
+}
+/* Reiter folgen dem Thema; Bootstrap setzt die aktive Fläche sonst fest hell (im Dunkelmodus
+   weiße Fläche mit heller Schrift). */
+:root .nav-tabs {
+  --bs-nav-tabs-border-color: var(--m-rand-stark);
+  --bs-nav-tabs-link-hover-border-color: var(--m-rand-stark) var(--m-rand-stark) var(--m-rand-stark);
+  --bs-nav-tabs-link-active-color: var(--m-text);
+  --bs-nav-tabs-link-active-bg: var(--m-flaeche);
+  --bs-nav-tabs-link-active-border-color: var(--m-rand-stark) var(--m-rand-stark) var(--m-flaeche);
+  --bs-nav-link-color: var(--m-text-2);
+  --bs-nav-link-hover-color: var(--m-akzent);
 }
 .form-check-input {
   border-radius: 0;

@@ -408,7 +408,7 @@
 <section class="m-chat">
   <div class="m-ansicht-kopf">
     {#if aktiv && umbenennen}
-      <input class="form-control" style="max-width: 520px" bind:value={neuerTitel} onkeydown={(e) => e.key === "Enter" && titelSpeichern()} />
+      <input class="form-control" style="max-width: 520px" bind:value={neuerTitel} onkeydown={(e) => e.key === "Enter" && titelSpeichern()} title="Neuer Titel der Unterhaltung; Eingabe speichert" />
       <button class="btn btn-sm btn-primary" onclick={titelSpeichern}>Speichern</button>
       <button class="btn btn-sm btn-outline-secondary" onclick={() => (umbenennen = false)}>Abbrechen</button>
     {:else}
@@ -459,7 +459,7 @@
                 {#if n.streamt}
                   <span><i class="fa-solid fa-circle-notch fa-spin"></i> antwortet ...</span>
                   {#if n.stellen.length}<span>Stellen ausgewählt: {n.stellen.length}</span>{/if}
-                  <button class="btn btn-sm btn-outline-danger ms-auto" onclick={stoppen}><i class="fa-solid fa-stop"></i> Stopp</button>
+                  <button class="btn btn-sm btn-outline-danger ms-auto" onclick={stoppen} title="Die laufende Antwort abbrechen; der bisherige Text bleibt stehen"><i class="fa-solid fa-stop"></i> Stopp</button>
                 {:else}
                   {#if n.modell}<span><i class="fa-solid fa-microchip"></i> {n.modell}</span>{/if}
                   {#if n.dauer_ms !== null}<span><i class="fa-regular fa-clock"></i> {(n.dauer_ms / 1000).toFixed(1).replace(".", ",")} Sekunden</span>{/if}
@@ -486,7 +486,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="fs-5 mb-2">{stellen.length} Stellen gefunden - prüfe die Auswahl rechts und lass dann antworten.</div>
-                <button class="btn btn-primary btn-lg" onclick={ausAuswahlAntworten} disabled={!gewaehlteIds.length}><i class="fa-solid fa-paper-plane"></i> Aus {gewaehlteIds.length} ausgewählten Stellen antworten</button>
+                <button class="btn btn-primary btn-lg" onclick={ausAuswahlAntworten} disabled={!gewaehlteIds.length} title="Antwort nur aus den rechts ausgewählten Stellen erzeugen, ohne neue Suche"><i class="fa-solid fa-paper-plane"></i> Aus {gewaehlteIds.length} ausgewählten Stellen antworten</button>
               </div>
             </div>
           </div>
@@ -497,7 +497,7 @@
 
   <div class="m-chat-eingabe">
     <div class="feld">
-      <textarea class="form-control" rows="2" placeholder="Frage an die Bibliothek ... (Umschalt + Eingabe für eine neue Zeile)" bind:value={frage} bind:this={eingabe} onkeydown={taste} disabled={laeuft && !nurSucheErgebnis}></textarea>
+      <textarea class="form-control" rows="2" title="Frage eingeben; Eingabe sendet, Umschalt + Eingabe macht eine neue Zeile" placeholder="Frage an die Bibliothek ... (Umschalt + Eingabe für eine neue Zeile)" bind:value={frage} bind:this={eingabe} onkeydown={taste} disabled={laeuft && !nurSucheErgebnis}></textarea>
       <button class="btn btn-outline-secondary btn-lg" title="Nur suchen, noch nicht antworten" onclick={nurSuchen} disabled={laeuft || !frage.trim()}><i class="fa-solid fa-magnifying-glass"></i></button>
       <button class="btn btn-primary btn-lg" title="Senden" onclick={() => senden()} disabled={laeuft || !frage.trim()}><i class="fa-solid fa-paper-plane"></i></button>
     </div>
@@ -512,26 +512,26 @@
       <h6>Breite <InfoKnopf anker="suche-breite" /></h6>
       <div class="m-regler">
         <label for="p-treffer">Treffer</label><span class="wert">{parameter.treffer}</span>
-        <input id="p-treffer" type="range" class="form-range" min="1" max="50" bind:value={parameter.treffer} />
+        <input id="p-treffer" type="range" class="form-range" min="1" max="50" bind:value={parameter.treffer} title="Wie viele Stellen höchstens in die Antwort eingehen (1 bis 50). Mehr Stellen geben dem Modell mehr Material, machen die Antwort aber breiter." />
       </div>
       <div class="m-regler">
         <label for="p-nachbarn">Nachbarstücke je Treffer</label><span class="wert">{parameter.nachbarn}</span>
-        <input id="p-nachbarn" type="range" class="form-range" min="0" max="3" bind:value={parameter.nachbarn} />
+        <input id="p-nachbarn" type="range" class="form-range" min="0" max="3" bind:value={parameter.nachbarn} title="So viele angrenzende Stücke desselben Werks werden jeder Stelle vorn und hinten angefügt (0 bis 3), damit ein Gedanke nicht am Schnitt endet." />
       </div>
       <div class="m-regler">
         <label for="p-jevideo">Höchstens je Werk</label><span class="wert">{parameter.max_je_video === 0 ? "keine Grenze" : parameter.max_je_video}</span>
-        <input id="p-jevideo" type="range" class="form-range" min="0" max="10" bind:value={parameter.max_je_video} />
+        <input id="p-jevideo" type="range" class="form-range" min="0" max="10" bind:value={parameter.max_je_video} title="Höchstens so viele Stellen aus demselben Video oder Dokument (0 = keine Grenze). Sorgt für Vielfalt, damit nicht ein einziges Werk die Antwort füllt." />
       </div>
     </div>
     <div class="m-parameter">
       <h6>Genauigkeit <InfoKnopf anker="suche-genauigkeit" /></h6>
       <div class="m-regler">
         <label for="p-min">Mindestähnlichkeit</label><span class="wert">{Number(parameter.mindest_aehnlichkeit).toFixed(2).replace(".", ",")}</span>
-        <input id="p-min" type="range" class="form-range" min="0" max="1" step="0.01" bind:value={parameter.mindest_aehnlichkeit} />
+        <input id="p-min" type="range" class="form-range" min="0" max="1" step="0.01" title="Stellen mit geringerer Ähnlichkeit zur Frage (0 bis 1) werden verworfen. 0,45 ist ein guter Anfang; bei sehr spezifischen Fragen hilft ein höherer Wert." bind:value={parameter.mindest_aehnlichkeit} />
       </div>
       <div class="mb-1">
         <label class="form-label small mb-1" for="p-neu">Neu-Bewertung</label>
-        <select id="p-neu" class="form-select form-select-sm" bind:value={parameter.neubewertung}>
+        <select id="p-neu" class="form-select form-select-sm" bind:value={parameter.neubewertung} title="Ordnet die gefundenen Kandidaten mit einem zweiten Verfahren neu: Aus ist am schnellsten, der Cross-Encoder läuft lokal in etwa einer Sekunde, das Sprachmodell ist am genauesten, aber langsam.">
           <option value="aus">Aus</option>
           <option value="crossencoder">Cross-Encoder (lokal, etwa eine Sekunde)</option>
           <option value="sprachmodell">Sprachmodell (sehr genau, langsam)</option>
@@ -546,17 +546,17 @@
         </h6>
         {#if werkzeugeOffen}
           <div class="btn-group btn-group-sm w-100 mb-2" role="group" title="Wer entscheidet, welche Werkzeuge laufen">
-            <button class="btn btn-outline-secondary" class:active={werkzeugwahl === "nutzer"} onclick={() => (werkzeugwahl = "nutzer")}>Ich wähle</button>
-            <button class="btn btn-outline-secondary" class:active={werkzeugwahl === "modell"} onclick={() => (werkzeugwahl = "modell")}>Modell wählt</button>
+            <button class="btn btn-outline-secondary" class:active={werkzeugwahl === "nutzer"} onclick={() => (werkzeugwahl = "nutzer")} title="Alle unten eingeschalteten Werkzeuge laufen vor jeder Antwort; ihre Ergebnisse kommen als weitere Stellen dazu.">Ich wähle</button>
+            <button class="btn btn-outline-secondary" class:active={werkzeugwahl === "modell"} onclick={() => (werkzeugwahl = "modell")} title="Das Sprachmodell entscheidet je Frage selbst, welche der eingeschalteten Werkzeuge es aufruft (Funktionsaufrufe, mehrere Runden möglich).">Modell wählt</button>
           </div>
           <div class="small text-secondary mb-2">{werkzeugwahl === "nutzer" ? "Alle eingeschalteten Werkzeuge laufen vor jeder Antwort." : "Das Modell entscheidet je Frage, welche der eingeschalteten Werkzeuge es aufruft."}</div>
           <div class="d-flex gap-1 mb-2">
-            <button class="btn btn-sm btn-outline-secondary py-0" onclick={() => (gewaehlteWerkzeuge = new Set(werkzeuge.map((w) => w.kennung)))}>alle</button>
-            <button class="btn btn-sm btn-outline-secondary py-0" onclick={() => (gewaehlteWerkzeuge = new Set())}>keine</button>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick={() => (gewaehlteWerkzeuge = new Set(werkzeuge.map((w) => w.kennung)))} title="Alle Werkzeuge einschalten">alle</button>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick={() => (gewaehlteWerkzeuge = new Set())} title="Alle Werkzeuge ausschalten; die Antwort kommt dann nur aus der Bibliothek">keine</button>
           </div>
           {#each werkzeuge as w (w.kennung)}
             <div class="form-check form-switch mb-1">
-              <input class="form-check-input" type="checkbox" role="switch" id="wz-{w.kennung}" checked={gewaehlteWerkzeuge.has(w.kennung)} onchange={() => werkzeugUmschalten(w.kennung)} />
+              <input class="form-check-input" type="checkbox" role="switch" id="wz-{w.kennung}" checked={gewaehlteWerkzeuge.has(w.kennung)} onchange={() => werkzeugUmschalten(w.kennung)} title={w.beschreibung || w.titel} />
               <label class="form-check-label small" for="wz-{w.kennung}" title={w.beschreibung}>{w.titel}</label>
             </div>
           {/each}
@@ -568,7 +568,7 @@
       <div class="row g-2">
         <div class="col-12">
           <label class="form-label small mb-1" for="p-werke">Werke <InfoKnopf anker="dokumente" finde="Im Chat" /></label>
-          <select id="p-werke" class="form-select form-select-sm" bind:value={werkwahl} onchange={werkwahlAnwenden}>
+          <select id="p-werke" class="form-select form-select-sm" bind:value={werkwahl} onchange={werkwahlAnwenden} title="Woraus die Antwort belegt wird: aus Videos und Dokumenten, nur aus Videos, nur aus Dokumenten oder aus einem einzelnen Dokument.">
             <option value="">Videos und Dokumente</option>
             <option value="video">Nur Videos</option>
             <option value="dokument">Nur Dokumente</option>
@@ -577,14 +577,14 @@
         </div>
         <div class="col-6">
           <label class="form-label small mb-1" for="p-serie">Serie</label>
-          <select id="p-serie" class="form-select form-select-sm" bind:value={parameter.serie}>
+          <select id="p-serie" class="form-select form-select-sm" bind:value={parameter.serie} title="Nur Videos dieser Serie durchsuchen; Dokumente haben keine Serie und fallen bei gesetzter Serie weg.">
             <option value="">Alle</option>
             {#each serien.filter((s) => s.serie) as s (s.serie)}<option value={s.serie}>{s.serie} ({s.anzahl})</option>{/each}
           </select>
         </div>
         <div class="col-6">
           <label class="form-label small mb-1" for="p-jahr">Zeitraum</label>
-          <select id="p-jahr" class="form-select form-select-sm" bind:value={jahr}>
+          <select id="p-jahr" class="form-select form-select-sm" bind:value={jahr} title="Nur Werke aus diesem Jahr durchsuchen (Datum der Veröffentlichung von Videos und Dokumenten).">
             <option value="">Alle Jahre</option>
             {#each jahre as j}<option value={String(j)}>{j}</option>{/each}
           </select>

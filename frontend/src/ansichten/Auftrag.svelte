@@ -92,9 +92,9 @@
       {#if a.video_serie}<Abzeichen serie={a.video_serie} folgeNr={a.video_folge_nr} />{/if}
       <span class="m-luecke"></span>
       {#if a.status === "laeuft" || a.status === "wartend"}
-        <button class="btn btn-sm btn-outline-danger" onclick={abbrechen}><i class="fa-solid fa-stop"></i> Abbrechen</button>
+        <button class="btn btn-sm btn-outline-danger" onclick={abbrechen} title="Den laufenden oder wartenden Auftrag abbrechen; das Video bleibt auf seiner bisherigen Stufe"><i class="fa-solid fa-stop"></i> Abbrechen</button>
       {:else if a.status === "fehler" || a.status === "abgebrochen"}
-        <button class="btn btn-sm btn-outline-secondary" onclick={wiederholen}><i class="fa-solid fa-rotate-right"></i> Erneut versuchen</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={wiederholen} title="Den Auftrag wieder in die Reihe stellen, zum Beispiel nach einem behobenen Fehler"><i class="fa-solid fa-rotate-right"></i> Erneut versuchen</button>
       {/if}
       {#if a.video_id}
         <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("video", a?.video_id ?? "")}><i class="fa-solid fa-film"></i> Video öffnen</button>
@@ -135,7 +135,7 @@
       </div>
       <div class="d-flex align-items-center mb-1">
         <h6 class="m-0"><i class="fa-solid fa-terminal"></i> Protokoll ({zahl(gesamt)} Zeilen)</h6>
-        {#if zeilen.length < gesamt}<button class="btn btn-sm btn-outline-secondary ms-auto" onclick={aeltere}>Ältere laden (noch {zahl(gesamt - zeilen.length)})</button>{/if}
+        {#if zeilen.length < gesamt}<button class="btn btn-sm btn-outline-secondary ms-auto" onclick={aeltere} title="Weitere, ältere Protokollzeilen nachladen">Ältere laden (noch {zahl(gesamt - zeilen.length)})</button>{/if}
       </div>
       <div class="m-protokoll" style="max-height: 480px">
         {#each zeilen as z (z.id)}

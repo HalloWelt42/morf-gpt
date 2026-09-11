@@ -6,6 +6,10 @@ symbol: fa-flag-checkered
 stichworte: start, einrichten, quelle, anbieter
 ---
 
+![Kopfleiste mit Chat, Bibliothek, Dokumente, Textstellen, Fließband und Einstellungen](/hilfe/kopfleiste.png)
+*Die Kopfleiste: die Zähler zeigen Videos im Umfang, Dokumente, Stücke und laufende Aufträge.*
+
+
 morf-gpt holt die Audiospur der Videos, schreibt sie mit Whisper mit, lässt ein Sprachmodell die Form glätten, zerlegt den Text in große Stücke, bettet sie ein und beantwortet Fragen ausschließlich aus diesen Stücken. Jede Antwort belegt ihre Stellen mit Video und Zeitfenster.
 
 1. Unter Einstellungen, Quellen eine Quelle anlegen: einen Kanal aus einem Videodienst oder ein Verzeichnis mit eigenen Dateien. Nach dem Abgleich kommen alle Videos über der Mindestdauer in den Umfang.

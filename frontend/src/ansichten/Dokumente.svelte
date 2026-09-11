@@ -124,8 +124,8 @@
     <InfoKnopf anker="dokumente" />
     <span class="m-luecke"></span>
     <input class="d-none" type="file" multiple accept={endungen || ".epub,.md,.markdown,.txt"} bind:this={dateiEingabe} onchange={hochladen} />
-    <button class="btn btn-sm btn-primary" disabled={beschaeftigt} onclick={() => dateiEingabe?.click()}><i class="fa-solid fa-upload"></i> Hochladen</button>
-    <button class="btn btn-sm btn-outline-secondary" class:active={textOffen} onclick={() => (textOffen = !textOffen)}><i class="fa-solid fa-pen-to-square"></i> Eigener Text</button>
+    <button class="btn btn-sm btn-primary" disabled={beschaeftigt} onclick={() => dateiEingabe?.click()} title="E-Book (EPUB), Markdown oder Text hochladen, auch mehrere Dateien; sie werden sofort in Kapitel gelesen"><i class="fa-solid fa-upload"></i> Hochladen</button>
+    <button class="btn btn-sm btn-outline-secondary" class:active={textOffen} onclick={() => (textOffen = !textOffen)} title="Einen eigenen Text direkt hier schreiben; er wird wie ein hochgeladenes Dokument verarbeitet"><i class="fa-solid fa-pen-to-square"></i> Eigener Text</button>
   </div>
 
   <div class="m-ansicht-koerper d-flex flex-column gap-2" style="overflow: hidden">
@@ -134,10 +134,10 @@
         <div class="card-body">
           <div class="d-flex align-items-center gap-2 mb-2"><h6 class="m-0 small text-uppercase text-secondary">Eigenen Text anlegen</h6><InfoKnopf anker="dokumente" finde="Eigener Text" /></div>
           <div class="row g-2">
-            <div class="col-md-6"><label class="form-label mb-1" for="et-titel">Titel</label><input class="form-control" id="et-titel" bind:value={eigener.titel} placeholder="z. B. Notizen zur Kasualisierung" /></div>
-            <div class="col-md-4"><label class="form-label mb-1" for="et-autor">Autor</label><input class="form-control" id="et-autor" bind:value={eigener.autor} /></div>
-            <div class="col-md-2"><label class="form-label mb-1" for="et-art">Art</label><select class="form-select" id="et-art" bind:value={eigener.art}><option value="markdown">Markdown</option><option value="text">Text</option></select></div>
-            <div class="col-12"><label class="form-label mb-1" for="et-text">Text (Überschriften mit # eröffnen Kapitel)</label><textarea class="form-control" id="et-text" rows="10" bind:value={eigener.text} placeholder="# Erstes Kapitel&#10;&#10;Der Text ..."></textarea></div>
+            <div class="col-md-6"><label class="form-label mb-1" for="et-titel">Titel</label><input class="form-control" id="et-titel" bind:value={eigener.titel} title="Titel des Dokuments, wie er in Belegen erscheint" placeholder="z. B. Notizen zur Kasualisierung" /></div>
+            <div class="col-md-4"><label class="form-label mb-1" for="et-autor">Autor</label><input class="form-control" id="et-autor" bind:value={eigener.autor} title="Autorin oder Autor, optional" /></div>
+            <div class="col-md-2"><label class="form-label mb-1" for="et-art">Art</label><select class="form-select" id="et-art" bind:value={eigener.art} title="Markdown: Überschriften mit # werden Kapitel, Auszeichnung wird zu Text. Text: ein Abschnitt, Absätze an Leerzeilen."><option value="markdown">Markdown</option><option value="text">Text</option></select></div>
+            <div class="col-12"><label class="form-label mb-1" for="et-text">Text (Überschriften mit # eröffnen Kapitel)</label><textarea class="form-control" id="et-text" rows="10" bind:value={eigener.text} title="Der Text; eine Zeile mit # am Anfang eröffnet ein Kapitel, ## ein Unterkapitel" placeholder="# Erstes Kapitel&#10;&#10;Der Text ..."></textarea></div>
             <div class="col-12 d-flex gap-2 align-items-center">
               <span class="small text-secondary">Der Text wird wie ein hochgeladenes Dokument gestückelt und eingebettet.</span>
               <span class="ms-auto"></span>
@@ -150,12 +150,12 @@
     {/if}
 
     <div class="d-flex gap-2 flex-wrap align-items-center">
-      <input class="form-control form-control-sm" style="width: 280px" placeholder="Titel, Autor oder Beschreibung suchen ..." bind:value={q} oninput={sucheGeaendert} />
-      <select class="form-select form-select-sm" style="width: 190px" bind:value={art} onchange={filterGeaendert} title="Art">
+      <input class="form-control form-control-sm" style="width: 280px" title="Sucht in Titel, Autor und Beschreibung" placeholder="Titel, Autor oder Beschreibung suchen ..." bind:value={q} oninput={sucheGeaendert} />
+      <select class="form-select form-select-sm" style="width: 190px" bind:value={art} onchange={filterGeaendert} title="Nur Dokumente dieser Dateiart zeigen">
         <option value="">Alle Arten</option>
         {#each arten as a (a.kennung)}<option value={a.kennung}>{a.titel}</option>{/each}
       </select>
-      <select class="form-select form-select-sm" style="width: 170px" bind:value={stufe} onchange={filterGeaendert} title="Stufe">
+      <select class="form-select form-select-sm" style="width: 170px" bind:value={stufe} onchange={filterGeaendert} title="Nur Dokumente zeigen, die auf dieser Stufe stehen: importiert, gestückelt oder eingebettet">
         <option value="">Alle Stufen</option>
         {#each STUFEN as [k, t] (k)}<option value={k}>{t}</option>{/each}
       </select>

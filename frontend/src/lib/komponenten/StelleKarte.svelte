@@ -50,7 +50,7 @@
       <span class="nr"><i class="fa-solid fa-plug"></i></span>
       <div class="flex-grow-1" style="min-width: 0">
         <div class="titel">{stelle.werkzeug}{#if stelle.titel} - {stelle.titel}{/if}</div>
-        <div class="zeit">Fremder Dienst &middot; Stelle {nummer}{#if stelle.quelle_url} &middot; <a href={stelle.quelle_url} target="_blank" rel="noreferrer">{stelle.quelle_url.replace(/^https?:\/\//, "").slice(0, 48)}</a>{/if}</div>
+        <div class="zeit">Fremder Dienst &middot; Stelle {nummer}{#if stelle.quelle_url} &middot; <a href={stelle.quelle_url} target="_blank" rel="noreferrer" title="Quelle des Werkzeugergebnisses öffnen">{stelle.quelle_url.replace(/^https?:\/\//, "").slice(0, 48)}</a>{/if}</div>
       </div>
     </div>
     <div class="auszug" style="-webkit-line-clamp: 6">{stelle.text}</div>

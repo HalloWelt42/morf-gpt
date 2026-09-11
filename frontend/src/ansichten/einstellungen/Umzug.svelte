@@ -94,12 +94,12 @@
           <div class="card-header fw-semibold">Exportieren</div>
           <div class="card-body">
             <p>Das Paket enthält Videodaten, Korrekturen, Stücke, Vektoren und Vorschaubilder. Audio bleibt hier; der Sprung zu YouTube bleibt überall möglich.</p>
-            <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="mt" bind:checked={mitTranskripten} /><label class="form-check-label" for="mt">Rohtranskripte mitnehmen (größer)</label></div>
+            <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="mt" bind:checked={mitTranskripten} title="Auch die Rohtranskripte mit Zeitmarken ins Paket nehmen; macht es deutlich größer" /><label class="form-check-label" for="mt">Rohtranskripte mitnehmen (größer)</label></div>
             {#if status?.laeuft}
               <div class="m-fortschritt laeuft mb-1"><span style="width: {Math.round(status.fortschritt * 100)}%"></span></div>
               <div class="text-secondary">{status.meldung}</div>
             {:else}
-              <button class="btn btn-primary" onclick={starten}><i class="fa-solid fa-box"></i> Paket erstellen</button>
+              <button class="btn btn-primary" onclick={starten} title="Videos, Korrekturen, Stücke, Vektoren und Vorschaubilder als ein Paket schreiben; Audio bleibt draußen"><i class="fa-solid fa-box"></i> Paket erstellen</button>
               {#if status?.fehler}<div class="text-danger mt-2">{status.fehler}</div>{/if}
               {#if status?.letzte_datei}<div class="text-secondary mt-2">Zuletzt erstellt: {status.letzte_datei}</div>{/if}
             {/if}
@@ -124,8 +124,8 @@
           <div class="card-body">
             <p>Ein Paket aus einer anderen Installation einlesen. Videos werden über ihre Kennung abgeglichen; das Einbettungsmodell und die Dimension müssen zur Datenbank passen.</p>
             <div class="d-flex gap-2 align-items-center flex-wrap">
-              <input class="form-control" type="file" accept=".tar.gz,.tgz" style="max-width: 460px" onchange={(e) => (datei = (e.target as HTMLInputElement).files?.[0] ?? null)} />
-              <button class="btn btn-primary" onclick={importieren} disabled={!datei || beschaeftigt}>{#if beschaeftigt}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} Importieren</button>
+              <input class="form-control" type="file" accept=".tar.gz,.tgz" style="max-width: 460px" title="Ein Paket aus einer anderen Installation wählen" onchange={(e) => (datei = (e.target as HTMLInputElement).files?.[0] ?? null)} />
+              <button class="btn btn-primary" onclick={importieren} disabled={!datei || beschaeftigt} title="Das Paket in diese Bibliothek einlesen; bekannte Videos werden über ihre Kennung abgeglichen">{#if beschaeftigt}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} Importieren</button>
             </div>
             {#if importErgebnis}
               <dl class="row mt-3 mb-0">{#each Object.entries(importErgebnis) as [k, v]}<dt class="col-5 fw-normal text-secondary">{k}</dt><dd class="col-7 mb-1">{typeof v === "object" ? JSON.stringify(v) : String(v)}</dd>{/each}</dl>

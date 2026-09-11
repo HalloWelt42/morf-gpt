@@ -86,10 +86,10 @@
       <InfoKnopf anker="stellen" />
       <span class="m-luecke"></span>
       {#if c.werkart === "dokument"}
-        <button class="btn btn-sm btn-outline-primary" onclick={() => ui.gehe("dokument", c!.dokument_id, c!.abschnitt_nr === null ? "" : String(c!.abschnitt_nr))}><i class="fa-solid fa-book-open"></i> Im Dokument lesen</button>
+        <button class="btn btn-sm btn-outline-primary" onclick={() => ui.gehe("dokument", c!.dokument_id, c!.abschnitt_nr === null ? "" : String(c!.abschnitt_nr))} title="Das Kapitel dieses Stücks in der Leseansicht öffnen"><i class="fa-solid fa-book-open"></i> Im Dokument lesen</button>
       {:else}
-        <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(c!.video_id, c!.start_s)}><i class="fa-solid fa-play"></i> Abspielen</button>
-        <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("video", c!.video_id, "stuecke")}><i class="fa-solid fa-film"></i> Video</button>
+        <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(c!.video_id, c!.start_s)} title="Ab dem Anfang dieses Stücks im eigenen Spieler abspielen"><i class="fa-solid fa-play"></i> Abspielen</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("video", c!.video_id, "stuecke")} title="Zum Video mit allen seinen Stücken"><i class="fa-solid fa-film"></i> Video</button>
       {/if}
     {:else}
       <h1>Stück</h1>
@@ -99,12 +99,12 @@
     {#if c}
       <div class="row g-3">
         <div class="col-lg-8">
-          <textarea class="form-control" style="font-size: 1.05rem; line-height: 1.6; min-height: 520px" bind:value={text} bind:this={feld}></textarea>
+          <textarea class="form-control" style="font-size: 1.05rem; line-height: 1.6; min-height: 520px" title="Text des Stücks; nach dem Speichern wird es neu eingebettet" bind:value={text} bind:this={feld}></textarea>
           <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
             <span class="text-secondary">{zahl(text.length)} Zeichen, Ziel {zahl(ziel)}, Überlappung vor {c.ueberlappung_vor} / nach {c.ueberlappung_nach}</span>
             <span class="ms-auto"></span>
             <button class="btn btn-outline-secondary" onclick={teilen} disabled={beschaeftigt || geaendert} title="An der Cursorposition in zwei Stücke teilen"><i class="fa-solid fa-scissors"></i> Teilen bei Cursor</button>
-            <button class="btn btn-outline-secondary" onclick={() => (text = c?.text ?? "")} disabled={!geaendert || beschaeftigt}>Verwerfen</button>
+            <button class="btn btn-outline-secondary" onclick={() => (text = c?.text ?? "")} disabled={!geaendert || beschaeftigt} title="Änderungen verwerfen und den gespeicherten Text wiederherstellen">Verwerfen</button>
             <button class="btn btn-primary" onclick={speichern} disabled={!geaendert || beschaeftigt || !text.trim()}>{#if beschaeftigt}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} Speichern und neu einbetten</button>
           </div>
         </div>

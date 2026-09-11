@@ -272,25 +272,25 @@
       <Abzeichen stufe={v.stufe} />
       <InfoKnopf anker="video" />
       <span class="m-luecke"></span>
-      {#if v.hat_audio}<button class="btn btn-sm btn-primary" onclick={() => spieleVideo(id)}><i class="fa-solid fa-play"></i> Abspielen</button>{/if}
+      {#if v.hat_audio}<button class="btn btn-sm btn-primary" onclick={() => spieleVideo(id)} title="Im eigenen Spieler ab Anfang abspielen"><i class="fa-solid fa-play"></i> Abspielen</button>{/if}
       {#if v.original_url}
         <a class="btn btn-sm btn-outline-secondary" href={v.original_url} target="_blank" rel="noreferrer">{#if v.original_url.includes("youtu")}<i class="fa-brands fa-youtube"></i> Bei YouTube öffnen{:else}<i class="fa-solid fa-up-right-from-square"></i> Original öffnen{/if}</a>
       {/if}
       <button class="btn btn-sm btn-outline-secondary" class:active={bearbeiten} title="Titel, Datum, Serie, Adresse und weitere Metadaten von Hand pflegen" onclick={() => (bearbeiten ? (bearbeiten = false) : pflegeStarten())}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
       <div class="dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Einzelne Stufen neu anstoßen, auf eine Stufe zurücksetzen oder den Umfang ändern"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
         <ul class="dropdown-menu dropdown-menu-end">
           <li><h6 class="dropdown-header">Auftrag anlegen</h6></li>
           {#each AUFTRAGSARTEN as [art, titel]}
             <li><button class="dropdown-item" onclick={() => auftrag(art)}>{titel}</button></li>
           {/each}
           <li><hr class="dropdown-divider" /></li>
-          <li><button class="dropdown-item" onclick={() => (zuruecksetzDialog = true)}><i class="fa-solid fa-rotate-left"></i> Auf Stufe zurücksetzen ...</button></li>
+          <li><button class="dropdown-item" onclick={() => (zuruecksetzDialog = true)} title="Ergebnisse oberhalb einer Stufe löschen und neu rechnen lassen (fragt nach)"><i class="fa-solid fa-rotate-left"></i> Auf Stufe zurücksetzen ...</button></li>
           <li><hr class="dropdown-divider" /></li>
           {#if v.ausgewaehlt}
-            <li><button class="dropdown-item" onclick={() => auswahl(false)}>Aus dem Umfang nehmen</button></li>
+            <li><button class="dropdown-item" onclick={() => auswahl(false)} title="Das Video wird nicht weiter verarbeitet; wartende Aufträge werden abgebrochen">Aus dem Umfang nehmen</button></li>
           {:else}
-            <li><button class="dropdown-item" onclick={() => auswahl(true)}>In den Umfang aufnehmen</button></li>
+            <li><button class="dropdown-item" onclick={() => auswahl(true)} title="Das Video wird verarbeitet; bei aktiver Automatik entsteht sofort der nächste Auftrag">In den Umfang aufnehmen</button></li>
           {/if}
         </ul>
       </div>
@@ -316,16 +316,16 @@
                 <div class="flex-grow-1" style="min-width: 260px">
                   <div class="d-flex align-items-center gap-2 mb-2"><h6 class="m-0 small text-uppercase text-secondary">Metadaten von Hand pflegen</h6><InfoKnopf anker="pflege" /></div>
                   <div class="row g-2">
-                    <div class="col-12"><label class="form-label mb-1" for="pf-titel">Titel</label><input class="form-control" id="pf-titel" bind:value={pflege.titel} /></div>
-                    <div class="col-md-3"><label class="form-label mb-1" for="pf-datum">Datum</label><input class="form-control" id="pf-datum" type="date" bind:value={pflege.veroeffentlicht} /></div>
-                    <div class="col-md-3"><label class="form-label mb-1" for="pf-dauer">Dauer</label><div class="input-group"><input class="form-control" id="pf-dauer" type="number" min="0" bind:value={pflege.dauer_s} /><span class="input-group-text">s</span></div></div>
-                    <div class="col-md-3"><label class="form-label mb-1" for="pf-serie">Serie</label><input class="form-control" id="pf-serie" placeholder="z. B. mmM" bind:value={pflege.serie} /></div>
-                    <div class="col-md-3"><label class="form-label mb-1" for="pf-folge">Folge</label><input class="form-control" id="pf-folge" type="number" min="0" placeholder="leer = keine" bind:value={pflege.folge_nr} /></div>
-                    <div class="col-md-8"><label class="form-label mb-1" for="pf-url">Originaladresse (YouTube oder andere)</label><input class="form-control" id="pf-url" placeholder="https://youtu.be/..." bind:value={pflege.original_url} /></div>
-                    <div class="col-md-4"><label class="form-label mb-1" for="pf-typ">Art</label><select class="form-select" id="pf-typ" bind:value={pflege.typ}><option value="video">Video</option><option value="live">Livestream</option><option value="short">Short</option><option value="audio">Audio</option></select></div>
-                    <div class="col-md-4"><label class="form-label mb-1" for="pf-kanal">Kanal</label><input class="form-control" id="pf-kanal" bind:value={pflege.kanal_name} /></div>
-                    <div class="col-md-8"><label class="form-label mb-1" for="pf-schlag">Schlagworte (durch Komma getrennt)</label><input class="form-control" id="pf-schlag" bind:value={pflege.schlagworte} /></div>
-                    <div class="col-12"><label class="form-label mb-1" for="pf-besch">Beschreibung</label><textarea class="form-control" id="pf-besch" rows="3" bind:value={pflege.beschreibung}></textarea></div>
+                    <div class="col-12"><label class="form-label mb-1" for="pf-titel">Titel</label><input class="form-control" id="pf-titel" bind:value={pflege.titel} title="Titel, wie er in Belegen und Listen erscheint" /></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-datum">Datum</label><input class="form-control" id="pf-datum" type="date" bind:value={pflege.veroeffentlicht} title="Datum der Veröffentlichung; der Zeitraum-Filter im Chat nutzt es" /></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-dauer">Dauer</label><div class="input-group"><input class="form-control" id="pf-dauer" type="number" min="0" bind:value={pflege.dauer_s} title="Dauer in Sekunden; die Aufnahmeregel vergleicht damit die Mindestdauer" /><span class="input-group-text">s</span></div></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-serie">Serie</label><input class="form-control" id="pf-serie" placeholder="z. B. mmM" bind:value={pflege.serie} title="Kürzel der Serie; steuert Reihenfolge auf dem Fließband und die Anzeige der Belege" /></div>
+                    <div class="col-md-3"><label class="form-label mb-1" for="pf-folge">Folge</label><input class="form-control" id="pf-folge" type="number" min="0" placeholder="leer = keine" title="Folgennummer innerhalb der Serie; leer lassen, wenn es keine gibt" bind:value={pflege.folge_nr} /></div>
+                    <div class="col-md-8"><label class="form-label mb-1" for="pf-url">Originaladresse (YouTube oder andere)</label><input class="form-control" id="pf-url" placeholder="https://youtu.be/..." bind:value={pflege.original_url} title="Adresse des Originals; Belege springen dorthin an die Sekunde, bei YouTube mit Zeitmarke" /></div>
+                    <div class="col-md-4"><label class="form-label mb-1" for="pf-typ">Art</label><select class="form-select" id="pf-typ" bind:value={pflege.typ} title="Art des Werks; die Aufnahmeregel kann Arten ausschließen"><option value="video">Video</option><option value="live">Livestream</option><option value="short">Short</option><option value="audio">Audio</option></select></div>
+                    <div class="col-md-4"><label class="form-label mb-1" for="pf-kanal">Kanal</label><input class="form-control" id="pf-kanal" bind:value={pflege.kanal_name} title="Name des Kanals oder der Urheberin" /></div>
+                    <div class="col-md-8"><label class="form-label mb-1" for="pf-schlag">Schlagworte (durch Komma getrennt)</label><input class="form-control" id="pf-schlag" bind:value={pflege.schlagworte} title="Schlagworte, durch Komma getrennt; nur zur Anzeige und Suche in der Bibliothek" /></div>
+                    <div class="col-12"><label class="form-label mb-1" for="pf-besch">Beschreibung</label><textarea class="form-control" id="pf-besch" rows="3" bind:value={pflege.beschreibung} title="Beschreibung der Quelle oder eigene; wird angezeigt, aber nicht eingebettet"></textarea></div>
                     <div class="col-12 d-flex gap-2 align-items-center flex-wrap">
                       <span class="small text-secondary">Gespeicherte Felder gelten als von Hand gepflegt; der Abgleich mit der Quelle überschreibt sie nicht mehr.</span>
                       <span class="ms-auto"></span>
@@ -356,7 +356,7 @@
               <details class="mt-2"><summary class="text-secondary">Beschreibung der Quelle</summary><pre class="mt-2 mb-0" style="white-space: pre-wrap; font-family: inherit">{v.beschreibung}</pre></details>
             {/if}
             <h6 class="mt-3 mb-1 small text-uppercase text-secondary">Notizen <InfoKnopf anker="video" /></h6>
-            <textarea class="form-control" rows="2" placeholder="Eigene Notizen zu diesem Video ..." bind:value={notizen} oninput={notizGeaendert}></textarea>
+            <textarea class="form-control" rows="2" title="Eigene Notizen; werden gespeichert, aber nicht eingebettet und nicht durchsucht" placeholder="Eigene Notizen zu diesem Video ..." bind:value={notizen} oninput={notizGeaendert}></textarea>
           </div></div>
         </div>
         <div class="col-xl-4">
@@ -383,11 +383,11 @@
         {#if aktiverReiter === "korrektur" && vergleich}
           <li class="nav-item ms-auto d-flex align-items-center gap-2 pe-1">
             <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary" class:active={vergleichModus === "beide"} onclick={() => (vergleichModus = "beide")}>Nebeneinander</button>
-              <button class="btn btn-outline-secondary" class:active={vergleichModus === "korrigiert"} onclick={() => (vergleichModus = "korrigiert")}>Nur korrigiert</button>
-              <button class="btn btn-outline-secondary" class:active={vergleichModus === "roh"} onclick={() => (vergleichModus = "roh")}>Nur roh</button>
+              <button class="btn btn-outline-secondary" class:active={vergleichModus === "beide"} onclick={() => (vergleichModus = "beide")} title="Rohtext und korrigierten Text Block für Block nebeneinander zeigen">Nebeneinander</button>
+              <button class="btn btn-outline-secondary" class:active={vergleichModus === "korrigiert"} onclick={() => (vergleichModus = "korrigiert")} title="Nur die korrigierte Fassung zeigen">Nur korrigiert</button>
+              <button class="btn btn-outline-secondary" class:active={vergleichModus === "roh"} onclick={() => (vergleichModus = "roh")} title="Nur den Rohtext des Transkriptionsdienstes zeigen">Nur roh</button>
             </div>
-            <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="nurverw" bind:checked={nurVerworfene} /><label class="form-check-label small" for="nurverw">Nur verworfene</label></div>
+            <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="nurverw" bind:checked={nurVerworfene} title="Nur Blöcke zeigen, die der Abweichungswächter verworfen hat" /><label class="form-check-label small" for="nurverw">Nur verworfene</label></div>
           </li>
         {/if}
       </ul>
@@ -426,7 +426,7 @@
                     {#each b.absaetze as a}<p class="mb-2">{a.text}</p>{/each}
                     {#if b.verworfen && b.vorschlag}
                       <details><summary class="text-secondary">Vorschlag des Modells zeigen</summary><p class="mt-2 text-secondary">{b.vorschlag}</p></details>
-                      <button class="btn btn-sm btn-outline-primary mt-1" onclick={() => blockUebernehmen(b.index)}>Trotzdem übernehmen</button>
+                      <button class="btn btn-sm btn-outline-primary mt-1" onclick={() => blockUebernehmen(b.index)} title="Den vom Wächter verworfenen Vorschlag des Modells doch übernehmen">Trotzdem übernehmen</button>
                     {/if}
                   </div>
                 {/if}
@@ -453,7 +453,7 @@
           {:else if !stuecke.eintraege.length}
             <div class="m-leer"><i class="fa-solid fa-scissors"></i>Noch keine Stücke.{#if v.stufe === "korrigiert" || v.stufe === "transkribiert"} <button class="btn btn-sm btn-primary ms-2" onclick={() => auftrag("stueckelung")}>Jetzt stückeln</button>{/if}</div>
           {:else}
-            <div class="d-flex justify-content-end mb-2"><button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("stellen")}><i class="fa-solid fa-align-left"></i> Im Textstellen-Browser öffnen</button></div>
+            <div class="d-flex justify-content-end mb-2"><button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("stellen")} title="Alle Stücke im Textstellen-Browser durchblättern und bearbeiten"><i class="fa-solid fa-align-left"></i> Im Textstellen-Browser öffnen</button></div>
             {#each stuecke.eintraege as c (c.id)}
               <div class="m-absatz" style="grid-template-columns: 110px 1fr">
                 <div>

@@ -139,7 +139,7 @@
     <span class="m-unter">Sprachmodelle und Einbettungen; die Rollen bestimmen, wer was tut</span>
     <InfoKnopf anker="anbieter" />
     <span class="m-luecke"></span>
-    <button class="btn btn-sm btn-primary" onclick={neu}><i class="fa-solid fa-plus"></i> Neuer Anbieter</button>
+    <button class="btn btn-sm btn-primary" onclick={neu} title="Ein Sprachmodell oder Einbettungsmodell anbinden: LM Studio, OpenAI-kompatibler Dienst oder fastembed"><i class="fa-solid fa-plus"></i> Neuer Anbieter</button>
   </div>
   <div class="m-ansicht-koerper">
     {#if !daten}
@@ -152,7 +152,7 @@
             <div class="row g-2 align-items-center mb-2">
               <div class="col-md-4 fw-semibold">{titel}</div>
               <div class="col-md-8">
-                <select class="form-select" value={daten.rollen[r] ?? ""} onchange={(ev) => rolle(r, ev)}>
+                <select class="form-select" value={daten.rollen[r] ?? ""} onchange={(ev) => rolle(r, ev)} title="Welcher Anbieter diese Rolle übernimmt: chat antwortet, korrektur glättet Transkripte, einbettung baut die Vektoren">
                   <option value="" disabled>Bitte wählen</option>
                   {#each daten.anbieter.filter((a) => a.art === (r === "einbettung" ? "einbettung" : "sprachmodell")) as a (a.id)}
                     <option value={a.id}>{a.name} ({a.modell}){a.aktiv ? "" : " - deaktiviert"}</option>
@@ -220,10 +220,10 @@
                 {/if}
               </div>
               <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => pruefen(a)}><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => probe(a)}><i class="fa-solid fa-vial"></i> Probe senden</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => bearbeite(a)}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => aktivUmschalten(a)}>{a.aktiv ? "Deaktivieren" : "Aktivieren"}</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => pruefen(a)} title="Erreichbarkeit und Modell des Anbieters prüfen, ohne etwas zu ändern"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => probe(a)} title="Eine kurze Testanfrage an den Anbieter schicken und die Antwort samt Dauer zeigen"><i class="fa-solid fa-vial"></i> Probe senden</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => bearbeite(a)} title="Adresse, Modell, Schlüssel und Parameter des Anbieters ändern"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => aktivUmschalten(a)} title="Ein deaktivierter Anbieter bleibt eingetragen, wird aber in keiner Rolle mehr verwendet">{a.aktiv ? "Deaktivieren" : "Aktivieren"}</button>
                 <button class="btn btn-sm btn-outline-danger" title="Löschen" onclick={() => { loeschZiel = a; loeschDialog = true; }}><i class="fa-solid fa-trash"></i></button>
               </div>
             </div>
@@ -246,13 +246,13 @@
     </div>
     <div class="col-md-3">
       <label class="form-label" for="f-typ">Typ</label>
-      <select class="form-select" id="f-typ" bind:value={formular.typ} onchange={typWechsel}>
+      <select class="form-select" id="f-typ" bind:value={formular.typ} onchange={typWechsel} title="LM Studio läuft lokal; OpenAI-kompatibel sind Dienste wie Hetzner; fastembed rechnet Einbettungen lokal ohne Dienst">
         {#each Object.entries(daten?.typen ?? {}) as [k, t] (k)}<option value={k}>{t}</option>{/each}
       </select>
     </div>
     <div class="col-md-3">
       <label class="form-label" for="f-art">Art</label>
-      <select class="form-select" id="f-art" bind:value={formular.art} disabled={formular.typ === "fastembed"}>
+      <select class="form-select" id="f-art" bind:value={formular.art} disabled={formular.typ === "fastembed"} title="Sprachmodell (antwortet und korrigiert) oder Einbettung (baut Vektoren)">
         <option value="sprachmodell">Sprachmodell</option>
         <option value="einbettung">Einbettung</option>
       </select>
@@ -264,7 +264,7 @@
       </div>
       <div class="col-md-6">
         <label class="form-label" for="f-key">Schlüssel <span class="text-secondary">(leer lassen, wenn keiner nötig ist)</span></label>
-        <input class="form-control" id="f-key" bind:value={formular.api_schluessel} />
+        <input class="form-control" id="f-key" bind:value={formular.api_schluessel} title="Schlüssel des Dienstes; hier lesbar, im Protokoll maskiert" />
       </div>
     {/if}
     <div class="col-md-6">
@@ -279,7 +279,7 @@
     {/if}
     <div class="col-md-3 d-flex align-items-end">
       <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="f-aktiv" bind:checked={formular.aktiv} />
+        <input class="form-check-input" type="checkbox" role="switch" id="f-aktiv" bind:checked={formular.aktiv} title="Nur aktive Anbieter lassen sich Rollen zuweisen" />
         <label class="form-check-label" for="f-aktiv">aktiv</label>
       </div>
     </div>

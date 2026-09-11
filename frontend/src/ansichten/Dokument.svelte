@@ -147,11 +147,11 @@
       <a class="btn btn-sm btn-outline-secondary" href="/api/dokumente/{d.id}/datei" target="_blank" rel="noreferrer" title="Originaldatei herunterladen"><i class="fa-solid fa-download"></i> {d.art_titel}</a>
       <button class="btn btn-sm btn-outline-secondary" class:active={bearbeiten} title="Titel, Autor, Datum und Beschreibung von Hand pflegen" onclick={() => (bearbeiten ? (bearbeiten = false) : pflegeStarten())}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
       <div class="dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
+        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Stückeln oder Einbetten für dieses Dokument neu anstoßen"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
         <ul class="dropdown-menu dropdown-menu-end">
           <li><h6 class="dropdown-header">Auftrag anlegen</h6></li>
           {#each AUFTRAGSARTEN as [art, titel] (art)}
-            <li><button class="dropdown-item" onclick={() => auftrag(art)}>{titel}</button></li>
+            <li><button class="dropdown-item" onclick={() => auftrag(art)} title={art === "stueckelung" ? "Alle Stücke des Dokuments neu bilden (Einbettungen fallen mit)" : "Alle Stücke mit dem aktiven Einbettungsmodell neu einbetten"}>{titel}</button></li>
           {/each}
         </ul>
       </div>
@@ -170,11 +170,11 @@
             {#if bearbeiten}
               <div class="d-flex align-items-center gap-2 mb-2"><h6 class="m-0 small text-uppercase text-secondary">Metadaten von Hand pflegen</h6><InfoKnopf anker="pflege" /></div>
               <div class="row g-2">
-                <div class="col-12"><label class="form-label mb-1" for="pf-titel">Titel</label><input class="form-control" id="pf-titel" bind:value={pflege.titel} /></div>
-                <div class="col-md-5"><label class="form-label mb-1" for="pf-autor">Autor</label><input class="form-control" id="pf-autor" bind:value={pflege.autor} /></div>
-                <div class="col-md-3"><label class="form-label mb-1" for="pf-datum">Datum</label><input class="form-control" id="pf-datum" type="date" bind:value={pflege.veroeffentlicht} /></div>
-                <div class="col-md-4"><label class="form-label mb-1" for="pf-sprache">Sprache</label><input class="form-control" id="pf-sprache" bind:value={pflege.sprache} /></div>
-                <div class="col-12"><label class="form-label mb-1" for="pf-besch">Beschreibung</label><textarea class="form-control" id="pf-besch" rows="3" bind:value={pflege.beschreibung}></textarea></div>
+                <div class="col-12"><label class="form-label mb-1" for="pf-titel">Titel</label><input class="form-control" id="pf-titel" bind:value={pflege.titel} title="Titel, wie er in Belegen und Listen erscheint" /></div>
+                <div class="col-md-5"><label class="form-label mb-1" for="pf-autor">Autor</label><input class="form-control" id="pf-autor" bind:value={pflege.autor} title="Autorin oder Autor des Dokuments" /></div>
+                <div class="col-md-3"><label class="form-label mb-1" for="pf-datum">Datum</label><input class="form-control" id="pf-datum" type="date" bind:value={pflege.veroeffentlicht} title="Datum der Veröffentlichung; der Zeitraum-Filter im Chat nutzt es" /></div>
+                <div class="col-md-4"><label class="form-label mb-1" for="pf-sprache">Sprache</label><input class="form-control" id="pf-sprache" bind:value={pflege.sprache} title="Sprachkürzel des Textes, zum Beispiel de oder en" /></div>
+                <div class="col-12"><label class="form-label mb-1" for="pf-besch">Beschreibung</label><textarea class="form-control" id="pf-besch" rows="3" bind:value={pflege.beschreibung} title="Kurzbeschreibung; wird angezeigt, aber nicht eingebettet"></textarea></div>
                 <div class="col-12 d-flex gap-2 align-items-center">
                   <span class="ms-auto"></span>
                   <button class="btn btn-outline-secondary" onclick={() => (bearbeiten = false)}>Abbrechen</button>
@@ -188,14 +188,14 @@
                 <dt class="col-sm-3 fw-normal text-secondary">Datum</dt><dd class="col-sm-9">{datum(d.veroeffentlicht)}</dd>
                 <dt class="col-sm-3 fw-normal text-secondary">Datei</dt><dd class="col-sm-9"><code>{d.dateiname || "-"}</code>{#if d.groesse_bytes} &middot; {bytes(d.groesse_bytes)}{/if} &middot; importiert {datumZeit(d.erstellt)}</dd>
                 <dt class="col-sm-3 fw-normal text-secondary">Umfang</dt><dd class="col-sm-9">{zahl(d.abschnitte_anzahl)} Abschnitte, {zahl(d.zeichen)} Zeichen, {zahl(d.chunks_anzahl)} Stücke</dd>
-                {#if d.felder_manuell.length}<dt class="col-sm-3 fw-normal text-secondary">Von Hand gepflegt</dt><dd class="col-sm-9">{d.felder_manuell.map((f) => FELD_TITEL[f] ?? f).join(", ")} <button class="btn btn-sm btn-link p-0 align-baseline" onclick={handpflegeAufheben}>aufheben</button></dd>{/if}
+                {#if d.felder_manuell.length}<dt class="col-sm-3 fw-normal text-secondary">Von Hand gepflegt</dt><dd class="col-sm-9">{d.felder_manuell.map((f) => FELD_TITEL[f] ?? f).join(", ")} <button class="btn btn-sm btn-link p-0 align-baseline" onclick={handpflegeAufheben} title="Die von Hand gepflegten Felder wieder freigeben; ein erneuter Import darf sie dann überschreiben">aufheben</button></dd>{/if}
               </dl>
               {#if d.beschreibung}
                 <details class="mt-2"><summary class="text-secondary">Beschreibung</summary><pre class="mt-2 mb-0" style="white-space: pre-wrap; font-family: inherit">{d.beschreibung}</pre></details>
               {/if}
             {/if}
             <h6 class="mt-3 mb-1 small text-uppercase text-secondary">Notizen</h6>
-            <textarea class="form-control" rows="2" placeholder="Eigene Notizen zu diesem Dokument ..." bind:value={notizen} oninput={notizGeaendert}></textarea>
+            <textarea class="form-control" rows="2" title="Eigene Notizen; werden gespeichert, aber nicht eingebettet und nicht durchsucht" placeholder="Eigene Notizen zu diesem Dokument ..." bind:value={notizen} oninput={notizGeaendert}></textarea>
           </div></div>
         </div>
         <div class="col-xl-4">
@@ -220,7 +220,7 @@
           <div class="m-seite-kopf"><i class="fa-solid fa-list"></i> Kapitel <InfoKnopf anker="dokumente" finde="Kapitel" /></div>
           <div class="m-seite-koerper p-0">
             {#each d.abschnitte as a (a.id)}
-              <button class="m-kapitel-eintrag ebene-{a.ebene}" class:aktiv={aktiverAbschnitt === a.reihenfolge} onclick={() => springe(a.reihenfolge)}>
+              <button class="m-kapitel-eintrag ebene-{a.ebene}" class:aktiv={aktiverAbschnitt === a.reihenfolge} onclick={() => springe(a.reihenfolge)} title="Zum Abschnitt in der Leseansicht springen; die Zahl ist die Anzahl seiner Stücke">
                 <span class="text-truncate">{a.titel || `Abschnitt ${a.reihenfolge}`}</span>
                 <span class="badge text-bg-light ms-auto" title="Stücke in diesem Abschnitt">{a.chunks_anzahl}</span>
               </button>

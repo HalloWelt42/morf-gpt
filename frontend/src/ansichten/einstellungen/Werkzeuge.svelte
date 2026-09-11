@@ -165,7 +165,7 @@
     <InfoKnopf anker="werkzeuge" />
     <span class="m-luecke"></span>
     <div class="dropdown">
-      <button class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-plus"></i> Neues Werkzeug</button>
+      <button class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown" title="Einen fremden Dienst anbinden: MCP-Server oder HTTP-Dienst mit JSON-Antwort"><i class="fa-solid fa-plus"></i> Neues Werkzeug</button>
       <ul class="dropdown-menu dropdown-menu-end">
         {#each VORLAGEN as v}<li><button class="dropdown-item" onclick={() => neu(v.werte)}>{v.titel}</button></li>{/each}
       </ul>
@@ -201,11 +201,11 @@
                 {#if pruefungen[w.id] === "laeuft"}<div class="small text-secondary mt-1"><i class="fa-solid fa-circle-notch fa-spin"></i> wird geprüft ...</div>{/if}
               </div>
               <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => pruefen(w)}><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => (offen[w.id] = !offen[w.id])}><i class="fa-solid fa-vial"></i> Probe</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => bearbeite(w)}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => umschalten(w, "vorausgewaehlt")}>{w.vorausgewaehlt ? "Nicht vorauswählen" : "Im Chat vorauswählen"}</button>
-                <button class="btn btn-sm btn-outline-secondary" onclick={() => umschalten(w, "aktiv")}>{w.aktiv ? "Deaktivieren" : "Aktivieren"}</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => pruefen(w)} title="Erreichbarkeit prüfen; bei MCP-Servern werden dabei die einzelnen Werkzeuge entdeckt"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => (offen[w.id] = !offen[w.id])} title="Eine Testfrage an das Werkzeug schicken und Argumente, Dauer und Ergebnis sehen"><i class="fa-solid fa-vial"></i> Probe</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => bearbeite(w)} title="Adresse, Kopfzeilen, Antwortpfade und Beschreibung ändern"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => umschalten(w, "vorausgewaehlt")} title="Vorausgewählte Werkzeuge sind in neuen Unterhaltungen von Anfang an eingeschaltet">{w.vorausgewaehlt ? "Nicht vorauswählen" : "Im Chat vorauswählen"}</button>
+                <button class="btn btn-sm btn-outline-secondary" onclick={() => umschalten(w, "aktiv")} title="Ein deaktiviertes Werkzeug bleibt eingetragen, erscheint im Chat aber nicht">{w.aktiv ? "Deaktivieren" : "Aktivieren"}</button>
                 <button class="btn btn-sm btn-outline-danger" title="Löschen" onclick={() => { loeschZiel = w; loeschDialog = true; }}><i class="fa-solid fa-trash"></i></button>
               </div>
             </div>
@@ -217,7 +217,7 @@
                   {#each w.entdeckt as e (e.name)}
                     <div class="col-md-6 col-xl-4">
                       <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="e-{w.id}-{e.name}" checked={e.aktiv !== false} onchange={(ev) => entdecktSchalten(w, e.name, (ev.target as HTMLInputElement).checked)} />
+                        <input class="form-check-input" type="checkbox" role="switch" id="e-{w.id}-{e.name}" title={e.beschreibung || "Dieses Werkzeug des Servers im Chat anbieten"} checked={e.aktiv !== false} onchange={(ev) => entdecktSchalten(w, e.name, (ev.target as HTMLInputElement).checked)} />
                         <label class="form-check-label" for="e-{w.id}-{e.name}" title={e.beschreibung}><b>{e.titel || e.name}</b> <span class="text-secondary small">{(e.beschreibung || "").slice(0, 90)}</span></label>
                       </div>
                     </div>
@@ -232,9 +232,9 @@
               <div class="mt-3 p-3 bg-body-tertiary">
                 <div class="row g-2 align-items-end">
                   {#if w.einsetzbar.length > 1}
-                    <div class="col-md-4"><label class="form-label small mb-1" for="pk-{w.id}">Werkzeug</label><select class="form-select form-select-sm" id="pk-{w.id}" bind:value={probeKennung[w.id]}>{#each w.einsetzbar as e (e.kennung)}<option value={e.kennung}>{e.titel}</option>{/each}</select></div>
+                    <div class="col-md-4"><label class="form-label small mb-1" for="pk-{w.id}">Werkzeug</label><select class="form-select form-select-sm" id="pk-{w.id}" bind:value={probeKennung[w.id]} title="Welches Werkzeug des Servers die Probe bekommt">{#each w.einsetzbar as e (e.kennung)}<option value={e.kennung}>{e.titel}</option>{/each}</select></div>
                   {/if}
-                  <div class="col-md-6"><label class="form-label small mb-1" for="pf-{w.id}">Frage für die Probe</label><input class="form-control form-control-sm" id="pf-{w.id}" placeholder="Wie ist das Wetter heute in Leipzig?" bind:value={probeFrage[w.id]} /></div>
+                  <div class="col-md-6"><label class="form-label small mb-1" for="pf-{w.id}">Frage für die Probe</label><input class="form-control form-control-sm" id="pf-{w.id}" title="Frage für die Probe; die Argumente leitet das Modell daraus ab" placeholder="Wie ist das Wetter heute in Leipzig?" bind:value={probeFrage[w.id]} /></div>
                   <div class="col-md-2"><button class="btn btn-sm btn-primary w-100" onclick={() => probe(w)} disabled={proben[w.id] === "laeuft"}>{#if proben[w.id] === "laeuft"}<i class="fa-solid fa-circle-notch fa-spin"></i>{:else}Probe senden{/if}</button></div>
                 </div>
                 {#if proben[w.id] && proben[w.id] !== "laeuft"}
@@ -259,42 +259,42 @@
 
 {#snippet formularInhalt()}
   <div class="row g-3">
-    <div class="col-md-4"><label class="form-label" for="w-name">Name</label><input class="form-control" id="w-name" bind:value={formular.name} placeholder="z. B. Recherche" /></div>
+    <div class="col-md-4"><label class="form-label" for="w-name">Name</label><input class="form-control" id="w-name" bind:value={formular.name} placeholder="z. B. Recherche" title="Anzeigename; erscheint im Chat und in den Belegen" /></div>
     <div class="col-md-3">
       <label class="form-label" for="w-typ">Typ</label>
-      <select class="form-select" id="w-typ" bind:value={formular.typ} onchange={typWechsel} disabled={bearbeiten !== "neu"}>
+      <select class="form-select" id="w-typ" bind:value={formular.typ} onchange={typWechsel} title="MCP-Server bieten mehrere Werkzeuge an, die beim Prüfen entdeckt werden; ein HTTP-Dienst ist eine einzelne Adresse mit JSON-Antwort" disabled={bearbeiten !== "neu"}>
         {#each Object.entries(daten?.typen ?? {}) as [k, t] (k)}<option value={k}>{t}</option>{/each}
       </select>
     </div>
-    <div class="col-md-5"><label class="form-label" for="w-besch">Beschreibung für das Modell <InfoKnopf anker="werkzeuge" /></label><input class="form-control" id="w-besch" bind:value={formular.beschreibung} placeholder="Wofür das Werkzeug taugt und wann es gefragt werden soll" /></div>
-    <div class="col-md-8"><label class="form-label" for="w-url">Adresse{formular.typ === "http_json" ? " (Platzhalter {frage} und {parametername})" : ""}</label><input class="form-control" id="w-url" bind:value={formular.konfiguration.url} placeholder={formular.typ === "mcp" ? "http://127.0.0.1:8000/mcp/" : "https://dienst.example/suche?q={frage}"} /></div>
+    <div class="col-md-5"><label class="form-label" for="w-besch">Beschreibung für das Modell <InfoKnopf anker="werkzeuge" /></label><input class="form-control" id="w-besch" bind:value={formular.beschreibung} title="Diese Beschreibung liest das Modell, wenn es selbst entscheidet, ob es das Werkzeug aufruft" placeholder="Wofür das Werkzeug taugt und wann es gefragt werden soll" /></div>
+    <div class="col-md-8"><label class="form-label" for="w-url">Adresse{formular.typ === "http_json" ? " (Platzhalter {frage} und {parametername})" : ""}</label><input class="form-control" id="w-url" bind:value={formular.konfiguration.url} title={formular.typ === "mcp" ? "Adresse des MCP-Servers" : "Adresse des Dienstes; die Platzhalter frage und parametername in geschweiften Klammern werden je Aufruf ersetzt"} placeholder={formular.typ === "mcp" ? "http://127.0.0.1:8000/mcp/" : "https://dienst.example/suche?q={frage}"} /></div>
     {#if formular.typ === "mcp"}
-      <div class="col-md-4"><label class="form-label" for="w-tr">Transport</label><select class="form-select" id="w-tr" bind:value={formular.konfiguration.transport}>{#each Object.entries(daten?.transporte ?? {}) as [k, t] (k)}<option value={k}>{t}</option>{/each}</select></div>
+      <div class="col-md-4"><label class="form-label" for="w-tr">Transport</label><select class="form-select" id="w-tr" bind:value={formular.konfiguration.transport} title="Übertragungsweg des MCP-Servers; Streamable HTTP ist der aktuelle Standard">{#each Object.entries(daten?.transporte ?? {}) as [k, t] (k)}<option value={k}>{t}</option>{/each}</select></div>
     {:else}
-      <div class="col-md-4"><label class="form-label" for="w-me">Methode</label><select class="form-select" id="w-me" bind:value={formular.konfiguration.methode}><option value="GET">GET</option><option value="POST">POST</option></select></div>
+      <div class="col-md-4"><label class="form-label" for="w-me">Methode</label><select class="form-select" id="w-me" bind:value={formular.konfiguration.methode} title="GET schickt die Parameter in der Adresse, POST im Rumpf"><option value="GET">GET</option><option value="POST">POST</option></select></div>
       {#if formular.konfiguration.methode === "POST"}
-        <div class="col-12"><label class="form-label" for="w-rumpf">Rumpf (JSON-Vorlage mit Platzhaltern)</label><textarea class="form-control" id="w-rumpf" rows="2" bind:value={formular.konfiguration.rumpf} placeholder={'{"query": "{frage}"}'}></textarea></div>
+        <div class="col-12"><label class="form-label" for="w-rumpf">Rumpf (JSON-Vorlage mit Platzhaltern)</label><textarea class="form-control" id="w-rumpf" rows="2" bind:value={formular.konfiguration.rumpf} title="JSON-Rumpf bei POST; Platzhalter in geschweiften Klammern wie frage werden je Aufruf ersetzt" placeholder={'{"query": "{frage}"}'}></textarea></div>
       {/if}
-      <div class="col-md-4"><label class="form-label" for="w-at">Pfad zum Antworttext</label><input class="form-control" id="w-at" bind:value={formular.konfiguration.antwort_text} placeholder="ergebnisse[].text" /></div>
-      <div class="col-md-4"><label class="form-label" for="w-ati">Pfad zum Titel (optional)</label><input class="form-control" id="w-ati" bind:value={formular.konfiguration.antwort_titel} placeholder="ergebnisse[].titel" /></div>
-      <div class="col-md-4"><label class="form-label" for="w-au">Pfad zur Quelladresse (optional)</label><input class="form-control" id="w-au" bind:value={formular.konfiguration.antwort_url} placeholder="ergebnisse[].url" /></div>
-      <div class="col-12"><label class="form-label" for="w-par">Parameter (JSON-Liste: name, beschreibung, pflicht)</label><textarea class="form-control" id="w-par" rows="3" bind:value={parameterText} style="font-family: ui-monospace, monospace; font-size: 0.9rem"></textarea></div>
+      <div class="col-md-4"><label class="form-label" for="w-at">Pfad zum Antworttext</label><input class="form-control" id="w-at" bind:value={formular.konfiguration.antwort_text} title="Pfad in der JSON-Antwort zum Text, der als Stelle in die Antwort geht; [] durchläuft Listen" placeholder="ergebnisse[].text" /></div>
+      <div class="col-md-4"><label class="form-label" for="w-ati">Pfad zum Titel (optional)</label><input class="form-control" id="w-ati" bind:value={formular.konfiguration.antwort_titel} title="Pfad zum Titel der Stelle, optional" placeholder="ergebnisse[].titel" /></div>
+      <div class="col-md-4"><label class="form-label" for="w-au">Pfad zur Quelladresse (optional)</label><input class="form-control" id="w-au" bind:value={formular.konfiguration.antwort_url} title="Pfad zur Quelladresse der Stelle, optional; wird im Beleg verlinkt" placeholder="ergebnisse[].url" /></div>
+      <div class="col-12"><label class="form-label" for="w-par">Parameter (JSON-Liste: name, beschreibung, pflicht)</label><textarea class="form-control" id="w-par" rows="3" bind:value={parameterText} title="Parameter, die das Modell befüllt: JSON-Liste mit name, beschreibung, pflicht" style="font-family: ui-monospace, monospace; font-size: 0.9rem"></textarea></div>
     {/if}
     <div class="col-12">
       <label class="form-label">Kopfzeilen (z. B. Authorization) <span class="text-secondary">- geheime Werte bleiben hier lesbar, im Protokoll maskiert</span></label>
       {#each kopfzeilen as k, i (i)}
         <div class="d-flex gap-2 mb-2">
-          <input class="form-control" style="max-width: 240px" placeholder="Name" bind:value={k.name} />
-          <input class="form-control" placeholder="Wert" bind:value={k.wert} />
-          <div class="form-check form-switch d-flex align-items-center gap-2 mb-0" style="min-width: 110px"><input class="form-check-input" type="checkbox" role="switch" id="kg-{i}" bind:checked={k.geheim} /><label class="form-check-label small" for="kg-{i}">geheim</label></div>
+          <input class="form-control" style="max-width: 240px" placeholder="Name" bind:value={k.name} title="Name der HTTP-Kopfzeile, zum Beispiel Authorization" />
+          <input class="form-control" placeholder="Wert" bind:value={k.wert} title="Wert der Kopfzeile; geheime Werte bleiben hier lesbar, im Protokoll maskiert" />
+          <div class="form-check form-switch d-flex align-items-center gap-2 mb-0" style="min-width: 110px"><input class="form-check-input" type="checkbox" role="switch" id="kg-{i}" bind:checked={k.geheim} title="Geheim: der Wert wird im Protokoll und in Fehlermeldungen maskiert" /><label class="form-check-label small" for="kg-{i}">geheim</label></div>
           <button class="btn btn-outline-danger" onclick={() => (kopfzeilen = kopfzeilen.filter((_, j) => j !== i))} title="Kopfzeile entfernen"><i class="fa-solid fa-xmark"></i></button>
         </div>
       {/each}
-      <button class="btn btn-sm btn-outline-secondary" onclick={() => (kopfzeilen = [...kopfzeilen, { name: "", wert: "", geheim: false }])}><i class="fa-solid fa-plus"></i> Kopfzeile</button>
+      <button class="btn btn-sm btn-outline-secondary" onclick={() => (kopfzeilen = [...kopfzeilen, { name: "", wert: "", geheim: false }])} title="Eine HTTP-Kopfzeile hinzufügen, etwa für einen Schlüssel"><i class="fa-solid fa-plus"></i> Kopfzeile</button>
     </div>
     <div class="col-12 d-flex gap-3 align-items-center flex-wrap">
-      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="w-aktiv" bind:checked={formular.aktiv} /><label class="form-check-label" for="w-aktiv">aktiv</label></div>
-      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="w-vor" bind:checked={formular.vorausgewaehlt} /><label class="form-check-label" for="w-vor">im Chat vorauswählen</label></div>
+      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="w-aktiv" bind:checked={formular.aktiv} title="Nur aktive Werkzeuge erscheinen im Chat" /><label class="form-check-label" for="w-aktiv">aktiv</label></div>
+      <div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="w-vor" title="In neuen Unterhaltungen von Anfang an eingeschaltet" bind:checked={formular.vorausgewaehlt} /><label class="form-check-label" for="w-vor">im Chat vorauswählen</label></div>
       <span class="ms-auto"></span>
       <button class="btn btn-outline-secondary" onclick={() => (bearbeiten = null)} disabled={beschaeftigt}>Abbrechen</button>
       <button class="btn btn-primary" onclick={speichern} disabled={beschaeftigt || !formular.name || !String(formular.konfiguration.url ?? "").trim()}>{#if beschaeftigt}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} Speichern</button>

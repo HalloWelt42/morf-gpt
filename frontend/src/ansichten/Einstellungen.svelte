@@ -123,7 +123,7 @@
       <h1>Einstellungen - {gruppeTitel}</h1>
       {#if gespeichert}<span class="m-unter"><i class="fa-solid fa-check text-success"></i> Gespeichert {uhrzeit(gespeichert)}</span>{/if}
       <span class="m-luecke"></span>
-      <input class="form-control form-control-sm" style="width: 280px" placeholder="Einstellung suchen ..." bind:value={suche} />
+      <input class="form-control form-control-sm" style="width: 280px" title="Sucht in Titel, Schlüssel und Beschreibung aller Einstellungen" placeholder="Einstellung suchen ..." bind:value={suche} />
     </div>
     <div class="m-ansicht-koerper">
       {#if laden}
@@ -146,20 +146,20 @@
                   <div class="d-flex align-items-center gap-2 justify-content-lg-end">
                     {#if e.typ === "schalter"}
                       <div class="form-check form-switch fs-5 mb-0">
-                        <input class="form-check-input" type="checkbox" role="switch" id="e-{e.schluessel}" checked={Boolean(e.wert)} onchange={(ev) => setze(e, (ev.target as HTMLInputElement).checked)} />
+                        <input class="form-check-input" type="checkbox" role="switch" id="e-{e.schluessel}" checked={Boolean(e.wert)} onchange={(ev) => setze(e, (ev.target as HTMLInputElement).checked)} title={e.beschreibung} />
                         <label class="form-check-label fs-6" for="e-{e.schluessel}">{e.wert ? "an" : "aus"}</label>
                       </div>
                     {:else if e.typ === "auswahl"}
-                      <select class="form-select" style="max-width: 320px" value={String(e.wert)} onchange={(ev) => setze(e, (ev.target as HTMLSelectElement).value)}>
+                      <select class="form-select" style="max-width: 320px" value={String(e.wert)} onchange={(ev) => setze(e, (ev.target as HTMLSelectElement).value)} title={e.beschreibung}>
                         {#each e.auswahl as o (o.wert)}<option value={o.wert}>{o.titel}</option>{/each}
                       </select>
                     {:else if e.typ === "zahl" || e.typ === "ganzzahl"}
                       <div class="input-group" style="max-width: 240px">
-                        <input class="form-control text-end" type="number" value={e.wert as number} min={e.minimum ?? undefined} max={e.maximum ?? undefined} step={e.schritt ?? (e.typ === "ganzzahl" ? 1 : 0.01)} onchange={(ev) => zahlEingabe(e, ev)} />
+                        <input class="form-control text-end" type="number" value={e.wert as number} min={e.minimum ?? undefined} max={e.maximum ?? undefined} step={e.schritt ?? (e.typ === "ganzzahl" ? 1 : 0.01)} onchange={(ev) => zahlEingabe(e, ev)} title={e.beschreibung} />
                         {#if e.einheit}<span class="input-group-text">{e.einheit}</span>{/if}
                       </div>
                     {:else}
-                      <input class="form-control" style="max-width: 360px" value={String(e.wert ?? "")} onchange={(ev) => setze(e, (ev.target as HTMLInputElement).value)} />
+                      <input class="form-control" style="max-width: 360px" value={String(e.wert ?? "")} onchange={(ev) => setze(e, (ev.target as HTMLInputElement).value)} title={e.beschreibung} />
                     {/if}
                     <span class="small text-secondary text-nowrap" title="Vorgabe">Vorgabe: {e.typ === "schalter" ? (e.vorgabe ? "an" : "aus") : e.typ === "auswahl" ? (e.auswahl.find((o) => o.wert === e.vorgabe)?.titel ?? String(e.vorgabe)) : String(e.vorgabe)}</span>
                     {#if e.geaendert}

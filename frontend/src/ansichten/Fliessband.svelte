@@ -242,7 +242,7 @@
     <span class="m-luecke"></span>
     {#if band}
       <div class="form-check form-switch mb-0 me-2" title="Nach einer fertigen Stufe automatisch den nächsten Auftrag anlegen">
-        <input class="form-check-input" type="checkbox" role="switch" id="automatik" checked={band.automatik} onchange={(e) => automatik((e.target as HTMLInputElement).checked)} />
+        <input class="form-check-input" type="checkbox" role="switch" id="automatik" checked={band.automatik} title="Automatik an: nach jedem fertigen Auftrag wird der nächste Schritt von selbst angelegt. Aus: jeder Schritt wird von Hand angestoßen." onchange={(e) => automatik((e.target as HTMLInputElement).checked)} />
         <label class="form-check-label small" for="automatik">Automatisch weiterreichen</label>
       </div>
     {/if}
@@ -276,7 +276,7 @@
           <div class="zeile"><span>Durchsatz</span><span>{a.durchsatz_fenster} je Stunde</span></div>
           <div class="zeile"><span>Rest</span><span>{a.restzeit_s !== null ? `etwa ${dauerWorte(a.restzeit_s)}` : "-"}</span></div>
           <div class="form-check form-switch mt-1">
-            <input class="form-check-input" type="checkbox" role="switch" id="p-{a.art}" checked={!a.pausiert} onchange={(e) => pause(a, !(e.target as HTMLInputElement).checked)} />
+            <input class="form-check-input" type="checkbox" role="switch" id="p-{a.art}" checked={!a.pausiert} title="Stufe anhalten oder weiterlaufen lassen; laufende Aufträge enden noch, neue starten nicht" onchange={(e) => pause(a, !(e.target as HTMLInputElement).checked)} />
             <label class="form-check-label small" for="p-{a.art}">{a.pausiert ? "angehalten" : `läuft (${a.parallel} parallel)`}</label>
           </div>
         </div>
@@ -333,7 +333,7 @@
       <div class="d-flex flex-column" style="width: 440px; min-height: 0">
         <div class="d-flex align-items-center mb-1">
           <h6 class="m-0"><i class="fa-solid fa-terminal"></i> Protokoll (live)</h6>
-          <div class="form-check form-switch ms-auto mb-0"><input class="form-check-input" type="checkbox" id="mitrollen" bind:checked={mitrollen} /><label class="form-check-label small" for="mitrollen">mitrollen</label></div>
+          <div class="form-check form-switch ms-auto mb-0"><input class="form-check-input" type="checkbox" id="mitrollen" bind:checked={mitrollen} title="Das Protokoll springt bei neuen Zeilen automatisch ans Ende" /><label class="form-check-label small" for="mitrollen">mitrollen</label></div>
         </div>
         <div class="m-protokoll flex-grow-1" bind:this={protokollFeld}>
           {#if !protokoll.length}<div class="text-secondary">Sobald Aufträge laufen, erscheinen hier ihre Meldungen.</div>{/if}

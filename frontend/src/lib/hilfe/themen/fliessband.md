@@ -6,6 +6,10 @@ symbol: fa-diagram-next
 stichworte: aufträge, pause, parallel, durchsatz, restzeit, fehler
 ---
 
+![Die Stufenkarten des Fließbands mit Zählern, Durchsatz, Rest und Schalter](/hilfe/fliessband-stufen.png)
+*Die Stufen: fertig, laufend, wartend, Durchsatz je Stunde, geschätzte Restzeit, der Schalter hält die Stufe an. Der Info-Knopf erklärt den Schritt.*
+
+
 Jedes Video durchläuft die Stufen Audio, Transkription, Korrektur, Stückelung und Einbettung. Je Stufe siehst du fertige, laufende und wartende Aufträge, den Durchsatz der letzten Stunde und eine geschätzte Restzeit. Der Schalter je Stufe hält sie an; laufende Aufträge enden noch.
 
 Band auffüllen legt für alle Videos im Umfang den nächsten Schritt an. Fehlgeschlagene Aufträge zeigen die Ursache und lassen sich einzeln oder gesammelt wiederholen. Der Info-Knopf an jeder Stufe erklärt, was in dem Schritt genau passiert und warum er wichtig ist.

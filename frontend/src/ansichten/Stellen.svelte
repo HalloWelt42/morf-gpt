@@ -146,14 +146,14 @@
   </div>
   <div class="m-ansicht-koerper d-flex flex-column gap-2" style="overflow: hidden">
     <div class="d-flex gap-2 flex-wrap align-items-center">
-      <input class="form-control form-control-sm" style="width: 300px" placeholder="Volltext oder Videotitel suchen ..." bind:value={q} oninput={sucheGeaendert} />
-      <select class="form-select form-select-sm" style="width: 160px" bind:value={serie} onchange={filterGeaendert}>
+      <input class="form-control form-control-sm" style="width: 300px" title="Sucht im Text der Stücke und in den Titeln der Werke" placeholder="Volltext oder Videotitel suchen ..." bind:value={q} oninput={sucheGeaendert} />
+      <select class="form-select form-select-sm" style="width: 160px" bind:value={serie} onchange={filterGeaendert} title="Nur Stücke aus Videos dieser Serie zeigen">
         <option value="">Alle Serien</option>
         {#each serien.filter((s) => s.serie) as s (s.serie)}<option value={s.serie}>{s.serie}</option>{/each}
       </select>
-      <input class="form-control form-control-sm" style="width: 220px" placeholder="Thema enthält ..." list="themenliste" bind:value={thema} oninput={sucheGeaendert} />
+      <input class="form-control form-control-sm" style="width: 220px" title="Nur Stücke, deren Thema (Themenaufschlüsselung oder Kapitel) diesen Text enthält" placeholder="Thema enthält ..." list="themenliste" bind:value={thema} oninput={sucheGeaendert} />
       <datalist id="themenliste">{#each themen.slice(0, 200) as t}<option value={t}></option>{/each}</datalist>
-      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="ohne" bind:checked={ohneEinbettung} onchange={filterGeaendert} /><label class="form-check-label small" for="ohne">nur ohne Einbettung</label></div>
+      <div class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" id="ohne" bind:checked={ohneEinbettung} title="Nur Stücke zeigen, die noch keinen Vektor haben und darum im Chat nicht gefunden werden" onchange={filterGeaendert} /><label class="form-check-label small" for="ohne">nur ohne Einbettung</label></div>
       {#if laden}<span class="text-secondary small"><i class="fa-solid fa-circle-notch fa-spin"></i></span>{/if}
     </div>
     <div class="flex-grow-1" style="min-height: 0; overflow-y: auto">
@@ -196,15 +196,15 @@
       <div class="text-secondary small mb-2">{#if gewaehlt.werkart === "dokument"}{gewaehlt.abschnitt ? `Kapitel: ${gewaehlt.abschnitt}` : "Dokument"}{:else}{zeitmarke(gewaehlt.start_s)} bis {zeitmarke(gewaehlt.end_s)}{/if}{#if gewaehlt.thema && gewaehlt.thema !== gewaehlt.abschnitt} &middot; {gewaehlt.thema}{/if} &middot; {zahl(gewaehlt.zeichen)} Zeichen</div>
       <div class="d-flex gap-1 flex-wrap mb-2">
         {#if gewaehlt.werkart === "dokument"}
-          <button class="btn btn-sm btn-outline-primary" onclick={() => ui.gehe("dokument", gewaehlt!.dokument_id, gewaehlt!.abschnitt_nr === null ? "" : String(gewaehlt!.abschnitt_nr))}><i class="fa-solid fa-book-open"></i> Im Dokument lesen</button>
+          <button class="btn btn-sm btn-outline-primary" onclick={() => ui.gehe("dokument", gewaehlt!.dokument_id, gewaehlt!.abschnitt_nr === null ? "" : String(gewaehlt!.abschnitt_nr))} title="Das Kapitel dieses Stücks in der Leseansicht öffnen"><i class="fa-solid fa-book-open"></i> Im Dokument lesen</button>
         {:else}
-          <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(gewaehlt!.video_id, gewaehlt!.start_s)}><i class="fa-solid fa-play"></i> Abspielen</button>
+          <button class="btn btn-sm btn-outline-primary" onclick={() => spieleVideo(gewaehlt!.video_id, gewaehlt!.start_s)} title="Ab dem Anfang dieses Stücks im eigenen Spieler abspielen"><i class="fa-solid fa-play"></i> Abspielen</button>
         {/if}
-        <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("stelle", gewaehlt!.id)}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
-        <button class="btn btn-sm btn-outline-secondary" onclick={() => (zusammenDialog = true)} disabled={!gewaehlt.naechster}><i class="fa-solid fa-object-group"></i> Mit nächstem zusammenlegen</button>
-        <button class="btn btn-sm btn-outline-secondary" onclick={einbetten} disabled={beschaeftigt}><i class="fa-solid fa-cube"></i> Neu einbetten</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={() => ui.gehe("stelle", gewaehlt!.id)} title="Text des Stücks bearbeiten oder teilen"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={() => (zusammenDialog = true)} disabled={!gewaehlt.naechster} title="Dieses und das nächste Stück zu einem verbinden; die Überlappung wird nicht doppelt genommen (fragt nach)"><i class="fa-solid fa-object-group"></i> Mit nächstem zusammenlegen</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={einbetten} disabled={beschaeftigt} title="Nur dieses Stück mit dem aktiven Einbettungsmodell neu einbetten"><i class="fa-solid fa-cube"></i> Neu einbetten</button>
         <button class="btn btn-sm btn-outline-secondary" onclick={neuStueckeln} title="Alle Stücke dieses Werks neu bilden"><i class="fa-solid fa-scissors"></i> {gewaehlt.werkart === "dokument" ? "Dokument" : "Video"} neu stückeln</button>
-        <button class="btn btn-sm btn-outline-danger" onclick={() => (loeschDialog = true)}><i class="fa-solid fa-trash"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick={() => (loeschDialog = true)} title="Dieses Stück löschen (fragt nach)"><i class="fa-solid fa-trash"></i></button>
       </div>
       <div class="small text-secondary mb-2">
         Einbettung: {#if gewaehlt.einbettung_details.length}{#each gewaehlt.einbettung_details as e}{e.modell} ({e.dimension} Dimensionen, {datumZeit(e.erstellt)}) {/each}{:else}<span class="text-warning">fehlt</span>{/if}

@@ -6,6 +6,10 @@ symbol: fa-book
 stichworte: dokumente, epub, e-book, markdown, text, eigener text, kapitel, hochladen
 ---
 
+![Liste der Dokumente mit Art, Umfang, Stücken und Stufe](/hilfe/dokumente-liste.png)
+*Der Bereich Dokumente: Hochladen, Eigener Text, und je Dokument Art, Umfang, Stücke und Stufe.*
+
+
 Dokumente sind die zweite Werkart der Bibliothek. Ein E-Book (EPUB), eine Markdown- oder Textdatei wird in Kapitel gelesen, in Stücke zerlegt und eingebettet, genau wie die Videos. Der Chat findet danach Stellen aus Büchern und Videos in derselben Suche und belegt sie nebeneinander: ein Video mit Folge und Zeitfenster, ein Dokument mit Kapitel.
 
 ## Hochladen
@@ -20,7 +24,13 @@ Mit Eigener Text legst du Notizen oder eigene Texte direkt in der Oberfläche an
 
 Die Stückelung läuft je Kapitel: Ein Stück überschreitet nie eine Kapitelgrenze, und der Kapiteltitel wird zum Thema des Stücks. In der Dokumentansicht zeigt die Kapitelliste, wie viele Stücke jedes Kapitel hat; die Leseansicht daneben zeigt den vollen Text. Ein Beleg im Chat springt genau in dieses Kapitel.
 
+![Kapitelliste mit Stückzahl und Leseansicht](/hilfe/dokument-kapitel.png)
+*Die Dokumentansicht: links die Kapitel mit der Zahl ihrer Stücke, rechts die Leseansicht.*
+
 ## Im Chat
+
+![Filter mit Auswahl Werke, Serie und Zeitraum](/hilfe/chat-filter.png)
+*Der Filter im Chat: Werke (alles, nur Videos, nur Dokumente, ein Dokument), Serie und Zeitraum.*
 
 Unter Filter wählst du, ob die Antwort aus allem, nur aus Videos, nur aus Dokumenten oder aus einem bestimmten Dokument kommt. "Höchstens je Werk" begrenzt die Stellen je Video oder Dokument, damit ein einzelnes Buch die Antwort nicht dominiert.
 

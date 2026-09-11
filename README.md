@@ -11,6 +11,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 
 ## Was die Anwendung kann
 
+![Antwort mit Belegen](frontend/public/hilfe/chat-antwort.png)
+
+*Eine Antwort im Chat: jede Aussage trägt die Nummer ihrer Stelle, ein Klick springt zur Fundstelle.*
+
 - **Chat** als Hauptwerkzeug: Frage stellen, belegte Antwort lesen, Belege anklicken.
   Vor der Antwort lässt sich die Suche steuern: **Breite** (Anzahl Treffer, Nachbarstücke,
   höchstens je Video) und **Genauigkeit** (Mindestähnlichkeit, Neu-Bewertung mit lokalem
@@ -31,11 +35,19 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   Sie werden in Kapitel gelesen, je Kapitel gestückelt und eingebettet und stehen dem Chat
   neben den Videos zur Verfügung; ein Beleg springt ins Kapitel der Leseansicht. Im Chat
   lässt sich auf Videos, Dokumente oder ein einzelnes Dokument einschränken.
+  ![Kapitel und Leseansicht eines Dokuments](frontend/public/hilfe/dokument-kapitel.png)
+
+  *Die Dokumentansicht: Kapitel mit der Zahl ihrer Stücke, daneben die Leseansicht.*
+
 - **Textstellen**: alle Stücke durchblättern, suchen, Überlappungen sehen, bearbeiten,
   teilen, zusammenlegen, neu einbetten oder ein Video neu stückeln.
 - **Fließband**: sechs Stufen mit Zählern, Durchsatz und Restzeit, Pause je Stufe,
   laufende und fehlgeschlagene Aufträge, Protokoll live. Jede Stufe hat einen Info-Knopf,
   der erklärt, was in dem Schritt passiert und warum er wichtig ist.
+  ![Stufen des Fließbands](frontend/public/hilfe/fliessband-stufen.png)
+
+  *Das Fließband: je Stufe Zähler, Durchsatz, Restzeit und der Schalter zum Anhalten; der Info-Knopf erklärt den Schritt.*
+
 - **Audiospieler** als feste Leiste: Abspielen ab Zeitmarke, Sprünge, Tempo, Zeitleiste
   mit den Themen, YouTube an derselben Stelle.
 - **Einstellungen**: jede Grenze mit Beschreibung, Bereich und Vorgabe; Anbieter für
@@ -50,6 +62,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   wird gemerkt. Themen sind Markdown-Dateien; die Volltextsuche läuft über alle Themen oder
   nur im gezeigten, mit Trefferzähler und Sprung von Treffer zu Treffer. Mini-i-Knöpfe
   öffnen genau das passende Thema, auf Wunsch gleich beim gesuchten Begriff.
+
+  ![Hilfefenster mit Suche](frontend/public/hilfe/hilfe-fenster.png)
+
+  *Das Hilfefenster: Suche über alle Themen mit Trefferzähler, Themenliste mit Trefferzahl, Fundstellen im Text markiert.*
 
 ## Werkstatt und Bibliothek
 
@@ -103,6 +119,19 @@ docker compose --env-file .env -f docker/docker-compose.yml --profile app up -d 
 
 Startet Datenbank und die gebaute Anwendung (Backend samt Oberfläche) im Container.
 Danach das Paket unter Einstellungen, Umzug importieren und Anbieter einrichten.
+
+## Bildschirmfotos für Hilfe und README
+
+Die Bilder unter `frontend/public/hilfe/` sind gezielte Ausschnitte aus der laufenden
+Anwendung (ein Regler, eine Karte, eine Leiste), keine Vollbilder. Sie entstehen
+reproduzierbar mit Chrome headless und dem DevTools-Protokoll, ohne weitere Pakete:
+
+```bash
+node tools/bildschirmfotos.mjs
+```
+
+Die Anwendung muss dafür laufen. Mit `--nur name,name` lassen sich einzelne Motive
+erneuern; die Motive stehen im Skript.
 
 ## Mockups
 

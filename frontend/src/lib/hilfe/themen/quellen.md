@@ -6,6 +6,10 @@ symbol: fa-folder-open
 stichworte: quelle, verzeichnis, lokale dateien, tubevault, kanal, beiblatt, abgleich
 ---
 
+![Formular Neue Quelle mit Typ Lokale Dateien und Verzeichnis](/hilfe/quellen-neu.png)
+*Neue Quelle: Typ wählen, bei lokalen Dateien das Verzeichnis eintragen, prüfen, anlegen.*
+
+
 Eine Quelle liefert Videos samt Metadaten in die Bibliothek. Es gibt zwei Arten, und beide dürfen nebeneinander bestehen: ein Kanal in einem Videodienst (TubeVault) und ein Verzeichnis mit eigenen Dateien auf diesem Rechner. Der Abgleich liest die Quelle, legt neue Videos an, frischt bekannte auf und wendet die Aufnahmeregel an.
 
 Lokale Dateien: Jede Video- oder Audiodatei unter dem Verzeichnis (auch in Unterordnern) wird ein Video. Titel entsteht aus dem Dateinamen, Datum aus dem Änderungsdatum, Dauer aus der Datei. Liegt ein Beiblatt name.json oder name.info.json daneben (etwa von einem Downloader), werden Titel, Beschreibung, Datum, Schlagworte und Originaladresse daraus übernommen. Ein Bild name.jpg, name.png oder name.webp daneben wird das Vorschaubild; fehlt es, zieht die Werkstatt bei Videodateien ein Einzelbild aus dem Film.

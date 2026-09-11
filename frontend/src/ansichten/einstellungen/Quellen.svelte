@@ -161,27 +161,27 @@
               </div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-              <button class="btn btn-sm btn-primary" onclick={() => abgleichen(q)}><i class="fa-solid fa-rotate"></i> Jetzt abgleichen</button>
-              <button class="btn btn-sm btn-outline-secondary" onclick={() => { vorschauSeite = 1; void ladeVorschau(q); }}><i class="fa-solid fa-eye"></i> Vorschau</button>
-              <button class="btn btn-sm btn-outline-secondary" onclick={() => bearbeite(q)}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
-              <button class="btn btn-sm btn-outline-danger" onclick={() => { ziel = q; entfernenDialog = true; }}><i class="fa-solid fa-trash"></i> Entfernen</button>
+              <button class="btn btn-sm btn-primary" onclick={() => abgleichen(q)} title="Die Quelle jetzt lesen: neue Videos anlegen, bekannte auffrischen, Aufnahmeregel anwenden (läuft als Auftrag)"><i class="fa-solid fa-rotate"></i> Jetzt abgleichen</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick={() => { vorschauSeite = 1; void ladeVorschau(q); }} title="Zeigt, was die Quelle liefert und welche Videos nach den Regeln aufgenommen würden, ohne etwas zu ändern"><i class="fa-solid fa-eye"></i> Vorschau</button>
+              <button class="btn btn-sm btn-outline-secondary" onclick={() => bearbeite(q)} title="Name, Adresse oder Verzeichnis und die Aufnahmeregeln dieser Quelle ändern"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+              <button class="btn btn-sm btn-outline-danger" onclick={() => { ziel = q; entfernenDialog = true; }} title="Quelle entfernen; ihre Videos bleiben in der Bibliothek, nur der Abgleich endet (fragt nach)"><i class="fa-solid fa-trash"></i> Entfernen</button>
             </div>
           </div>
           {#if bearbeiten?.id === q.id}
             <hr />
             <div class="row g-3">
-              <div class="col-md-4"><label class="form-label" for="q-name">Name</label><input class="form-control" id="q-name" bind:value={bearbeiten.name} /></div>
+              <div class="col-md-4"><label class="form-label" for="q-name">Name</label><input class="form-control" id="q-name" bind:value={bearbeiten.name} title="Anzeigename der Quelle" /></div>
               {#if bearbeiten.typ === "lokal"}
                 <div class="col-md-8"><label class="form-label" for="q-url">Verzeichnis</label><input class="form-control" id="q-url" bind:value={bearbeiten.basis_url} /></div>
               {:else}
                 <div class="col-md-5"><label class="form-label" for="q-url">Basisadresse</label><input class="form-control" id="q-url" bind:value={bearbeiten.basis_url} /></div>
-                <div class="col-md-3"><label class="form-label" for="q-kanal">Kanalkennung</label><input class="form-control" id="q-kanal" bind:value={bearbeiten.kanal_id} /></div>
+                <div class="col-md-3"><label class="form-label" for="q-kanal">Kanalkennung</label><input class="form-control" id="q-kanal" bind:value={bearbeiten.kanal_id} title="Kennung des Kanals, wie die Quelle sie führt (bei YouTube beginnt sie mit UC)" /></div>
               {/if}
-              <div class="col-md-4"><label class="form-label" for="r-dauer">Mindestdauer (leer = Einstellungen)</label><div class="input-group"><input class="form-control" id="r-dauer" type="number" bind:value={regeln.mindest_dauer_s} /><span class="input-group-text">Sekunden</span></div></div>
-              <div class="col-md-4"><label class="form-label" for="r-typen">Arten (leer = Einstellungen)</label><input class="form-control" id="r-typen" placeholder="video,live" bind:value={regeln.typen} /></div>
-              {#if bearbeiten.typ !== "lokal"}<div class="col-md-4"><label class="form-label" for="r-dl">Nur heruntergeladene</label><select class="form-select" id="r-dl" bind:value={regeln.nur_heruntergeladene}><option value="">aus den Einstellungen</option><option value="true">ja</option><option value="false">nein</option></select></div>{/if}
+              <div class="col-md-4"><label class="form-label" for="r-dauer">Mindestdauer (leer = Einstellungen)</label><div class="input-group"><input class="form-control" id="r-dauer" type="number" bind:value={regeln.mindest_dauer_s} title="Nur Videos, die länger sind als dieser Wert, kommen automatisch in den Umfang; leer heißt Wert aus den Einstellungen" /><span class="input-group-text">Sekunden</span></div></div>
+              <div class="col-md-4"><label class="form-label" for="r-typen">Arten (leer = Einstellungen)</label><input class="form-control" id="r-typen" placeholder="video,live" bind:value={regeln.typen} title="Welche Arten aufgenommen werden, durch Komma getrennt: video, live, short; leer heißt Wert aus den Einstellungen" /></div>
+              {#if bearbeiten.typ !== "lokal"}<div class="col-md-4"><label class="form-label" for="r-dl">Nur heruntergeladene</label><select class="form-select" id="r-dl" bind:value={regeln.nur_heruntergeladene} title="Nur Videos aufnehmen, die in der Quelle schon als Datei vorliegen"><option value="">aus den Einstellungen</option><option value="true">ja</option><option value="false">nein</option></select></div>{/if}
               <div class="col-md-12 d-flex gap-2 align-items-center">
-                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="q-aktiv" bind:checked={bearbeiten.aktiv} /><label class="form-check-label" for="q-aktiv">aktiv</label></div>
+                <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="q-aktiv" bind:checked={bearbeiten.aktiv} title="Eine deaktivierte Quelle wird nicht mehr abgeglichen" /><label class="form-check-label" for="q-aktiv">aktiv</label></div>
                 <span class="ms-auto"></span>
                 <button class="btn btn-outline-secondary" onclick={() => (bearbeiten = null)}>Abbrechen</button>
                 <button class="btn btn-primary" onclick={speichern} disabled={beschaeftigt}>Speichern</button>
@@ -196,16 +196,16 @@
       <div class="card-header fw-semibold">Neue Quelle</div>
       <div class="card-body">
         <div class="row g-3">
-          <div class="col-md-3"><label class="form-label" for="n-typ">Typ <InfoKnopf anker="quellen" /></label><select class="form-select" id="n-typ" bind:value={neu.typ} onchange={typGewechselt}>{#each Object.entries(typen) as [k, t] (k)}<option value={k}>{t}</option>{/each}</select></div>
+          <div class="col-md-3"><label class="form-label" for="n-typ">Typ <InfoKnopf anker="quellen" /></label><select class="form-select" id="n-typ" bind:value={neu.typ} onchange={typGewechselt} title="TubeVault: ein Kanal in einem Videodienst. Lokale Dateien: ein Verzeichnis mit eigenen Video- und Audiodateien auf diesem Rechner.">{#each Object.entries(typen) as [k, t] (k)}<option value={k}>{t}</option>{/each}</select></div>
           <div class="col-md-3"><label class="form-label" for="n-name">Name</label><input class="form-control" id="n-name" bind:value={neu.name} placeholder={istLokal ? "z. B. Meine Aufnahmen" : "z. B. morf"} /></div>
           {#if istLokal}
-            <div class="col-md-6"><label class="form-label" for="n-url">Verzeichnis auf diesem Rechner</label><input class="form-control" id="n-url" bind:value={neu.basis_url} placeholder="/Users/name/Videos/morf" /><div class="form-text">Alle Video- und Audiodateien darunter, auch in Unterordnern. Ein Beiblatt name.json und ein Bild name.jpg neben der Datei werden übernommen.</div></div>
+            <div class="col-md-6"><label class="form-label" for="n-url">Verzeichnis auf diesem Rechner</label><input class="form-control" id="n-url" bind:value={neu.basis_url} placeholder="/Users/name/Videos/morf" title="Vollständiger Pfad des Verzeichnisses; Unterordner werden mitgelesen" /><div class="form-text">Alle Video- und Audiodateien darunter, auch in Unterordnern. Ein Beiblatt name.json und ein Bild name.jpg neben der Datei werden übernommen.</div></div>
           {:else}
-            <div class="col-md-3"><label class="form-label" for="n-url">Basisadresse der Quelle</label><input class="form-control" id="n-url" bind:value={neu.basis_url} /></div>
-            <div class="col-md-3"><label class="form-label" for="n-kanal">Kanalkennung</label><input class="form-control" id="n-kanal" bind:value={neu.kanal_id} placeholder="UC..." /></div>
+            <div class="col-md-3"><label class="form-label" for="n-url">Basisadresse der Quelle</label><input class="form-control" id="n-url" bind:value={neu.basis_url} title="Adresse des Dienstes samt Port, ohne Pfad" /></div>
+            <div class="col-md-3"><label class="form-label" for="n-kanal">Kanalkennung</label><input class="form-control" id="n-kanal" bind:value={neu.kanal_id} placeholder="UC..." title="Kennung des Kanals, wie die Quelle sie führt (bei YouTube beginnt sie mit UC)" /></div>
           {/if}
           <div class="col-12 d-flex gap-2 align-items-center flex-wrap">
-            <button class="btn btn-outline-secondary" onclick={kanalPruefen} disabled={pruefen || !neu.basis_url || (!istLokal && !neu.kanal_id)}>{#if pruefen}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} {istLokal ? "Verzeichnis prüfen" : "Kanal prüfen"}</button>
+            <button class="btn btn-outline-secondary" onclick={kanalPruefen} title="Fragt die Quelle nach dem Kanal oder liest das Verzeichnis, ohne etwas zu speichern" disabled={pruefen || !neu.basis_url || (!istLokal && !neu.kanal_id)}>{#if pruefen}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} {istLokal ? "Verzeichnis prüfen" : "Kanal prüfen"}</button>
             {#if kanal}
               {#if istLokal}
                 <span class="text-success"><i class="fa-solid fa-circle-check"></i> Ordner gefunden: <b>{kanal.name}</b>, {zahl(kanal.videos_gesamt)} Dateien</span>
@@ -214,7 +214,7 @@
               {/if}
             {/if}
             <span class="ms-auto"></span>
-            <button class="btn btn-primary" onclick={anlegen} disabled={beschaeftigt || !kanal || !neu.name}>Quelle anlegen</button>
+            <button class="btn btn-primary" onclick={anlegen} disabled={beschaeftigt || !kanal || !neu.name} title="Quelle speichern; danach mit Jetzt abgleichen die Videos übernehmen">Quelle anlegen</button>
           </div>
         </div>
       </div>

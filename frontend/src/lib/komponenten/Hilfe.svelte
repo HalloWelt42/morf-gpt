@@ -173,7 +173,7 @@
         </div>
         <div class="m-hilfe-suchfeld">
           <i class="fa-solid fa-magnifying-glass text-secondary"></i>
-          <input bind:this={suchfeld} placeholder={hilfe.bereich === "alle" ? "In allen Themen suchen ..." : "In diesem Thema suchen ..."} value={hilfe.suche} oninput={(e) => hilfe.setzeSuche(e.currentTarget.value)} onkeydown={tasteImSuchfeld} aria-label="Hilfe durchsuchen" />
+          <input bind:this={suchfeld} placeholder={hilfe.bereich === "alle" ? "In allen Themen suchen ..." : "In diesem Thema suchen ..."} value={hilfe.suche} oninput={(e) => hilfe.setzeSuche(e.currentTarget.value)} onkeydown={tasteImSuchfeld} aria-label="Hilfe durchsuchen" title="Volltextsuche; Eingabe springt zum nächsten Treffer, Umschalt + Eingabe zurück, Escape leert" />
           {#if hilfe.suche.trim()}
             <span class="zaehler">{hilfe.trefferGesamt ? hilfe.trefferIndex + 1 : 0}/{hilfe.trefferGesamt}</span>
             <button class="btn btn-sm btn-link p-0" type="button" title="Vorheriger Treffer (Umschalt + Eingabe)" onclick={() => hilfe.voriger()}><i class="fa-solid fa-chevron-up"></i></button>

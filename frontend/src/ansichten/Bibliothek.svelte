@@ -185,21 +185,21 @@
 
   <div class="m-ansicht-koerper d-flex flex-column gap-2" style="overflow: hidden">
     <div class="d-flex gap-2 flex-wrap align-items-center">
-      <input class="form-control form-control-sm" style="width: 280px" placeholder="Titel oder Beschreibung suchen ..." bind:value={q} oninput={sucheGeaendert} />
-      <select class="form-select form-select-sm" style="width: 170px" bind:value={serie} onchange={filterGeaendert} title="Serie">
+      <input class="form-control form-control-sm" style="width: 280px" title="Sucht in Titel und Beschreibung der Videos" placeholder="Titel oder Beschreibung suchen ..." bind:value={q} oninput={sucheGeaendert} />
+      <select class="form-select form-select-sm" style="width: 170px" bind:value={serie} onchange={filterGeaendert} title="Nur Videos dieser Serie zeigen">
         <option value="">Alle Serien</option>
         {#each serien as s (s.serie)}<option value={s.serie || "__ohne__"}>{s.serie || "Ohne Serie"} ({s.anzahl})</option>{/each}
       </select>
-      <select class="form-select form-select-sm" style="width: 170px" bind:value={stufe} onchange={filterGeaendert} title="Stufe">
+      <select class="form-select form-select-sm" style="width: 170px" bind:value={stufe} onchange={filterGeaendert} title="Nur Videos zeigen, die auf dieser Stufe des Fließbands stehen">
         <option value="">Alle Stufen</option>
         {#each STUFEN as s}<option value={s}>{STUFEN_TITEL[s]}</option>{/each}
       </select>
-      <select class="form-select form-select-sm" style="width: 170px" bind:value={auswahl} onchange={filterGeaendert} title="Umfang">
+      <select class="form-select form-select-sm" style="width: 170px" bind:value={auswahl} onchange={filterGeaendert} title="Im Umfang heißt: das Video wird auf dem Fließband verarbeitet">
         <option value="true">Im Umfang</option>
         <option value="false">Nicht im Umfang</option>
         <option value="">Alle</option>
       </select>
-      <select class="form-select form-select-sm" style="width: 140px" bind:value={typ} onchange={filterGeaendert} title="Art">
+      <select class="form-select form-select-sm" style="width: 140px" bind:value={typ} onchange={filterGeaendert} title="Nur Videos dieser Art zeigen (Video, Livestream, Short)">
         <option value="">Alle Arten</option>
         <option value="video">Video</option>
         <option value="live">Livestream</option>
@@ -262,10 +262,10 @@
     <div class="d-flex align-items-center gap-2 flex-wrap">
       {#if markiert.size}
         <span class="fw-semibold">{zahl(markiert.size)} markiert:</span>
-        <button class="btn btn-sm btn-outline-primary" onclick={() => stapelAuswahl(true)}>In den Umfang aufnehmen</button>
-        <button class="btn btn-sm btn-outline-secondary" onclick={() => stapelAuswahl(false)}>Aus dem Umfang nehmen</button>
-        <button class="btn btn-sm btn-outline-secondary" onclick={vorziehen}><i class="fa-solid fa-arrow-up"></i> Vorziehen</button>
-        <button class="btn btn-sm btn-outline-danger" onclick={() => (zuruecksetzDialog = true)}><i class="fa-solid fa-rotate-left"></i> Zurücksetzen auf Stufe ...</button>
+        <button class="btn btn-sm btn-outline-primary" onclick={() => stapelAuswahl(true)} title="Die markierten Videos werden verarbeitet; bei aktiver Automatik entstehen sofort die nächsten Aufträge">In den Umfang aufnehmen</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={() => stapelAuswahl(false)} title="Die markierten Videos werden nicht weiter verarbeitet; wartende Aufträge werden abgebrochen, Fertiges bleibt">Aus dem Umfang nehmen</button>
+        <button class="btn btn-sm btn-outline-secondary" onclick={vorziehen} title="Die markierten Videos bekommen Vorrang auf dem Fließband"><i class="fa-solid fa-arrow-up"></i> Vorziehen</button>
+        <button class="btn btn-sm btn-outline-danger" onclick={() => (zuruecksetzDialog = true)} title="Ergebnisse oberhalb einer Stufe löschen und neu rechnen lassen (fragt nach)"><i class="fa-solid fa-rotate-left"></i> Zurücksetzen auf Stufe ...</button>
       {/if}
       <span class="ms-auto"></span>
       {#if daten}<Seitenwahl bind:seite bind:jeSeite gesamt={daten.gesamt} onWechsel={ladeDaten} />{/if}
