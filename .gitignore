@@ -27,3 +27,6 @@ frontend/dist/
 # Gebautes Mockup-Thema und Viewer-Laufzeit
 mockups/bootstrap.css
 mockups/.run/
+
+# Von der editierbaren Installation erzeugt
+*.egg-info/
