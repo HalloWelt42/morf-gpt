@@ -35,6 +35,14 @@ export interface Dienst {
   hinweis: string;
 }
 
+// --- Seitenweise Listen -----------------------------------------------------
+export interface Seite<T> {
+  eintraege: T[];
+  gesamt: number;
+  seite: number;
+  je_seite: number;
+}
+
 // --- Einstellungen ----------------------------------------------------------
 export type EinstellungTyp = "zahl" | "ganzzahl" | "text" | "schalter" | "auswahl";
 
@@ -109,10 +117,476 @@ export interface AnbieterProbe {
   dauer_ms: number;
 }
 
-// --- Seitenweise Listen -----------------------------------------------------
-export interface Seite<T> {
-  eintraege: T[];
+// --- Videos -------------------------------------------------------------------
+export interface OffenerAuftrag {
+  id: string;
+  art: string;
+  art_titel: string;
+  status: string;
+  fortschritt: number;
+  meldung: string;
+}
+
+export interface VideoEintrag {
+  id: string;
+  extern_id: string;
+  titel: string;
+  serie: string;
+  folge_nr: number | null;
+  veroeffentlicht: string | null;
+  dauer_s: number | null;
+  typ: string;
+  stufe: string;
+  stufe_titel: string;
+  ausgewaehlt: boolean;
+  auswahl_manuell: boolean;
+  fehler: string;
+  original_url: string;
+  miniatur_url: string | null;
+  hat_audio: boolean;
+  chunks_anzahl: number;
+  offener_auftrag: OffenerAuftrag | null;
+}
+
+export interface SerieEintrag {
+  serie: string;
+  anzahl: number;
+  ausgewaehlt: number;
+  min_folge: number | null;
+  max_folge: number | null;
+}
+
+export interface AudioInfo {
+  id: string;
+  pfad: string;
+  format: string;
+  dauer_s: number | null;
+  groesse_bytes: number | null;
+  abtastrate: number | null;
+  kanaele: number | null;
+  bezugsweg: string;
+  datei_vorhanden: boolean;
+  erstellt: string;
+}
+
+export interface TranskriptMeta {
+  id: string;
+  engine: string;
+  modell: string;
+  sprache: string;
+  zeichen: number;
+  segmente_anzahl: number;
+  dauer_verarbeitung_s: number | null;
+  erstellt: string;
+}
+
+export interface Thema {
+  titel: string;
+  start_s: number;
+  end_s: number;
+  kurz: string;
+}
+
+export interface KorrekturMeta {
+  id: string;
+  transkript_id: string | null;
+  engine: string;
+  anbieter: string;
+  modell: string;
+  absaetze_anzahl: number;
+  themen: Thema[];
+  zusammenfassung: string;
+  aehnlichkeit: number | null;
+  bloecke_gesamt: number;
+  bloecke_verworfen: number;
+  dauer_verarbeitung_s: number | null;
+  manuell_bearbeitet: boolean;
+  erstellt: string;
+}
+
+export interface AuftragKurz {
+  id: string;
+  art: string;
+  art_titel: string;
+  status: string;
+  fortschritt: number;
+  meldung: string;
+  fehler: string;
+  versuche: number;
+  gestartet: string | null;
+  beendet: string | null;
+  erstellt: string;
+}
+
+export interface VideoDetail extends VideoEintrag {
+  beschreibung: string;
+  aufrufe: number | null;
+  schlagworte: string[];
+  kanal_name: string;
+  quelle_id: string | null;
+  quelle_heruntergeladen: boolean;
+  prioritaet: number;
+  notizen: string;
+  metadaten_original: Record<string, unknown>;
+  audio: AudioInfo | null;
+  transkript: TranskriptMeta | null;
+  korrektur: KorrekturMeta | null;
+  auftraege: AuftragKurz[];
+  erstellt: string;
+  aktualisiert: string;
+}
+
+export interface AuswahlregelAusgabe {
+  mindest_dauer_s: number;
+  typen: string[];
+  nur_heruntergeladene: boolean;
+}
+
+export interface AuswahlRegelErgebnis {
+  regel: AuswahlregelAusgabe;
+  geprueft: number;
+  aufgenommen: number;
+  entfernt: number;
+  unveraendert: number;
+  auftraege_angelegt: number;
+  auftraege_abgebrochen: number;
+}
+
+export interface AuswahlStapelErgebnis {
+  angefragt: number;
+  geaendert: number;
+  unveraendert: number;
+  nicht_gefunden: number;
+  auftraege_angelegt: number;
+  auftraege_abgebrochen: number;
+}
+
+export interface ZuruecksetzErgebnis {
+  video_id: string;
+  stufe_vorher: string;
+  stufe_nachher: string;
+  geloescht: Record<string, number>;
+  auftraege_abgebrochen: number;
+  folgeauftrag_id: string | null;
+}
+
+// --- Transkript / Korrektur -------------------------------------------------
+export interface Wort {
+  wort: string;
+  start_s: number;
+  end_s: number;
+}
+
+export interface Segment {
+  index: number;
+  start_s: number;
+  end_s: number;
+  text: string;
+  woerter: Wort[];
+}
+
+export interface Transkript {
+  id: string;
+  video_id: string;
+  engine: string;
+  modell: string;
+  sprache: string;
+  zeichen: number;
+  segmente_anzahl: number;
+  dauer_verarbeitung_s: number | null;
+  aktuell: boolean;
+  erstellt: string;
+  volltext: string;
+  segmente: Segment[];
+}
+
+export interface Absatz {
+  start_s: number;
+  end_s: number;
+  text: string;
+  block: number;
+  verworfen: boolean;
+}
+
+export interface Korrektur {
+  id: string;
+  video_id: string;
+  transkript_id: string | null;
+  engine: string;
+  anbieter: string;
+  modell: string;
+  absaetze: Absatz[];
+  themen: Thema[];
+  zusammenfassung: string;
+  aehnlichkeit: number | null;
+  bloecke_gesamt: number;
+  bloecke_verworfen: number;
+  dauer_verarbeitung_s: number | null;
+  manuell_bearbeitet: boolean;
+  aktuell: boolean;
+  erstellt: string;
+}
+
+export interface BlockVergleich {
+  index: number;
+  start_s: number;
+  end_s: number;
+  roh: string;
+  korrigiert: string;
+  absaetze: Absatz[];
+  aehnlichkeit: number | null;
+  verworfen: boolean;
+  grund: string;
+  vorschlag: string;
+}
+
+export interface Vergleich {
+  korrektur_id: string;
+  video_id: string;
+  bloecke: BlockVergleich[];
   gesamt: number;
-  seite: number;
-  je_seite: number;
+}
+
+// --- Chunks -------------------------------------------------------------------
+export interface ChunkEintrag {
+  id: string;
+  video_id: string;
+  video_titel: string;
+  serie: string;
+  folge_nr: number | null;
+  original_url: string;
+  miniatur_url: string | null;
+  reihenfolge: number;
+  anzahl_im_video: number;
+  text: string;
+  start_s: number;
+  end_s: number;
+  zeichen: number;
+  thema: string;
+  ueberlappung_vor: number;
+  ueberlappung_nach: number;
+  manuell_bearbeitet: boolean;
+  einbettungen: string[];
+  erstellt: string;
+  aktualisiert: string;
+}
+
+export interface Nachbar {
+  id: string;
+  reihenfolge: number;
+  start_s: number;
+  end_s: number;
+  text: string;
+}
+
+export interface EinbettungInfo {
+  modell: string;
+  anbieter: string;
+  dimension: number;
+  erstellt: string;
+}
+
+export interface ChunkDetail extends ChunkEintrag {
+  vorheriger: Nachbar | null;
+  naechster: Nachbar | null;
+  einbettung_details: EinbettungInfo[];
+  korrektur_id: string | null;
+}
+
+// --- Aufträge -----------------------------------------------------------------
+export interface AuftragEintrag {
+  id: string;
+  art: string;
+  art_titel: string;
+  video_id: string | null;
+  video_titel: string;
+  video_serie: string;
+  video_folge_nr: number | null;
+  status: string;
+  prioritaet: number;
+  versuche: number;
+  fortschritt: number;
+  meldung: string;
+  fehler: string;
+  gestartet: string | null;
+  beendet: string | null;
+  herzschlag: string | null;
+  erstellt: string;
+  laufzeit_s: number | null;
+}
+
+export interface AuftragDetail extends AuftragEintrag {
+  parameter: Record<string, unknown>;
+  ergebnis: Record<string, unknown>;
+  protokoll_anzahl: number;
+}
+
+export interface ProtokollZeile {
+  id: number;
+  zeit: string;
+  stufe: string;
+  text: string;
+}
+
+export interface ProtokollSeite {
+  eintraege: ProtokollZeile[];
+  gesamt: number;
+  ab: number;
+  anzahl: number;
+}
+
+export interface ArtUebersicht {
+  art: string;
+  titel: string;
+  wartend: number;
+  laufend: number;
+  fertig: number;
+  fehler: number;
+  abgebrochen: number;
+  pausiert: boolean;
+  pausierbar: boolean;
+  parallel: number;
+  durchsatz_fenster: number;
+  mittlere_dauer_s: number | null;
+  restzeit_s: number | null;
+}
+
+export interface BandUebersicht {
+  arten: ArtUebersicht[];
+  automatik: boolean;
+  laeufer_aktiv: boolean;
+  durchsatz_fenster_s: number;
+  wartend_gesamt: number;
+  laufend_gesamt: number;
+  fehler_gesamt: number;
+}
+
+// --- Chat ---------------------------------------------------------------------
+export interface Suchparameter {
+  treffer: number;
+  nachbarn: number;
+  max_je_video: number;
+  mindest_aehnlichkeit: number;
+  neubewertung: string;
+  kandidaten_faktor: number;
+  serie: string;
+  von: string | null;
+  bis: string | null;
+  video_ids: string[];
+}
+
+export interface Stelle {
+  chunk_id: string;
+  video_id: string;
+  titel: string;
+  serie: string;
+  folge_nr: number | null;
+  start_s: number;
+  end_s: number;
+  text: string;
+  wert: number;
+  reihenfolge: number;
+  thema: string;
+  original_url: string;
+  miniatur: string;
+  ueberlappung_vor: number;
+  bewertung: number | null;
+  benutzt?: boolean;
+}
+
+export interface Unterhaltung {
+  id: string;
+  titel: string;
+  suchparameter: Partial<Suchparameter>;
+  nachrichten: number;
+  letzte: string | null;
+  erstellt: string;
+  aktualisiert: string;
+}
+
+export interface Nachricht {
+  id: string;
+  rolle: "nutzer" | "assistent";
+  inhalt: string;
+  stellen: Stelle[];
+  parameter: Record<string, unknown>;
+  modell: string;
+  dauer_ms: number | null;
+  tokens_ein: number | null;
+  tokens_aus: number | null;
+  fehler: string;
+  erstellt: string;
+  // nur im Browser während des Streamens
+  streamt?: boolean;
+}
+
+export interface UnterhaltungDetail extends Unterhaltung {
+  verlauf: Nachricht[];
+}
+
+export interface SucheAusgabe {
+  stellen: Stelle[];
+  hinweise: string[];
+  einbettungsmodell: string;
+  neubewertung: string;
+  parameter: Suchparameter;
+}
+
+// --- Quellen ----------------------------------------------------------------
+export interface Quelle {
+  id: string;
+  typ: string;
+  typ_titel: string;
+  name: string;
+  basis_url: string;
+  kanal_id: string;
+  kanal_name: string;
+  kanal_beschreibung: string;
+  regeln: Record<string, unknown>;
+  aktiv: boolean;
+  zuletzt_abgeglichen: string | null;
+  erstellt: string;
+  videos: number;
+  videos_ausgewaehlt: number;
+}
+
+export interface KanalAusgabe {
+  kanal_id: string;
+  name: string;
+  beschreibung: string;
+  videos_gesamt: number | null;
+  videos_heruntergeladen: number | null;
+}
+
+export interface VorschauEintrag {
+  extern_id: string;
+  titel: string;
+  veroeffentlicht: string | null;
+  dauer_s: number | null;
+  typ: string;
+  heruntergeladen: boolean;
+  wuerde_aufgenommen: boolean;
+  bekannt: boolean;
+}
+
+// --- Export -------------------------------------------------------------------
+export interface ExportStatus {
+  laeuft: boolean;
+  gestartet: string | null;
+  mit_transkripten: boolean;
+  fortschritt: number;
+  meldung: string;
+  letzte_datei: string | null;
+  fehler: string;
+}
+
+export interface PaketInfo {
+  name: string;
+  groesse_bytes: number;
+  erstellt: string;
+}
+
+export interface AuftragAusgabe {
+  auftrag_id: string | null;
+  hinweis: string;
 }
