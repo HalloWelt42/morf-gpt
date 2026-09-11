@@ -24,6 +24,8 @@ SYSTEM_PROMPT = (
     "- Antworte auf Deutsch in lateinischer Schrift, sachlich und direkt an die fragende Person. Kein Gerede über dich, "
     "die Stellen oder deine Arbeitsweise; keine Einleitung wie 'Laut den Stellen'.\n"
     "- Keine Quellenliste und keine Zusammenfassung der Belege am Ende; die Belege stehen nur im Text.\n"
+    "- Jede Nachricht der fragenden Person ist eine neue Frage mit eigenen Stellen. Beantworte immer nur die zuletzt "
+    "gestellte Frage; wiederhole keine frühere Antwort.\n"
     '- Verwende nur gerade Anführungszeichen (") und den einfachen Bindestrich (-), keine Gedankenstriche.'
 )
 
@@ -38,10 +40,14 @@ SYSTEM_WERKZEUGWAHL = (
     "2. Erst wenn alle nötigen Ergebnisse vorliegen (oder kein Werkzeug helfen kann), antworte.\n"
     "Für die Antwort gilt: nur aus den nummerierten Stellen (Videos, Dokumente und Werkzeugergebnisse), jede Aussage mit "
     "[n] belegt, auf Deutsch in lateinischer Schrift, sachlich, ohne Quellenliste am Ende, nur gerade "
-    "Anführungszeichen und der einfache Bindestrich."
+    "Anführungszeichen und der einfache Bindestrich. Beantworte immer nur die zuletzt gestellte Frage; wiederhole keine "
+    "frühere Antwort."
 )
 
 FRAGE_PRAEFIX = "Frage: "
+# Die Frage steht vor und nach den Stellen: mit Verlauf neigt das Modell sonst dazu, seine vorige
+# Antwort zu wiederholen, wenn die neue Nachricht nur mit einer Stellenliste beginnt (am 80B belegt).
+ANTWORT_AUFFORDERUNG = "Beantworte jetzt die Frage: "
 STELLEN_UEBERSCHRIFT = "Stellen:"
 ZUSAMMENFASSUNG_PRAEFIX = "Zusammenfassung des Videos: "
 KEINE_STELLEN_HINWEIS = "(Es wurden keine passenden Stellen gefunden. Sage das kurz und beantworte nichts aus eigenem Wissen.)"
@@ -115,7 +121,9 @@ def kontextblock(stellen: Sequence[Treffer], zusammenfassungen: Mapping[str, str
 
 
 def nutzernachricht(frage: str, stellen: Sequence[Treffer], zusammenfassungen: Mapping[str, str] | None = None) -> str:
-    return f"{kontextblock(stellen, zusammenfassungen)}\n\n{FRAGE_PRAEFIX}{frage.strip()}"
+    """Frage, dann die Stellen, dann die Frage noch einmal als Aufforderung (siehe ANTWORT_AUFFORDERUNG)."""
+    f = frage.strip()
+    return f"{FRAGE_PRAEFIX}{f}\n\n{kontextblock(stellen, zusammenfassungen)}\n\n{ANTWORT_AUFFORDERUNG}{f}"
 
 
 def baue_nachrichten(

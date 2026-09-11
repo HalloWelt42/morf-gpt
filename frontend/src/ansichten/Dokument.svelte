@@ -47,7 +47,8 @@
     }
     await tick();
     const nr = Number(abschnitt);
-    if (abschnitt && Number.isFinite(nr)) springe(nr);
+    // Erst nach dem Aufbau der Leseansicht springen; sonst greift der Sprung ins Leere.
+    if (abschnitt && Number.isFinite(nr)) window.setTimeout(() => springe(nr), 80);
   }
 
   function springe(nr: number): void {

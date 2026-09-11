@@ -100,18 +100,27 @@ def absaetze_verbinden(absaetze: list[str]) -> str:
 
 
 def abschnitte_bereinigen(abschnitte: list[Abschnitt]) -> list[Abschnitt]:
-    """Text glätten, Reste entfernen. Ein Titel ohne Text bleibt nur, wenn Unterabschnitte folgen."""
-    aus: list[Abschnitt] = []
-    for i, a in enumerate(abschnitte):
+    """Text glätten, Reste entfernen. Ein Titel ohne Text bleibt nur, wenn Unterabschnitte folgen.
+
+    Läuft, bis nichts mehr wegfällt: fällt eine kurze Unterzeile weg, verliert die Überschrift
+    davor ihren Grund zu bleiben (Titelseiten mit Untertitel).
+    """
+    for a in abschnitte:
         a.text = text_bereinigen(a.text)
         a.titel = " ".join(a.titel.split())
-        if a.zeichen >= MINDEST_ZEICHEN_ABSCHNITT:
-            aus.append(a)
-            continue
-        folgt_tieferer = i + 1 < len(abschnitte) and abschnitte[i + 1].ebene > a.ebene
-        if a.titel and folgt_tieferer:
-            aus.append(a)
-    return aus
+    aktuell = list(abschnitte)
+    while True:
+        aus: list[Abschnitt] = []
+        for i, a in enumerate(aktuell):
+            if a.zeichen >= MINDEST_ZEICHEN_ABSCHNITT:
+                aus.append(a)
+                continue
+            folgt_tieferer = i + 1 < len(aktuell) and aktuell[i + 1].ebene > a.ebene
+            if a.titel and folgt_tieferer:
+                aus.append(a)
+        if len(aus) == len(aktuell):
+            return aus
+        aktuell = aus
 
 
 def titel_aus_text(text: str, vorgabe: str, hoechstens: int = 80) -> str:

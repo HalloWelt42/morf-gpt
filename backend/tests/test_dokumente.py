@@ -204,3 +204,16 @@ def test_stellenkopf_dokument() -> None:
     assert prompts.stellenkopf(3, t) == "[3] Dokument Buch (Kapitel Kap)"
     t.seite_von = 12
     assert "Seite 12" in prompts.stellenkopf(1, t)
+
+
+def test_bereinigen_titelseite_mit_kurzer_unterzeile_faellt_weg() -> None:
+    roh = [
+        basis.Abschnitt("Das Buch", 1, ""),
+        basis.Abschnitt("Untertitel kurz", 2, "zu kurz"),
+        basis.Abschnitt("Kapitel eins", 1, "Genug Text für einen richtigen Abschnitt im Buch."),
+        basis.Abschnitt("Teil", 1, ""),
+        basis.Abschnitt("Unterkapitel", 2, "Auch hier steht genug Text, damit der Abschnitt bleibt."),
+    ]
+    titel = [a.titel for a in basis.abschnitte_bereinigen(roh)]
+    assert titel == ["Kapitel eins", "Teil", "Unterkapitel"]
+
