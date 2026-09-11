@@ -41,6 +41,20 @@ CROSSENCODER_MODELL_VORGABE = "BAAI/bge-reranker-base"
 CROSSENCODER_ZEITGRENZE_S_VORGABE = 120.0
 SPRACHMODELL_ZEICHEN_JE_KANDIDAT_VORGABE = 1200
 
+BEWERTUNG_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "bewertungen": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {"nr": {"type": "integer"}, "wert": {"type": "number"}},
+                "required": ["nr", "wert"],
+            },
+        }
+    },
+    "required": ["bewertungen"],
+}
 BEWERTUNG_MIN = 0.0
 BEWERTUNG_MAX = 10.0
 
@@ -230,7 +244,7 @@ class SprachmodellNeubewertung:
             temperatur=0.0,
             max_tokens=40 * len(texte) + 200,  # je Eintrag etwa ein Dutzend Tokens, plus Rahmen
             zeitgrenze_s=self._zeitgrenze_s,
-            json_modus=True,
+            json_schema=BEWERTUNG_SCHEMA,
         )
         try:
             antwort = await self._anbieter.antworte(nachrichten, parameter)

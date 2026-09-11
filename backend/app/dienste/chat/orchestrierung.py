@@ -22,35 +22,12 @@ from ..anbieter.basis import AnbieterFehler, Antwortparameter
 from ..einstellungen import dienst as einstellungen_dienst
 from ..suche.retrieval import Suche, Suchergebnis, Suchparameter
 from ..suche.retrieval import suche as standard_suche
+from ..text import gerade
 from . import prompts
 
 log = logging.getLogger(__name__)
 
 TITEL_ZEICHEN = 60
-
-_ERSATZ: dict[str, str] = {
-    "—": "-",  # Geviertstrich
-    "–": "-",  # Halbgeviertstrich
-    "‒": "-",
-    "‑": "-",
-    "“": '"',
-    "”": '"',
-    "„": '"',
-    "‟": '"',
-    "«": '"',
-    "»": '"',
-    "‘": "'",
-    "’": "'",
-    "‚": "'",
-    "…": "...",
-}
-
-
-def gerade(text: str) -> str:
-    """Typografische Sonderzeichen auf gerade Zeichen zurückführen."""
-    for alt, neu in _ERSATZ.items():
-        text = text.replace(alt, neu)
-    return text
 
 
 def titel_aus_frage(frage: str) -> str:

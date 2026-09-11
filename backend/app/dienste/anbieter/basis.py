@@ -29,6 +29,8 @@ class Antwortparameter:
     max_tokens: int = 4000
     zeitgrenze_s: float = 1800.0
     json_modus: bool = False
+    # Strukturierte Ausgabe nach Schema (OpenAI 'json_schema'); hat Vorrang vor json_modus.
+    json_schema: dict[str, Any] | None = None
     stopp: list[str] = field(default_factory=list)
 
 

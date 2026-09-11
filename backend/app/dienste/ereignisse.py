@@ -32,7 +32,8 @@ class Bus:
         self._abonnenten: set[asyncio.Queue[Ereignis]] = set()
         self._letzte: list[Ereignis] = []
 
-    def veroeffentliche(self, art: str, **daten: Any) -> None:
+    def veroeffentliche(self, art: str, /, **daten: Any) -> None:
+        """Ereignis an alle Abonnenten. `art` ist nur positional, damit Nutzdaten ein Feld `art` tragen dürfen."""
         e = Ereignis(art, daten)
         self._letzte.append(e)
         if len(self._letzte) > 200:

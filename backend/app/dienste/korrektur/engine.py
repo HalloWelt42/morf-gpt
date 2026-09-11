@@ -16,6 +16,7 @@ from math import ceil
 from typing import Any
 
 from ..anbieter.basis import AnbieterFehler, Antwortparameter, SprachmodellAnbieter
+from ..text import gerade
 from . import bloecke as blockmodul
 from . import prompts, waechter
 
@@ -29,6 +30,28 @@ Protokollant = Callable[[str, str], Awaitable[None]]
 ZEICHEN_JE_TOKEN: float = 2.5
 TOKEN_RESERVE: int = 300
 THEMEN_MAX_TOKENS: int = 4000
+
+# Schema der Themenantwort (strukturierte Ausgabe, damit das Modell kein Beiwerk liefert).
+THEMEN_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "themen": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "titel": {"type": "string"},
+                    "start_s": {"type": "number"},
+                    "end_s": {"type": "number"},
+                    "kurz": {"type": "string"},
+                },
+                "required": ["titel", "start_s", "end_s", "kurz"],
+            },
+        },
+        "zusammenfassung": {"type": "string"},
+    },
+    "required": ["themen", "zusammenfassung"],
+}
 
 
 @dataclass(slots=True)
@@ -248,8 +271,8 @@ async def korrigiere(
             prompts.korrektur_nachrichten(block.text),
             Antwortparameter(temperatur=p.temperatur, max_tokens=max_tokens_fuer(block.zeichen), zeitgrenze_s=p.zeitgrenze_s),
         )
-        pruefung = waechter.pruefe_block(block.text, antwort.text, p.mindest_aehnlichkeit)
-        vorschlag = waechter.bereinige_antwort(antwort.text) if pruefung.verworfen else ""
+        pruefung = waechter.pruefe_block(block.text, gerade(antwort.text), p.mindest_aehnlichkeit)
+        vorschlag = waechter.bereinige_antwort(gerade(antwort.text)) if pruefung.verworfen else ""
         ergebnis.bloecke.append(
             Blockergebnis(
                 index=block.index,
@@ -273,10 +296,12 @@ async def korrigiere(
         try:
             antwort = await anbieter.antworte(
                 prompts.themen_nachrichten(ergebnis.absaetze, video_titel),
-                Antwortparameter(temperatur=p.temperatur, max_tokens=THEMEN_MAX_TOKENS, zeitgrenze_s=p.zeitgrenze_s, json_modus=True),
+                Antwortparameter(
+                    temperatur=p.temperatur, max_tokens=THEMEN_MAX_TOKENS, zeitgrenze_s=p.zeitgrenze_s, json_schema=THEMEN_SCHEMA
+                ),
             )
             ergebnis.themen, ergebnis.zusammenfassung = themen_aus_antwort(
-                antwort.text, ergebnis.absaetze[0].start_s, ergebnis.absaetze[-1].end_s
+                gerade(antwort.text), ergebnis.absaetze[0].start_s, ergebnis.absaetze[-1].end_s
             )
             await schreibe(f"{len(ergebnis.themen)} Themen, Zusammenfassung mit {len(ergebnis.zusammenfassung)} Zeichen", "info")
         except (AnbieterFehler, ValueError) as e:

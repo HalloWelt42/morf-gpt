@@ -62,7 +62,15 @@ class OpenAiKompatibel:
             "max_tokens": p.max_tokens,
             "stream": stream,
         }
-        if p.json_modus:
+        if stream:
+            nutzlast["stream_options"] = {"include_usage": True}
+        if p.json_schema is not None:
+            # LM Studio kennt nur json_schema/text, OpenAI-kompatible Dienste meist beides.
+            nutzlast["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {"name": "antwort", "strict": True, "schema": p.json_schema},
+            }
+        elif p.json_modus:
             nutzlast["response_format"] = {"type": "json_object"}
         if p.stopp:
             nutzlast["stop"] = p.stopp
