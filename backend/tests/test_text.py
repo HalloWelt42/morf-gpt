@@ -4,7 +4,7 @@ from app.dienste.text import bereinige, gerade, nur_lateinisch
 
 
 def test_gerade_ersetzt_typografische_zeichen() -> None:
-    assert gerade("Cashflow – staatlich „so“ … ‚ja‘") == 'Cashflow - staatlich "so" ... \'ja\''
+    assert gerade("Cashflow – staatlich „so“ … ‚ja‘") == "Cashflow - staatlich \"so\" ... 'ja'"
 
 
 def test_umlaute_bleiben() -> None:

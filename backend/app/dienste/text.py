@@ -43,21 +43,21 @@ def gerade(text: str) -> str:
 # ein ("weil er认为 in ..."). Griechisch und Mathematik bleiben erlaubt.
 _FREMDE_SCHRIFT = re.compile(
     "["
-    "\u0400-\u052F"  # Kyrillisch
-    "\u0590-\u06FF"  # Hebräisch, Arabisch
-    "\u0900-\u0DFF"  # indische Schriften
-    "\u0E00-\u0E7F"  # Thai
-    "\u1100-\u11FF"  # Hangul-Jamo
-    "\u2E80-\u2FDF"  # CJK-Radikale
-    "\u3000-\u30FF"  # CJK-Zeichensetzung, Hiragana, Katakana
-    "\u3100-\u31FF"  # Bopomofo, Hangul-Kompatibilität
-    "\u3400-\u4DBF"  # CJK-Erweiterung A
-    "\u4E00-\u9FFF"  # CJK-Ideogramme
-    "\uA960-\uA97F"  # Hangul-Jamo Erweiterung
-    "\uAC00-\uD7FF"  # Hangul-Silben
-    "\uF900-\uFAFF"  # CJK-Kompatibilität
-    "\uFF00-\uFFEF"  # Vollbreite Formen
-    "\U00020000-\U0003134F"  # CJK-Erweiterungen B bis G
+    "\u0400-\u052f"  # Kyrillisch
+    "\u0590-\u06ff"  # Hebräisch, Arabisch
+    "\u0900-\u0dff"  # indische Schriften
+    "\u0e00-\u0e7f"  # Thai
+    "\u1100-\u11ff"  # Hangul-Jamo
+    "\u2e80-\u2fdf"  # CJK-Radikale
+    "\u3000-\u30ff"  # CJK-Zeichensetzung, Hiragana, Katakana
+    "\u3100-\u31ff"  # Bopomofo, Hangul-Kompatibilität
+    "\u3400-\u4dbf"  # CJK-Erweiterung A
+    "\u4e00-\u9fff"  # CJK-Ideogramme
+    "\ua960-\ua97f"  # Hangul-Jamo Erweiterung
+    "\uac00-\ud7ff"  # Hangul-Silben
+    "\uf900-\ufaff"  # CJK-Kompatibilität
+    "\uff00-\uffef"  # Vollbreite Formen
+    "\U00020000-\U0003134f"  # CJK-Erweiterungen B bis G
     "]+"
 )
 _DOPPELTE_LEERZEICHEN = re.compile(r"[ \t]{2,}")

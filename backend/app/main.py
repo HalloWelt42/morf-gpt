@@ -35,6 +35,7 @@ from .routers import (
     system,
     transkripte,
     videos,
+    werkzeuge,
 )
 from .routers import (
     einstellungen as einstellungen_router,
@@ -93,6 +94,7 @@ for r in (
     chat,
     export,
     ereignisse,
+    werkzeuge,
 ):
     app.include_router(r.router, prefix="/api")
 

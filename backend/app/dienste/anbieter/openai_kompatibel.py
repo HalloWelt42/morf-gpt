@@ -20,6 +20,7 @@ from .basis import (
     Antwortparameter,
     Delta,
     Nachricht,
+    Werkzeugaufruf,
 )
 
 
@@ -37,6 +38,31 @@ def _fehlertext(resp: httpx.Response) -> str:
     except ValueError:
         pass
     return resp.text[:400] or f"HTTP {resp.status_code}"
+
+
+def _werkzeugaufrufe_lesen(roh: Any) -> list[Werkzeugaufruf]:
+    """tool_calls der OpenAI-Antwort in Werkzeugaufrufe wandeln; kaputte Argumente werden leer."""
+    aus: list[Werkzeugaufruf] = []
+    for i, tc in enumerate(roh or []):
+        if not isinstance(tc, dict):
+            continue
+        fn = tc.get("function") or {}
+        name = str(fn.get("name") or "").strip()
+        if not name:
+            continue
+        argumente_roh = fn.get("arguments")
+        argumente: dict[str, Any] = {}
+        if isinstance(argumente_roh, dict):
+            argumente = argumente_roh
+        elif isinstance(argumente_roh, str) and argumente_roh.strip():
+            try:
+                geparst = json.loads(argumente_roh)
+                if isinstance(geparst, dict):
+                    argumente = geparst
+            except ValueError:
+                argumente = {}
+        aus.append(Werkzeugaufruf(id=str(tc.get("id") or f"aufruf_{i}"), name=name, argumente=argumente))
+    return aus
 
 
 class OpenAiKompatibel:
@@ -74,6 +100,9 @@ class OpenAiKompatibel:
             nutzlast["response_format"] = {"type": "json_object"}
         if p.stopp:
             nutzlast["stop"] = p.stopp
+        if p.werkzeuge:
+            nutzlast["tools"] = p.werkzeuge
+            nutzlast["tool_choice"] = "auto"
         nutzlast.update(self._zusatz)
         return nutzlast
 
@@ -91,7 +120,8 @@ class OpenAiKompatibel:
             raise AnbieterFehler(f"{self.info.name}: {_fehlertext(resp)}")
         daten = resp.json()
         try:
-            text = daten["choices"][0]["message"]["content"] or ""
+            nachricht = daten["choices"][0]["message"]
+            text = nachricht.get("content") or ""
         except (KeyError, IndexError, TypeError) as e:
             raise AnbieterFehler(f"{self.info.name}: unerwartete Antwort") from e
         nutzung = daten.get("usage") or {}
@@ -101,6 +131,7 @@ class OpenAiKompatibel:
             tokens_ein=nutzung.get("prompt_tokens"),
             tokens_aus=nutzung.get("completion_tokens"),
             roh=daten,
+            werkzeugaufrufe=_werkzeugaufrufe_lesen(nachricht.get("tool_calls")),
         )
 
     async def streame(self, nachrichten: list[Nachricht], parameter: Antwortparameter) -> AsyncIterator[Delta]:

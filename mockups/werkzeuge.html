@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="de" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>morf-gpt - Werkzeuge</title>
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/400.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/500.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/600.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fontsource/barlow/700.css" />
+    <link rel="stylesheet" href="/frontend/node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
+    <link rel="stylesheet" href="/mockups/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/src/app.css" />
+    <link rel="stylesheet" href="/mockups/mockup.css" />
+    <script defer src="/frontend/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="/mockups/mockup.js"></script>
+  </head>
+  <body>
+    <div class="m-app">
+      <header class="m-kopf">
+        <a class="m-marke" href="/mockups/index.html"><span class="m-logo">m</span> morf-gpt</a>
+        <nav class="m-nav">
+          <a href="chat.html"><i class="fa-solid fa-comments"></i> Chat</a>
+          <a href="bibliothek.html"><i class="fa-solid fa-film"></i> Bibliothek <span class="zaehler">664</span></a>
+          <a href="stellen.html"><i class="fa-solid fa-align-left"></i> Textstellen <span class="zaehler">33.812</span></a>
+          <a href="fliessband.html"><i class="fa-solid fa-diagram-next"></i> Fließband <span class="zaehler">3</span></a>
+          <a class="aktiv" href="einstellungen.html"><i class="fa-solid fa-sliders"></i> Einstellungen</a>
+        </nav>
+        <div class="m-kopf-rechts">
+          <span title="Auftragsläufer aktiv"><span class="m-status-punkt"></span>Läufer aktiv</span>
+          <button class="m-kopf-knopf" data-thema title="Helles oder dunkles Thema"><i class="fa-solid fa-circle-half-stroke"></i></button>
+          <button class="m-kopf-knopf" data-hilfe title="Hilfe öffnen"><i class="fa-solid fa-circle-question"></i> Hilfe</button>
+          <span class="version">v0.1.0</span>
+        </div>
+      </header>
+
+      <main class="m-inhalt">
+        <aside class="m-seite links">
+          <div class="m-seite-kopf"><i class="fa-solid fa-sliders"></i> Einstellungen <button class="m-info ms-auto" title="Hilfe zu den Einstellungen">i</button></div>
+          <div class="m-seite-koerper p-0">
+            <div class="list-group list-group-flush">
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Quelle und Auswahl</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Fließband</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Audio</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Transkription</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Korrektur</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Stückelung</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Einbettung</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Suche</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Chat</a>
+              <a class="list-group-item list-group-item-action" href="einstellungen.html">Werkzeuge</a>
+              <div class="list-group-item bg-body-tertiary small text-uppercase text-secondary fw-semibold py-1">Verwaltung</div>
+              <a class="list-group-item list-group-item-action" href="anbieter.html"><i class="fa-solid fa-microchip me-2"></i>Anbieter</a>
+              <a class="list-group-item list-group-item-action active" href="werkzeuge.html"><i class="fa-solid fa-plug me-2"></i>Werkzeuge</a>
+              <a class="list-group-item list-group-item-action" href="quellen.html"><i class="fa-solid fa-satellite-dish me-2"></i>Quellen</a>
+              <a class="list-group-item list-group-item-action" href="umzug.html"><i class="fa-solid fa-truck-ramp-box me-2"></i>Umzug</a>
+            </div>
+          </div>
+        </aside>
+
+        <section class="m-ansicht">
+          <div class="m-ansicht-kopf">
+            <h1>Werkzeuge</h1>
+            <span class="m-unter">Fremde Dienste, die der Chat neben der Bibliothek befragen kann</span>
+            <button class="m-info" title="Hilfe zu Werkzeugen">i</button>
+            <span class="m-luecke"></span>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown"><i class="fa-solid fa-plus"></i> Neues Werkzeug</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><button class="dropdown-item">MCP-Server</button></li>
+                <li><button class="dropdown-item">HTTP-Dienst mit JSON-Antwort</button></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><button class="dropdown-item">Leer</button></li>
+              </ul>
+            </div>
+          </div>
+          <div class="m-ansicht-koerper">
+            <!-- MCP-Server mit entdeckten Werkzeugen -->
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-start gap-3 flex-wrap">
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="m-status-punkt"></span>
+                      <span class="fs-5 fw-semibold">Recherche</span>
+                      <span class="badge text-bg-secondary">MCP-Server</span>
+                      <span class="badge text-bg-success">im Chat vorausgewählt</span>
+                    </div>
+                    <div class="text-secondary mt-1">Eigener Recherche-Server: Websuche, Wikipedia, Wetter, Zeit</div>
+                    <div class="small text-secondary mt-1">http://127.0.0.1:8000/mcp/ &middot; Streamable HTTP</div>
+                    <div class="small mt-1 text-success"><i class="fa-solid fa-circle-check"></i> recherche 1.4.0: 17 Werkzeuge <span class="text-secondary">(geprüft vor 5 Minuten)</span></div>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-vial"></i> Probe</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                    <button class="btn btn-sm btn-outline-secondary">Nicht vorauswählen</button>
+                    <button class="btn btn-sm btn-outline-secondary">Deaktivieren</button>
+                    <button class="btn btn-sm btn-outline-danger" title="Löschen"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+                </div>
+                <div class="mt-3">
+                  <div class="small text-uppercase text-secondary fw-semibold mb-1">Entdeckte Werkzeuge (5 von 17 freigeschaltet) <button class="m-info" title="Hilfe zu Werkzeugen">i</button></div>
+                  <div class="row g-2">
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e1" checked /><label class="form-check-label" for="e1"><b>get_weather</b> <span class="text-secondary small">Aktuelles Wetter für einen Ort aus dem lokalen Wetterdienst</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e2" checked /><label class="form-check-label" for="e2"><b>get_current_time</b> <span class="text-secondary small">Datum, Wochentag, Uhrzeit und Kalenderwoche</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e3" checked /><label class="form-check-label" for="e3"><b>web_search</b> <span class="text-secondary small">Sucht im Web und liefert eine nummerierte Trefferliste</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e4" checked /><label class="form-check-label" for="e4"><b>wikipedia_lookup</b> <span class="text-secondary small">Kurzfassung des besten Wikipedia-Artikels zu einem Begriff</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e5" checked /><label class="form-check-label" for="e5"><b>solve_math_problem</b> <span class="text-secondary small">Löst mathematische Aufgaben exakt und symbolisch</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e6" /><label class="form-check-label" for="e6"><b>retrieve_knowledge</b> <span class="text-secondary small">Durchsucht die eingelesene Wissensdatenbank</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e7" /><label class="form-check-label" for="e7"><b>web_research</b> <span class="text-secondary small">Recherche mit Inhalt: liest die relevantesten Seiten</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e8" /><label class="form-check-label" for="e8"><b>deep_research</b> <span class="text-secondary small">Tiefenrecherche in mehreren Runden</span></label></div></div>
+                    <div class="col-md-6 col-xl-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="e9" /><label class="form-check-label" for="e9"><b>image_search</b> <span class="text-secondary small">Sucht Bilder zum Thema</span></label></div></div>
+                  </div>
+                </div>
+                <div class="mt-3 p-3 bg-body-tertiary">
+                  <div class="row g-2 align-items-end">
+                    <div class="col-md-4"><label class="form-label small mb-1">Werkzeug</label><select class="form-select form-select-sm"><option>Recherche: get_weather</option><option>Recherche: get_current_time</option></select></div>
+                    <div class="col-md-6"><label class="form-label small mb-1">Frage für die Probe</label><input class="form-control form-control-sm" value="Wie ist das Wetter heute in Leipzig?" /></div>
+                    <div class="col-md-2"><button class="btn btn-sm btn-primary w-100">Probe senden</button></div>
+                  </div>
+                  <div class="mt-2 small text-secondary">Argumente (modell): <code>{"ort": "Leipzig"}</code> &middot; 16394 Millisekunden &middot; 1 Fundstücke</div>
+                  <pre class="mt-2 mb-0" style="white-space: pre-wrap; font-family: inherit">Wetter in Leipzig: 20,0 °C (gefühlt 19,0 °C), Bedeckt. Luftfeuchte 40 %, Wind 7,0 km/h aus West.</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- HTTP-Dienst im Bearbeiten-Zustand -->
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex align-items-start gap-3 flex-wrap">
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="m-status-punkt aus"></span>
+                      <span class="fs-5 fw-semibold">Suchdienst</span>
+                      <span class="badge text-bg-secondary">HTTP-Dienst (JSON)</span>
+                    </div>
+                    <div class="text-secondary mt-1">Sucht im Netz und liefert Treffer mit Text und Adresse</div>
+                    <div class="small text-secondary mt-1">https://dienst.example/suche?q={frage} &middot; GET</div>
+                    <div class="small mt-1 text-danger"><i class="fa-solid fa-circle-xmark"></i> Suchdienst: nicht erreichbar (ConnectError) <span class="text-secondary">(geprüft vor 2 Minuten)</span></div>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-stethoscope"></i> Prüfen</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-vial"></i> Probe</button>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-pen"></i> Bearbeiten</button>
+                    <button class="btn btn-sm btn-outline-secondary">Im Chat vorauswählen</button>
+                    <button class="btn btn-sm btn-outline-secondary">Deaktivieren</button>
+                    <button class="btn btn-sm btn-outline-danger" title="Löschen"><i class="fa-solid fa-trash"></i></button>
+                  </div>
+                </div>
+                <hr />
+                <div class="row g-3">
+                  <div class="col-md-4"><label class="form-label">Name</label><input class="form-control" value="Suchdienst" /></div>
+                  <div class="col-md-3"><label class="form-label">Typ</label><select class="form-select" disabled><option>HTTP-Dienst (JSON)</option></select></div>
+                  <div class="col-md-5"><label class="form-label">Beschreibung für das Modell <button class="m-info" title="Hilfe zu Werkzeugen">i</button></label><input class="form-control" value="Sucht im Netz und liefert Treffer mit Text und Adresse" /></div>
+                  <div class="col-md-8"><label class="form-label">Adresse (Platzhalter {frage} und {parametername})</label><input class="form-control" value="https://dienst.example/suche?q={frage}" /></div>
+                  <div class="col-md-4"><label class="form-label">Methode</label><select class="form-select"><option>GET</option><option>POST</option></select></div>
+                  <div class="col-md-4"><label class="form-label">Pfad zum Antworttext</label><input class="form-control" value="ergebnisse[].text" /></div>
+                  <div class="col-md-4"><label class="form-label">Pfad zum Titel (optional)</label><input class="form-control" value="ergebnisse[].titel" /></div>
+                  <div class="col-md-4"><label class="form-label">Pfad zur Quelladresse (optional)</label><input class="form-control" value="ergebnisse[].url" /></div>
+                  <div class="col-12"><label class="form-label">Parameter (JSON-Liste: name, beschreibung, pflicht)</label><textarea class="form-control" rows="3" style="font-family: ui-monospace, monospace; font-size: 0.9rem">[
+ {"name": "frage", "beschreibung": "Die Suchanfrage", "pflicht": true}
+]</textarea></div>
+                  <div class="col-12">
+                    <label class="form-label">Kopfzeilen (z. B. Authorization) <span class="text-secondary">- geheime Werte bleiben hier lesbar, im Protokoll maskiert</span></label>
+                    <div class="d-flex gap-2 mb-2">
+                      <input class="form-control" style="max-width: 240px" value="Authorization" />
+                      <input class="form-control" value="Bearer sk-live-4711-beispiel" />
+                      <div class="form-check form-switch d-flex align-items-center gap-2 mb-0" style="min-width: 110px"><input class="form-check-input" type="checkbox" id="kg" checked /><label class="form-check-label small" for="kg">geheim</label></div>
+                      <button class="btn btn-outline-danger" title="Kopfzeile entfernen"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-plus"></i> Kopfzeile</button>
+                  </div>
+                  <div class="col-12 d-flex gap-3 align-items-center flex-wrap">
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="w-aktiv" checked /><label class="form-check-label" for="w-aktiv">aktiv</label></div>
+                    <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="w-vor" /><label class="form-check-label" for="w-vor">im Chat vorauswählen</label></div>
+                    <span class="ms-auto"></span>
+                    <button class="btn btn-outline-secondary">Abbrechen</button>
+                    <button class="btn btn-primary">Speichern</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="m-spieler leer"></footer>
+    </div>
+
+    <div class="m-hilfe" hidden style="right: 24px; top: 72px">
+      <div class="m-hilfe-kopf">
+        <i class="fa-solid fa-circle-question"></i> <b>Hilfe</b>
+        <span class="ms-auto small opacity-75">Ziehen zum Verschieben, Ecke zum Vergrößern</span>
+        <button class="btn btn-sm btn-light" data-schliessen title="Schließen"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="m-hilfe-suche"><input class="form-control" placeholder="Hilfe durchsuchen ..." /></div>
+      <div class="m-hilfe-koerper">
+        <nav class="m-hilfe-inhalt">
+          <a href="#">Erste Schritte</a>
+          <a href="#">Chat</a>
+          <a href="#">Anbieter</a>
+          <a class="aktiv" href="#">Werkzeuge und fremde Dienste</a>
+          <a href="#">Einstellungen</a>
+        </nav>
+        <div class="m-hilfe-text">
+          <h2>Werkzeuge und fremde Dienste</h2>
+          <p>Ein Werkzeug ist ein fremder Dienst, den der Chat zusätzlich zur Bibliothek befragen kann: ein MCP-Server oder ein HTTP-Dienst mit JSON-Antwort. Bei MCP-Servern entdeckt Prüfen die einzelnen Werkzeuge, die du einzeln freischaltest.</p>
+          <p><b>Ich wähle:</b> alle im Chat eingeschalteten Werkzeuge laufen vor jeder Antwort. <b>Modell wählt:</b> das Modell entscheidet je Frage, welche der eingeschalteten Werkzeuge es aufruft.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -483,6 +483,60 @@ DEFINITIONEN: tuple[Definition, ...] = (
         True,
         "chat",
     ),
+    # --- Werkzeuge -----------------------------------------------------------------
+    Definition(
+        "chat.werkzeugwahl",
+        "Wer wählt die Werkzeuge",
+        "Nutzer: die im Chat eingeschalteten Werkzeuge laufen vor jeder Antwort. Modell: das Sprachmodell "
+        "entscheidet selbst, ob und welche der eingeschalteten Werkzeuge es aufruft (braucht ein Modell mit Werkzeugaufrufen).",
+        "auswahl",
+        "nutzer",
+        "werkzeuge",
+        auswahl=(("nutzer", "Der Nutzer wählt"), ("modell", "Das Modell wählt")),
+    ),
+    Definition(
+        "werkzeuge.zeitgrenze_s",
+        "Zeitgrenze je Werkzeugaufruf",
+        "So lange darf ein einzelner Aufruf eines fremden Dienstes dauern.",
+        "ganzzahl",
+        120,
+        "werkzeuge",
+        einheit="Sekunden",
+        minimum=5,
+        maximum=1800,
+        schritt=5,
+    ),
+    Definition(
+        "werkzeuge.max_runden",
+        "Höchstzahl Werkzeugrunden",
+        "Wenn das Modell wählt: so viele Runden mit Werkzeugaufrufen sind je Frage erlaubt, bevor geantwortet wird.",
+        "ganzzahl",
+        3,
+        "werkzeuge",
+        minimum=1,
+        maximum=10,
+    ),
+    Definition(
+        "werkzeuge.ergebnis_zeichen",
+        "Zeichen je Werkzeugergebnis",
+        "Längere Ergebnisse werden für das Modell gekürzt (die volle Antwort bleibt in der Nachricht einsehbar).",
+        "ganzzahl",
+        6000,
+        "werkzeuge",
+        einheit="Zeichen",
+        minimum=500,
+        maximum=60000,
+        schritt=500,
+    ),
+    Definition(
+        "werkzeuge.argumente_per_modell",
+        "Argumente vom Modell ableiten",
+        "Braucht ein Werkzeug mehr als eine Frage als Eingabe, leitet das Sprachmodell die Argumente aus der Frage ab. "
+        "Aus: solche Werkzeuge bekommen nur die Frage als Text.",
+        "schalter",
+        True,
+        "werkzeuge",
+    ),
     # --- Anbieter-Rollen ----------------------------------------------------------
     Definition("anbieter.chat", "Anbieter für Chat", "Kennung des aktiven Sprachmodell-Anbieters für Antworten.", "text", "", "anbieter"),
     Definition(
@@ -508,6 +562,7 @@ GRUPPEN_TITEL: dict[str, str] = {
     "einbettung": "Einbettung",
     "suche": "Suche",
     "chat": "Chat",
+    "werkzeuge": "Werkzeuge",
     "anbieter": "Anbieter",
 }
 

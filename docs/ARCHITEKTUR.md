@@ -22,6 +22,15 @@ importiert (siehe Abschnitt 8).
 Audiodateien gehören zur Werkstatt. Sie sind für die Bibliothek optional: fehlen sie,
 gibt es keinen Abspielknopf an den Textstellen, alles andere bleibt gleich.
 
+**Zielbild für Empfänger der fertigen Bibliothek:** Wer das Paket bekommt, hat in der
+Regel wenig Hardware und keinen der Spezialdienste dieser Werkstatt (keine Videoquelle
+auf dem Pi, keinen Recherche-Server). Die Bibliothek muss deshalb mit einem
+OpenAI-kompatiblen Dienst mittlerer Stärke als Sprachmodell und fastembed als Einbettung
+vollständig nutzbar sein: befragen, Belege lesen, Stellen pflegen. Neue Videos kommen dort
+eher von lokalen Dateien als aus einer Videoquelle, und Metadaten werden auch von Hand
+gepflegt. Alles darüber hinaus (Transkription, Korrektur, fremde Werkzeuge) ist Zusatz,
+der zuschaltbar ist und nie Voraussetzung.
+
 ## 2. Das Fließband (Stufen je Video)
 
 ```
@@ -185,14 +194,52 @@ mit JSONL je Tabelle (Videos, Korrekturen, Chunks, Einbettungen) plus Manifest
 über Video-Kennung). Audio wird nicht mitgenommen (Sprung zu YouTube bleibt immer
 möglich); Transkripte optional.
 
-## 9. Erweiterung: Fremde Dienste und Werkzeuge
+## 9. Fremde Dienste und Werkzeuge
 
-Vorbereitet, noch ohne Oberfläche (kein toter Regler): das Anbieter-Register
-(`dienste/anbieter/register.py`) nimmt weitere Typen auf; die Chat-Orchestrierung ist so
-geschnitten, dass Werkzeuge (Zeit, Web, fremde Suchdienste) als weitere Quellen vor der
-Antwort eingehängt werden können (`dienste/chat/orchestrierung.py`, Punkt "Quellen
-sammeln"). Sobald eine erste Umsetzung existiert, bekommt sie ihre Verwaltung in der
-Oberfläche.
+Werkzeuge sind eine Zusatzoption der Bibliothek, keine Voraussetzung: ohne angelegte
+Werkzeuge fehlt der Abschnitt im Chat, und es läuft nie ein Werkzeug, das nicht ausdrücklich
+je Frage oder als Vorauswahl eingeschaltet wurde. Das Paket für den Umzug enthält keine
+Werkzeuge; sie werden am Zielort bei Bedarf neu angelegt.
+
+Neben der eigenen Bibliothek kann der Chat weitere Quellen befragen. Ein **Werkzeug** ist
+ein Baustein hinter der Schnittstelle `Werkzeug` (`dienste/werkzeuge/basis.py`):
+
+```
+beschreibung() -> Werkzeugbeschreibung(name, beschreibung, parameter_schema)
+ausfuehren(argumente) -> Werkzeugergebnis(text, quellen[], dauer_ms)
+```
+
+Werkzeuge werden vom Nutzer in der Oberfläche angelegt (Tabelle `werkzeuge`: Name,
+Typ, Beschreibung für das Modell, Konfiguration, aktiv, im Chat vorausgewählt). Typen:
+
+| Typ | Was er anbindet | Konfiguration |
+|---|---|---|
+| `http_json` | Beliebiger HTTP-Dienst mit JSON-Antwort (REST) | Adresse mit Platzhalter `{frage}`, Methode, Kopfzeilen (Schlüssel geheim markierbar), Rumpf-Vorlage, Pfad zum Antworttext (z. B. `ergebnisse[].text`), Pfad zur Quelladresse, Zeitgrenze |
+| `mcp` | MCP-Server (Streamable HTTP oder SSE), etwa ein Recherche-Server mit Websuche, Wikipedia oder Wetter | Adresse, Transport, Kopfzeilen; die Werkzeuge des Servers werden beim Prüfen entdeckt und einzeln freigeschaltet |
+
+Ein MCP-Server erscheint im Chat als mehrere Werkzeuge (`server: werkzeug`), jedes
+abwählbar. Das Register (`dienste/werkzeuge/register.py`) baut aus den Zeilen die
+einsetzbaren Werkzeuge; neue Typen kommen als weiteres Modul dazu.
+
+**Zwei Betriebsarten** (Einstellung `chat.werkzeugwahl`, im Chat umschaltbar):
+
+1. **Der Nutzer wählt** (Vorgabe): in der Suchleiste stehen die aktiven Werkzeuge als
+   Schalter. Vor der Antwort führt morf-gpt jedes gewählte Werkzeug aus. Braucht ein
+   Werkzeug nur einen Text, bekommt es die Frage; braucht es strukturierte Argumente,
+   leitet das Sprachmodell sie in einem kleinen Aufruf mit dem Parameterschema ab
+   (`dienste/werkzeuge/argumente.py`). Deterministisch und ohne Modellfähigkeit zur
+   Werkzeugwahl.
+2. **Das Modell wählt**: die Werkzeuge gehen als Funktionsbeschreibungen mit; das
+   Modell entscheidet je Runde, ob und welche es aufruft (`dienste/chat/werkzeugschleife.py`,
+   höchstens `werkzeuge.max_runden` Runden), die Ergebnisse gehen zurück, am Ende wird
+   die Antwort gestreamt. Kann der Anbieter keine Werkzeugaufrufe, fällt der Chat auf
+   Betriebsart 1 zurück und sagt das.
+
+In beiden Fällen werden Werkzeugergebnisse zu **Stellen** wie die Bibliothekstreffer
+(Art `werkzeug`, mit Werkzeugname und Quelladresse) und im Kontext nummeriert, damit das
+Modell sie mit `[n]` belegt. Jeder Aufruf steht mit Argumenten, Dauer und Ergebnis in der
+Nachricht (`Nachricht.parameter.werkzeugaufrufe`) und ist in der Oberfläche einsehbar.
+Geheimnisse (Kopfzeilen) sind im Verwaltungsbereich lesbar, im Protokoll maskiert.
 
 ## 10. Technik
 

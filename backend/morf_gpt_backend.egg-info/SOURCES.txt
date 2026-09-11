@@ -1,9 +1,13 @@
 pyproject.toml
 app/__init__.py
 app/config.py
+app/main.py
 app/version.py
 morf_gpt_backend.egg-info/PKG-INFO
 morf_gpt_backend.egg-info/SOURCES.txt
 morf_gpt_backend.egg-info/dependency_links.txt
 morf_gpt_backend.egg-info/requires.txt
 morf_gpt_backend.egg-info/top_level.txt
+tests/test_audio.py
+tests/test_export.py
+tests/test_text.py

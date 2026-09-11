@@ -9,6 +9,7 @@
   import { uhrzeit } from "../lib/format";
   import InfoKnopf from "../lib/komponenten/InfoKnopf.svelte";
   import Anbieter from "./einstellungen/Anbieter.svelte";
+  import Werkzeuge from "./einstellungen/Werkzeuge.svelte";
   import Quellen from "./einstellungen/Quellen.svelte";
   import Umzug from "./einstellungen/Umzug.svelte";
 
@@ -16,6 +17,7 @@
 
   const SONDER: { kennung: string; titel: string; icon: string }[] = [
     { kennung: "anbieter-verwaltung", titel: "Anbieter", icon: "fa-microchip" },
+    { kennung: "werkzeuge-verwaltung", titel: "Werkzeuge", icon: "fa-plug" },
     { kennung: "quellen", titel: "Quellen", icon: "fa-satellite-dish" },
     { kennung: "umzug", titel: "Umzug", icon: "fa-truck-ramp-box" },
   ];
@@ -109,6 +111,8 @@
 
 {#if sonder?.kennung === "anbieter-verwaltung"}
   <Anbieter />
+{:else if sonder?.kennung === "werkzeuge-verwaltung"}
+  <Werkzeuge />
 {:else if sonder?.kennung === "quellen"}
   <Quellen />
 {:else if sonder?.kennung === "umzug"}

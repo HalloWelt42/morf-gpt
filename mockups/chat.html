@@ -94,7 +94,8 @@
                 <div class="meta">
                   <span><i class="fa-solid fa-microchip"></i> qwen3-next-80b-a3b-instruct-mlx</span>
                   <span><i class="fa-regular fa-clock"></i> 14,2 Sekunden</span>
-                  <span><i class="fa-solid fa-align-left"></i> 6 Stellen, 4 belegt</span>
+                  <span><i class="fa-solid fa-align-left"></i> 7 Stellen, 5 belegt</span>
+                  <span title="Argumente: {&quot;ort&quot;: &quot;Leipzig&quot;}"><i class="fa-solid fa-plug"></i> Recherche: get_weather (16,4 s)</span>
                   <span class="ms-auto">
                     <button class="btn btn-sm btn-outline-secondary" title="Antwort kopieren"><i class="fa-regular fa-copy"></i></button>
                     <button class="btn btn-sm btn-outline-secondary" title="Mit denselben Stellen neu antworten lassen"><i class="fa-solid fa-rotate-right"></i> Neu antworten</button>
@@ -164,6 +165,19 @@
                   <option>Sprachmodell (sehr genau, langsam)</option>
                 </select>
               </div>
+            </div>
+            <div class="m-parameter">
+              <h6>Weitere Quellen (2 von 5) <button class="m-info" title="Hilfe zu Werkzeugen">i</button></h6>
+              <div class="btn-group btn-group-sm w-100 mb-2" role="group">
+                <button class="btn btn-outline-secondary active">Ich wähle</button>
+                <button class="btn btn-outline-secondary">Modell wählt</button>
+              </div>
+              <div class="small text-secondary mb-2">Alle eingeschalteten Werkzeuge laufen vor jeder Antwort.</div>
+              <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="wz-1" checked /><label class="form-check-label small" for="wz-1">Recherche: get_weather</label></div>
+              <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="wz-2" checked /><label class="form-check-label small" for="wz-2">Recherche: get_current_time</label></div>
+              <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="wz-3" /><label class="form-check-label small" for="wz-3">Recherche: web_search</label></div>
+              <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="wz-4" /><label class="form-check-label small" for="wz-4">Recherche: wikipedia_lookup</label></div>
+              <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="wz-5" /><label class="form-check-label small" for="wz-5">Suchdienst</label></div>
             </div>
             <div class="m-parameter">
               <h6>Filter</h6>
@@ -294,6 +308,22 @@
                   <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube öffnen" href="#"><i class="fa-brands fa-youtube"></i></a>
                   <button class="btn btn-sm btn-outline-secondary" title="Textstelle öffnen"><i class="fa-solid fa-up-right-from-square"></i></button>
                   <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle wieder aufnehmen"><i class="fa-regular fa-square"></i></button>
+                </div>
+              </div>
+
+              <div class="m-stelle werkzeug" id="stelle-7">
+                <div class="kopf">
+                  <span class="nr" style="background: var(--m-stufe-korrigiert)"><i class="fa-solid fa-plug"></i></span>
+                  <div>
+                    <div class="titel">Recherche: get_weather</div>
+                    <div class="zeit">Fremder Dienst &middot; Stelle 7</div>
+                  </div>
+                </div>
+                <div class="auszug">Wetter in Leipzig: 20,0 °C (gefühlt 19,0 °C), Bedeckt. Luftfeuchte 40 %, Wind 7,0 km/h aus West.</div>
+                <div class="aktionen">
+                  <span class="small text-secondary">102 Zeichen &middot; 16,4 Sekunden</span>
+                  <span class="ms-auto"></span>
+                  <button class="btn btn-sm btn-outline-secondary" data-abwaehlen title="Stelle abwählen"><i class="fa-regular fa-square-check"></i></button>
                 </div>
               </div>
             </div>

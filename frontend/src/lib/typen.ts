@@ -463,6 +463,8 @@ export interface BandUebersicht {
 
 // --- Chat ---------------------------------------------------------------------
 export interface Suchparameter {
+  werkzeuge?: string[];
+  werkzeugwahl?: "nutzer" | "modell";
   treffer: number;
   nachbarn: number;
   max_je_video: number;
@@ -491,7 +493,22 @@ export interface Stelle {
   miniatur: string;
   ueberlappung_vor: number;
   bewertung: number | null;
+  art: "bibliothek" | "werkzeug";
+  werkzeug: string;
+  quelle_url: string;
   benutzt?: boolean;
+}
+
+export interface Werkzeugaufruf {
+  kennung: string;
+  titel: string;
+  argumente: Record<string, unknown>;
+  herkunft: string;
+  dauer_ms: number;
+  stellen: number;
+  text: string;
+  fehler: string;
+  runde: number;
 }
 
 export interface Unterhaltung {
@@ -589,4 +606,71 @@ export interface PaketInfo {
 export interface AuftragAusgabe {
   auftrag_id: string | null;
   hinweis: string;
+}
+
+// --- Werkzeuge ----------------------------------------------------------------
+export interface EntdecktesWerkzeug {
+  name: string;
+  titel: string;
+  beschreibung: string;
+  parameter_schema: Record<string, unknown>;
+  aktiv?: boolean;
+}
+
+export interface EinsetzbaresWerkzeug {
+  kennung: string;
+  titel: string;
+  name: string;
+  beschreibung: string;
+  typ: string;
+  werkzeug_id: string;
+  parameter: string[];
+  pflicht: string[];
+  vorausgewaehlt: boolean;
+}
+
+export interface Werkzeug {
+  id: string;
+  name: string;
+  typ: string;
+  typ_titel: string;
+  beschreibung: string;
+  konfiguration: Record<string, unknown>;
+  entdeckt: EntdecktesWerkzeug[];
+  aktiv: boolean;
+  vorausgewaehlt: boolean;
+  zuletzt_geprueft: string | null;
+  pruefung: { ok?: boolean; hinweis?: string };
+  einsetzbar: EinsetzbaresWerkzeug[];
+  erstellt: string | null;
+}
+
+export interface WerkzeugUebersicht {
+  werkzeuge: Werkzeug[];
+  typen: Record<string, string>;
+  transporte: Record<string, string>;
+}
+
+export interface WerkzeugEingabe {
+  name: string;
+  typ: string;
+  beschreibung: string;
+  konfiguration: Record<string, unknown>;
+  aktiv: boolean;
+  vorausgewaehlt: boolean;
+}
+
+export interface WerkzeugPruefung {
+  ok: boolean;
+  hinweis: string;
+  entdeckt: EntdecktesWerkzeug[];
+}
+
+export interface WerkzeugProbe {
+  argumente: Record<string, unknown>;
+  herkunft: string;
+  dauer_ms: number;
+  stellen: number;
+  text: string;
+  fehler: string;
 }

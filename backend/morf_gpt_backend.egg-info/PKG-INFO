@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: morf-gpt-backend
-Version: 0.1.0
+Version: 0.1.7
 Summary: morf-gpt - Wissensbibliothek und Chat über die Erklärvideos von morf
 Requires-Python: >=3.12
 Requires-Dist: fastapi>=0.115
@@ -15,6 +15,7 @@ Requires-Dist: httpx>=0.27
 Requires-Dist: python-multipart>=0.0.9
 Requires-Dist: sse-starlette>=2.1
 Requires-Dist: fastembed>=0.5
+Requires-Dist: mcp>=1.10
 Provides-Extra: dev
 Requires-Dist: pytest>=8; extra == "dev"
 Requires-Dist: pytest-asyncio>=0.23; extra == "dev"

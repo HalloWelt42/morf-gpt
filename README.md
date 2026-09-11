@@ -28,6 +28,12 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   mit den Themen, YouTube an derselben Stelle.
 - **Einstellungen**: jede Grenze mit Beschreibung, Bereich und Vorgabe; Anbieter für
   Sprachmodelle und Einbettungen mit Rollen; Quellen; Umzug der Bibliothek als Paket.
+- **Werkzeuge und fremde Dienste** als Zusatzoption: MCP-Server und beliebige HTTP-Dienste
+  mit JSON-Antwort lassen sich als weitere Quellen im Chat zuschalten. Ohne angelegte
+  Werkzeuge bleibt der Chat reine Bibliothek; nichts davon ist Voraussetzung oder von
+  sich aus aktiv. Entweder wählt der Nutzer die Werkzeuge je Frage, oder das Modell
+  entscheidet selbst per Werkzeugaufruf. Ergebnisse werden wie Videostellen belegt, jeder
+  Aufruf ist mit Argumenten und Dauer einsehbar.
 - **Hilfe** als freischwebendes, durchsuchbares Fenster; Mini-i-Knöpfe springen direkt
   zum passenden Abschnitt.
 

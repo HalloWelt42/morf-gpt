@@ -23,7 +23,8 @@ from ..einstellungen import dienst as einstellungen_dienst
 from ..suche.retrieval import Suche, Suchergebnis, Suchparameter
 from ..suche.retrieval import suche as standard_suche
 from ..text import bereinige
-from . import prompts
+from ..werkzeuge import ausfuehrung
+from . import prompts, werkzeugschleife
 
 log = logging.getLogger(__name__)
 
@@ -67,7 +68,11 @@ class Orchestrierung:
                 anzahl = await s.scalar(select(Nachricht.id).where(Nachricht.unterhaltung_id == u.id).limit(1))
                 if anzahl is None and u.titel == "Neue Unterhaltung":
                     u.titel = titel_aus_frage(frage)
-                u.suchparameter = p.als_dict()
+                u.suchparameter = {
+                    **p.als_dict(),
+                    "werkzeuge": self._werkzeug_kennungen(parameter, u.suchparameter),
+                    "werkzeugwahl": (parameter or {}).get("werkzeugwahl") or (u.suchparameter or {}).get("werkzeugwahl"),
+                }
                 nutzer = Nachricht(unterhaltung_id=u.id, rolle="nutzer", inhalt=frage, parameter=p.als_dict())
                 s.add(nutzer)
                 await s.flush()
@@ -91,7 +96,45 @@ class Orchestrierung:
                 )
                 await s.commit()
 
-            stellen_dicts = [t.als_dict() for t in ergebnis.stellen]
+                # Werkzeuge: gewählte Kennungen aus der Anfrage (Vorrang) oder der Unterhaltung
+                kennungen = self._werkzeug_kennungen(parameter, u.suchparameter)
+                werkzeugwahl = str((parameter or {}).get("werkzeugwahl") or werte["chat.werkzeugwahl"])
+                aufrufe: list[dict[str, Any]] = []
+                alle_stellen = list(ergebnis.stellen)
+                schleife: werkzeugschleife.Schleifenergebnis | None = None
+                if kennungen and werkzeugwahl == "nutzer":
+                    lauf = await ausfuehrung.fuer_frage(
+                        s,
+                        kennungen,
+                        frage,
+                        anbieter=anbieter,
+                        argumente_per_modell=bool(werte["werkzeuge.argumente_per_modell"]),
+                        zeitgrenze_s=float(werte["werkzeuge.zeitgrenze_s"]),
+                        ergebnis_zeichen=int(werte["werkzeuge.ergebnis_zeichen"]),
+                    )
+                    alle_stellen.extend(lauf.stellen)
+                    ergebnis.hinweise.extend(lauf.hinweise)
+                    aufrufe = [a.als_dict() for a in lauf.aufrufe]
+                elif kennungen and werkzeugwahl == "modell":
+                    schleife = await werkzeugschleife.laufe(
+                        s,
+                        anbieter,
+                        frage,
+                        ergebnis.stellen,
+                        verlauf,
+                        zusammenfassungen,
+                        kennungen,
+                        max_runden=int(werte["werkzeuge.max_runden"]),
+                        zeitgrenze_s=float(werte["chat.zeitgrenze_s"]),
+                        werkzeug_zeitgrenze_s=float(werte["werkzeuge.zeitgrenze_s"]),
+                        ergebnis_zeichen=int(werte["werkzeuge.ergebnis_zeichen"]),
+                        temperatur=float(werte["chat.temperatur"]),
+                    )
+                    alle_stellen.extend(schleife.stellen)
+                    ergebnis.hinweise.extend(schleife.hinweise)
+                    aufrufe = [a.als_dict() for a in schleife.aufrufe]
+
+            stellen_dicts = [t.als_dict() for t in alle_stellen]
             yield {
                 "art": "treffer",
                 "nachricht_id": nutzer_id,
@@ -100,10 +143,16 @@ class Orchestrierung:
                 "einbettungsmodell": ergebnis.einbettungsmodell,
                 "neubewertung": ergebnis.neubewertung,
                 "parameter": p.als_dict(),
+                "werkzeugaufrufe": aufrufe,
+                "werkzeugwahl": werkzeugwahl,
                 "unterhaltung_titel": None,
             }
 
-            nachrichten = prompts.baue_nachrichten(frage, ergebnis.stellen, verlauf, zusammenfassungen)
+            if schleife is not None and schleife.unterstuetzt and schleife.aufrufe:
+                # Antwort mit allen Werkzeug-Zwischenschritten im Kontext streamen
+                nachrichten = schleife.nachrichten
+            else:
+                nachrichten = prompts.baue_nachrichten(frage, alle_stellen, verlauf, zusammenfassungen)
             text_teile: list[str] = []
             modell = anbieter.info.modell
             tokens_ein: int | None = None
@@ -125,7 +174,14 @@ class Orchestrierung:
                     rolle="assistent",
                     inhalt=inhalt,
                     stellen=stellen_dicts,
-                    parameter={**p.als_dict(), "chunk_ids": chunk_ids or [], "hinweise": ergebnis.hinweise},
+                    parameter={
+                        **p.als_dict(),
+                        "chunk_ids": chunk_ids or [],
+                        "hinweise": ergebnis.hinweise,
+                        "werkzeuge": kennungen,
+                        "werkzeugwahl": werkzeugwahl,
+                        "werkzeugaufrufe": aufrufe,
+                    },
                     modell=modell,
                     dauer_ms=dauer_ms,
                     tokens_ein=tokens_ein,
@@ -151,6 +207,18 @@ class Orchestrierung:
                 s.add(Nachricht(unterhaltung_id=unterhaltung_id, rolle="assistent", inhalt="", fehler=str(e), parameter=(parameter or {})))
                 await s.commit()
             yield {"art": "fehler", "text": str(e)}
+
+    @staticmethod
+    def _werkzeug_kennungen(parameter: dict[str, Any] | None, gespeichert: dict[str, Any] | None) -> list[str]:
+        """Gewählte Werkzeuge: aus der Anfrage, sonst aus der Unterhaltung; immer eine Liste von Texten."""
+        quelle: Any = None
+        if parameter is not None and "werkzeuge" in parameter:
+            quelle = parameter.get("werkzeuge")
+        elif gespeichert:
+            quelle = gespeichert.get("werkzeuge")
+        if not isinstance(quelle, list):
+            return []
+        return [str(k) for k in quelle if str(k).strip()]
 
     async def _verlauf(self, s: Any, unterhaltung_id: str, anzahl: int, ohne: str) -> list[prompts.Verlaufsnachricht]:
         if anzahl <= 0:

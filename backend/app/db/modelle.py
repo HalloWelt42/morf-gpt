@@ -197,6 +197,13 @@ class Einbettung(Basis):
     __table_args__ = (
         UniqueConstraint("chunk_id", "modell", name="uq_einbettung_chunk_modell"),
         Index("ix_einbettungen_modell", "modell"),
+        Index(
+            "ix_einbettungen_vektor_hnsw",
+            "vektor",
+            postgresql_using="hnsw",
+            postgresql_with={"m": 16, "ef_construction": 96},
+            postgresql_ops={"vektor": "vector_cosine_ops"},
+        ),
     )
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=neue_id)
@@ -272,6 +279,26 @@ class Anbieter(Basis):
     modell: Mapped[str] = mapped_column(String(200), default="")
     parameter: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     aktiv: Mapped[bool] = mapped_column(Boolean, default=True)
+    erstellt: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt)
+    aktualisiert: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt, onupdate=jetzt)
+
+
+class Werkzeug(Basis):
+    """Ein fremder Dienst oder ein Werkzeug, das der Chat neben der Bibliothek befragen kann."""
+
+    __tablename__ = "werkzeuge"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=neue_id)
+    name: Mapped[str] = mapped_column(String(120))
+    typ: Mapped[str] = mapped_column(String(32))  # http_json, mcp
+    beschreibung: Mapped[str] = mapped_column(Text, default="")  # für das Sprachmodell
+    konfiguration: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    # Entdeckte Werkzeuge eines MCP-Servers: [{"name","beschreibung","parameter_schema","aktiv"}]
+    entdeckt: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    aktiv: Mapped[bool] = mapped_column(Boolean, default=True)
+    vorausgewaehlt: Mapped[bool] = mapped_column(Boolean, default=False)  # im Chat vorab an
+    zuletzt_geprueft: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    pruefung: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)  # {"ok": bool, "hinweis": str}
     erstellt: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt)
     aktualisiert: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=jetzt, onupdate=jetzt)
 

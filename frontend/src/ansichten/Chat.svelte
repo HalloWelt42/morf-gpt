@@ -3,7 +3,7 @@
   // Fundstellen rechts. Die Antwort entsteht nur aus den rechts ausgewählten Stellen.
   import { onMount, tick } from "svelte";
   import { api, postStrom } from "../lib/api";
-  import type { Nachricht, Stelle, SucheAusgabe, Suchparameter, Unterhaltung, UnterhaltungDetail, SerieEintrag } from "../lib/typen";
+  import type { EinsetzbaresWerkzeug, Nachricht, Stelle, SucheAusgabe, Suchparameter, Unterhaltung, UnterhaltungDetail, SerieEintrag, Werkzeugaufruf } from "../lib/typen";
   import { ui } from "../lib/stores/ui.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
   import { rendereMarkdown } from "../lib/markdown";
@@ -33,6 +33,12 @@
   let umbenennen = $state(false);
   let neuerTitel = $state("");
   let bibliothekStand = $state<{ eingebettet: number; ausgewaehlt: number; chunks: number } | null>(null);
+  let werkzeuge = $state<EinsetzbaresWerkzeug[]>([]);
+  let gewaehlteWerkzeuge = $state<Set<string>>(new Set());
+  let werkzeugwahl = $state<"nutzer" | "modell">("nutzer");
+  let werkzeugwahlVorgabe = "nutzer";
+  let aufrufe = $state<Werkzeugaufruf[]>([]);
+  let werkzeugeOffen = $state(true);
 
   const VORGABEN: Suchparameter = {
     treffer: 8,
@@ -76,9 +82,19 @@
       VORGABEN.mindest_aehnlichkeit = Number(w["suche.mindest_aehnlichkeit"]);
       VORGABEN.neubewertung = String(w["suche.neubewertung"]);
       VORGABEN.kandidaten_faktor = Number(w["suche.kandidaten_faktor"]);
-      if (!aktiv) parameter = { ...VORGABEN };
+      werkzeugwahlVorgabe = String(w["chat.werkzeugwahl"] ?? "nutzer");
+      if (!aktiv) {
+        parameter = { ...VORGABEN };
+        werkzeugwahl = werkzeugwahlVorgabe as "nutzer" | "modell";
+      }
     } catch {
       // Vorgaben aus dem Code bleiben
+    }
+    try {
+      werkzeuge = await api.get<EinsetzbaresWerkzeug[]>("/werkzeuge/einsetzbar");
+      if (!aktiv) gewaehlteWerkzeuge = new Set(werkzeuge.filter((w) => w.vorausgewaehlt).map((w) => w.kennung));
+    } catch {
+      werkzeuge = [];
     }
     try {
       serien = await api.get<SerieEintrag[]>("/videos/serien");
@@ -96,6 +112,11 @@
       verlauf = aktiv.verlauf;
       parameter = { ...VORGABEN, ...(aktiv.suchparameter as Partial<Suchparameter>) };
       jahr = parameter.von ? parameter.von.slice(0, 4) : "";
+      const gespeichert = aktiv.suchparameter.werkzeuge;
+      gewaehlteWerkzeuge = new Set(Array.isArray(gespeichert) ? gespeichert : werkzeuge.filter((w) => w.vorausgewaehlt).map((w) => w.kennung));
+      werkzeugwahl = (aktiv.suchparameter.werkzeugwahl ?? werkzeugwahlVorgabe) as "nutzer" | "modell";
+      const letzteAntwort = [...verlauf].reverse().find((n) => n.rolle === "assistent");
+      aufrufe = (letzteAntwort?.parameter.werkzeugaufrufe as Werkzeugaufruf[] | undefined) ?? [];
       const letzte = [...verlauf].reverse().find((n) => n.rolle === "assistent" && n.stellen.length);
       stellen = letzte ? letzte.stellen : [];
       abgewaehlt = new Set();
@@ -145,6 +166,8 @@
     const p: Record<string, unknown> = { ...parameter };
     p.von = jahr ? `${jahr}-01-01T00:00:00` : null;
     p.bis = jahr ? `${jahr}-12-31T23:59:59` : null;
+    p.werkzeuge = [...gewaehlteWerkzeuge].filter((k) => werkzeuge.some((w) => w.kennung === k));
+    p.werkzeugwahl = werkzeugwahl;
     return p;
   }
 
@@ -152,10 +175,13 @@
     const f = (text ?? frage).trim();
     if (!f || laeuft) return;
     if (!aktiv) {
-      const u = await api.post<Unterhaltung>("/chat/unterhaltungen", {});
-      await ladeListe();
+      // Neue Unterhaltung direkt übernehmen statt nachzuladen: Regler, Werkzeugwahl und der
+      // gerade entstehende Verlauf bleiben so erhalten, und die Routenbeobachtung lädt nicht erneut.
+      const u = await api.post<Unterhaltung>("/chat/unterhaltungen", { suchparameter: parameterFuerAnfrage() });
+      aktiv = { ...u, verlauf: [] };
+      verlauf = [];
       ui.gehe("chat", u.id);
-      await oeffne(u.id);
+      void ladeListe();
     }
     if (!aktiv) return;
     const uid = aktiv.id;
@@ -180,6 +206,8 @@
           abgewaehlt = new Set();
           hinweise = (e.daten.hinweise as string[]) ?? [];
           antwort.stellen = stellen;
+          aufrufe = (e.daten.werkzeugaufrufe as Werkzeugaufruf[]) ?? [];
+          antwort.parameter = { ...antwort.parameter, werkzeugaufrufe: aufrufe };
           nutzer.id = String(e.daten.nachricht_id ?? nutzer.id);
         } else if (e.art === "delta") {
           antwort.inhalt += String(e.daten.text ?? "");
@@ -251,6 +279,13 @@
     if (neu.has(chunkId)) neu.delete(chunkId);
     else neu.add(chunkId);
     abgewaehlt = neu;
+  }
+
+  function werkzeugUmschalten(kennung: string): void {
+    const neu = new Set(gewaehlteWerkzeuge);
+    if (neu.has(kennung)) neu.delete(kennung);
+    else neu.add(kennung);
+    gewaehlteWerkzeuge = neu;
   }
 
   function taste(e: KeyboardEvent): void {
@@ -401,6 +436,9 @@
                   {#if n.modell}<span><i class="fa-solid fa-microchip"></i> {n.modell}</span>{/if}
                   {#if n.dauer_ms !== null}<span><i class="fa-regular fa-clock"></i> {(n.dauer_ms / 1000).toFixed(1).replace(".", ",")} Sekunden</span>{/if}
                   {#if n.stellen.length}<span><i class="fa-solid fa-align-left"></i> {n.stellen.length} Stellen</span>{/if}
+                  {#each (n.parameter.werkzeugaufrufe as Werkzeugaufruf[] | undefined) ?? [] as a}
+                    <span title={`Argumente: ${JSON.stringify(a.argumente)}${a.fehler ? `\nFehler: ${a.fehler}` : ""}`} class:text-danger={!!a.fehler}><i class="fa-solid fa-plug"></i> {a.titel} ({(a.dauer_ms / 1000).toFixed(1).replace(".", ",")} s{a.fehler ? ", Fehler" : ""})</span>
+                  {/each}
                   <span class="ms-auto d-flex gap-1">
                     <button class="btn btn-sm btn-outline-secondary" title="Antwort kopieren" onclick={() => navigator.clipboard.writeText(n.inhalt).then(() => meldungen.gut("Antwort kopiert"))}><i class="fa-regular fa-copy"></i></button>
                     {#if n.stellen.length && !laeuft}
@@ -472,6 +510,31 @@
         </select>
       </div>
     </div>
+    {#if werkzeuge.length}
+      <div class="m-parameter">
+        <h6 class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm btn-link p-0 text-secondary" onclick={() => (werkzeugeOffen = !werkzeugeOffen)} title={werkzeugeOffen ? "Einklappen" : "Ausklappen"}><i class="fa-solid {werkzeugeOffen ? 'fa-caret-down' : 'fa-caret-right'}"></i></button>
+          Weitere Quellen ({gewaehlteWerkzeuge.size} von {werkzeuge.length}) <InfoKnopf anker="werkzeuge" />
+        </h6>
+        {#if werkzeugeOffen}
+          <div class="btn-group btn-group-sm w-100 mb-2" role="group" title="Wer entscheidet, welche Werkzeuge laufen">
+            <button class="btn btn-outline-secondary" class:active={werkzeugwahl === "nutzer"} onclick={() => (werkzeugwahl = "nutzer")}>Ich wähle</button>
+            <button class="btn btn-outline-secondary" class:active={werkzeugwahl === "modell"} onclick={() => (werkzeugwahl = "modell")}>Modell wählt</button>
+          </div>
+          <div class="small text-secondary mb-2">{werkzeugwahl === "nutzer" ? "Alle eingeschalteten Werkzeuge laufen vor jeder Antwort." : "Das Modell entscheidet je Frage, welche der eingeschalteten Werkzeuge es aufruft."}</div>
+          <div class="d-flex gap-1 mb-2">
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick={() => (gewaehlteWerkzeuge = new Set(werkzeuge.map((w) => w.kennung)))}>alle</button>
+            <button class="btn btn-sm btn-outline-secondary py-0" onclick={() => (gewaehlteWerkzeuge = new Set())}>keine</button>
+          </div>
+          {#each werkzeuge as w (w.kennung)}
+            <div class="form-check form-switch mb-1">
+              <input class="form-check-input" type="checkbox" role="switch" id="wz-{w.kennung}" checked={gewaehlteWerkzeuge.has(w.kennung)} onchange={() => werkzeugUmschalten(w.kennung)} />
+              <label class="form-check-label small" for="wz-{w.kennung}" title={w.beschreibung}>{w.titel}</label>
+            </div>
+          {/each}
+        {/if}
+      </div>
+    {/if}
     <div class="m-parameter">
       <h6>Filter</h6>
       <div class="row g-2">

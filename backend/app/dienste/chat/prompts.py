@@ -13,7 +13,8 @@ from ..anbieter.basis import Nachricht
 from ..suche.retrieval import Treffer
 
 SYSTEM_PROMPT = (
-    "Du beantwortest Fragen zu Erklärvideos. Du bekommst nummerierte Textstellen aus den Videos.\n"
+    "Du beantwortest Fragen zu Erklärvideos. Du bekommst nummerierte Textstellen aus den Videos "
+    "und gegebenenfalls Ergebnisse fremder Werkzeuge (mit 'Werkzeug' gekennzeichnet).\n"
     "Regeln:\n"
     "- Antworte ausschließlich aus diesen Stellen. Steht die Antwort nicht darin, sage das in einem Satz "
     "und erfinde nichts dazu.\n"
@@ -23,6 +24,20 @@ SYSTEM_PROMPT = (
     "die Stellen oder deine Arbeitsweise; keine Einleitung wie 'Laut den Stellen'.\n"
     "- Keine Quellenliste und keine Zusammenfassung der Belege am Ende; die Belege stehen nur im Text.\n"
     '- Verwende nur gerade Anführungszeichen (") und den einfachen Bindestrich (-), keine Gedankenstriche.'
+)
+
+# Betriebsart "Das Modell wählt": die Werkzeugregel steht vor der Belegregel, sonst verweigert das
+# Modell Aufrufe, weil es "nur aus den Stellen" antworten soll.
+SYSTEM_WERKZEUGWAHL = (
+    "Du beantwortest Fragen zu Erklärvideos und hast dafür Werkzeuge (Funktionen).\n"
+    "Vorgehen:\n"
+    "1. Prüfe, ob Teile der Frage von den mitgelieferten Textstellen nicht abgedeckt werden oder nach "
+    "Aktuellem, Wetter, Datum und Uhrzeit, Nachschlagewerken, dem Web oder einer Rechnung verlangen. "
+    "Dann rufe die passenden Werkzeuge auf - auch mehrere, auch nacheinander. Frage nicht nach Erlaubnis.\n"
+    "2. Erst wenn alle nötigen Ergebnisse vorliegen (oder kein Werkzeug helfen kann), antworte.\n"
+    "Für die Antwort gilt: nur aus den nummerierten Stellen (Videos und Werkzeugergebnisse), jede Aussage mit "
+    "[n] belegt, auf Deutsch in lateinischer Schrift, sachlich, ohne Quellenliste am Ende, nur gerade "
+    "Anführungszeichen und der einfache Bindestrich."
 )
 
 FRAGE_PRAEFIX = "Frage: "
@@ -63,7 +78,14 @@ def folgenkennung(serie: str, folge_nr: int | None) -> str:
 
 
 def stellenkopf(nummer: int, t: Treffer) -> str:
-    """'[n] <Titel> (mmM#123, 12:34-15:02)'."""
+    """'[n] <Titel> (mmM#123, 12:34-15:02)'; bei Werkzeugen '[n] Werkzeug <Name>: <Titel>'."""
+    if t.art == "werkzeug":
+        kopf = f"[{nummer}] Werkzeug {t.werkzeug}"
+        if t.titel:
+            kopf = f"{kopf} - {t.titel}"
+        if t.quelle_url:
+            kopf = f"{kopf} ({t.quelle_url})"
+        return kopf
     kennung = folgenkennung(t.serie, t.folge_nr)
     klammer = f"{kennung}, {zeitfenster(t.start_s, t.end_s)}" if kennung else zeitfenster(t.start_s, t.end_s)
     return f"[{nummer}] {t.titel} ({klammer})"
@@ -94,9 +116,11 @@ def baue_nachrichten(
     stellen: Sequence[Treffer],
     verlauf: Sequence[Verlaufsnachricht] = (),
     zusammenfassungen: Mapping[str, str] | None = None,
+    *,
+    system: str = SYSTEM_PROMPT,
 ) -> list[Nachricht]:
     """Systemanweisung, dann der Verlauf, dann Kontext und Frage als letzte Nutzernachricht."""
-    nachrichten: list[Nachricht] = [Nachricht("system", SYSTEM_PROMPT)]
+    nachrichten: list[Nachricht] = [Nachricht("system", system)]
     for v in verlauf:
         if v.rolle in ("user", "assistant") and v.inhalt.strip():
             nachrichten.append(Nachricht(v.rolle, v.inhalt))  # type: ignore[arg-type]

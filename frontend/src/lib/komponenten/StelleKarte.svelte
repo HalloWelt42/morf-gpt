@@ -1,7 +1,7 @@
 <script lang="ts">
   // Eine Fundstelle: Nummer, Video, Zeitfenster, Wert, Auszug, Sprünge, Abwahl.
   import type { Stelle } from "../typen";
-  import { zeitmarke, datum, folge, youtubeMitZeit } from "../format";
+  import { zeitmarke, folge, youtubeMitZeit } from "../format";
   import { spieleVideo } from "../spielen";
   import { ui } from "../stores/ui.svelte";
 
@@ -24,6 +24,26 @@
   const prozent = $derived(Math.max(0, Math.min(100, Math.round(stelle.wert * 100))));
 </script>
 
+{#if stelle.art === "werkzeug"}
+  <div class="m-stelle werkzeug" class:abgewaehlt={!gewaehlt} class:hervor={hervorgehoben} id="stelle-{nummer}">
+    <div class="kopf">
+      <span class="nr"><i class="fa-solid fa-plug"></i></span>
+      <div class="flex-grow-1" style="min-width: 0">
+        <div class="titel">{stelle.werkzeug}{#if stelle.titel} - {stelle.titel}{/if}</div>
+        <div class="zeit">Fremder Dienst &middot; Stelle {nummer}{#if stelle.quelle_url} &middot; <a href={stelle.quelle_url} target="_blank" rel="noreferrer">{stelle.quelle_url.replace(/^https?:\/\//, "").slice(0, 48)}</a>{/if}</div>
+      </div>
+    </div>
+    <div class="auszug" style="-webkit-line-clamp: 6">{stelle.text}</div>
+    <div class="aktionen">
+      <span class="small text-secondary">{stelle.text.length} Zeichen</span>
+      <span class="ms-auto"></span>
+      {#if stelle.quelle_url}<a class="btn btn-sm btn-outline-secondary" title="Quelle öffnen" href={stelle.quelle_url} target="_blank" rel="noreferrer"><i class="fa-solid fa-up-right-from-square"></i></a>{/if}
+      {#if umschaltbar && onUmschalten}
+        <button class="btn btn-sm btn-outline-secondary" title={gewaehlt ? "Stelle abwählen" : "Stelle wieder aufnehmen"} onclick={onUmschalten}><i class="fa-regular {gewaehlt ? 'fa-square-check' : 'fa-square'}"></i></button>
+      {/if}
+    </div>
+  </div>
+{:else}
 <div class="m-stelle" class:abgewaehlt={!gewaehlt} class:hervor={hervorgehoben} id="stelle-{nummer}">
   <div class="kopf">
     <span class="nr">{nummer}</span>
@@ -49,10 +69,13 @@
       <button class="btn btn-sm btn-outline-secondary" title={gewaehlt ? "Stelle abwählen" : "Stelle wieder aufnehmen"} onclick={onUmschalten}><i class="fa-regular {gewaehlt ? 'fa-square-check' : 'fa-square'}"></i></button>
     {/if}
   </div>
-  <span class="visually-hidden">{datum(null)}</span>
 </div>
+{/if}
 
 <style>
+  .m-stelle.werkzeug .nr {
+    background: var(--m-stufe-korrigiert);
+  }
   .m-stelle.hervor {
     border-color: var(--m-akzent);
     box-shadow: 0 0 0 2px var(--m-akzent-hell);

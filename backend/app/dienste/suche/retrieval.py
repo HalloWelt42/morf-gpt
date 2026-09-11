@@ -159,6 +159,10 @@ class Treffer:
     miniatur: str
     ueberlappung_vor: int = 0
     bewertung: float | None = None
+    # Herkunft: "bibliothek" (eigene Stücke) oder "werkzeug" (fremder Dienst)
+    art: str = "bibliothek"
+    werkzeug: str = ""
+    quelle_url: str = ""
 
     def als_dict(self) -> dict[str, Any]:
         return asdict(self)
