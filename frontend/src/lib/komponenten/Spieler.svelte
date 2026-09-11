@@ -65,45 +65,45 @@
       onplay={() => (spieler.laeuft = true)}
       onerror={() => (spieler.ladefehler = "Audio konnte nicht geladen werden")}
     ></audio>
-    <div>
-      <div class="titel" title={spieler.video.titel}>{spieler.video.titel}</div>
-      <div class="unter">
-        {#if spieler.video.serie}<span class="m-serie">{folge(spieler.video.serie, spieler.video.folge_nr)}</span> &middot;{/if}
-        {#if spieler.ladefehler}<span class="text-danger">{spieler.ladefehler}</span>
-        {:else if spieler.aktuellesThema}Thema: {spieler.aktuellesThema.titel}
-        {:else}Abspielen ab Zeitmarke{/if}
+    <div class="zeile1">
+      <div style="min-width: 0">
+        <div class="titel" title={spieler.video.titel}>{spieler.video.titel}</div>
+        <div class="unter">
+          {#if spieler.video.serie}<span class="m-serie">{folge(spieler.video.serie, spieler.video.folge_nr)}</span> &middot;{/if}
+          {#if spieler.ladefehler}<span class="text-danger">{spieler.ladefehler}</span>
+          {:else if spieler.aktuellesThema}Thema: {spieler.aktuellesThema.titel}
+          {:else}Abspielen ab Zeitmarke{/if}
+        </div>
+      </div>
+      <div class="knoepfe">
+        <button class="btn btn-outline-secondary" title="30 Sekunden zurück" onclick={() => spieler.relativ(-30)}><i class="fa-solid fa-backward"></i></button>
+        <button class="btn btn-outline-secondary" title="5 Sekunden zurück" onclick={() => spieler.relativ(-5)}><i class="fa-solid fa-backward-step"></i></button>
+        <button class="btn btn-primary" title={spieler.laeuft ? "Pause" : "Abspielen"} onclick={() => spieler.umschalten()}><i class="fa-solid {spieler.laeuft ? 'fa-pause' : 'fa-play'}"></i></button>
+        <button class="btn btn-outline-secondary" title="5 Sekunden vor" onclick={() => spieler.relativ(5)}><i class="fa-solid fa-forward-step"></i></button>
+        <button class="btn btn-outline-secondary" title="30 Sekunden vor" onclick={() => spieler.relativ(30)}><i class="fa-solid fa-forward"></i></button>
+      </div>
+      <div class="rechts">
+        <span class="zeiten">{zeitmarke(spieler.position)} / {zeitmarke(dauer)}</span>
+        <select class="form-select form-select-sm" style="width: 84px" title="Tempo" bind:value={spieler.tempo}>
+          <option value={0.8}>0,8x</option>
+          <option value={1}>1,0x</option>
+          <option value={1.25}>1,25x</option>
+          <option value={1.5}>1,5x</option>
+          <option value={2}>2,0x</option>
+        </select>
+        {#if spieler.video.original_url}
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href={youtubeMitZeit(spieler.video.original_url, spieler.position)} target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+        {/if}
+        <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen" onclick={() => spieler.schliessen()}><i class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
-    <div class="knoepfe">
-      <button class="btn btn-outline-secondary" title="30 Sekunden zurück" onclick={() => spieler.relativ(-30)}><i class="fa-solid fa-backward"></i></button>
-      <button class="btn btn-outline-secondary" title="5 Sekunden zurück" onclick={() => spieler.relativ(-5)}><i class="fa-solid fa-backward-step"></i></button>
-      <button class="btn btn-primary" title={spieler.laeuft ? "Pause" : "Abspielen"} onclick={() => spieler.umschalten()}><i class="fa-solid {spieler.laeuft ? 'fa-pause' : 'fa-play'}"></i></button>
-      <button class="btn btn-outline-secondary" title="5 Sekunden vor" onclick={() => spieler.relativ(5)}><i class="fa-solid fa-forward-step"></i></button>
-      <button class="btn btn-outline-secondary" title="30 Sekunden vor" onclick={() => spieler.relativ(30)}><i class="fa-solid fa-forward"></i></button>
-    </div>
-    <div>
-      <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-      <div class="m-zeitleiste" bind:this={zeitleiste} title="Themen des Videos - klicken zum Springen" onclick={zeitKlick}>
-        {#each spieler.video.themen as t, i (i)}
-          <div class="thema" style="left: {links(t.start_s)}; width: {breite(t.start_s, t.end_s)}" title="{t.titel} ({zeitmarke(t.start_s)} bis {zeitmarke(t.end_s)})">{t.titel}</div>
-        {/each}
-        <div class="gespielt" style="width: {anteil}%"></div>
-        <div class="marke" style="left: {anteil}%"></div>
-      </div>
-    </div>
-    <div class="d-flex align-items-center gap-3">
-      <span class="zeiten">{zeitmarke(spieler.position)} / {zeitmarke(dauer)}</span>
-      <select class="form-select form-select-sm" style="width: 84px" title="Tempo" bind:value={spieler.tempo}>
-        <option value={0.8}>0,8x</option>
-        <option value={1}>1,0x</option>
-        <option value={1.25}>1,25x</option>
-        <option value={1.5}>1,5x</option>
-        <option value={2}>2,0x</option>
-      </select>
-      {#if spieler.video.original_url}
-        <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href={youtubeMitZeit(spieler.video.original_url, spieler.position)} target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
-      {/if}
-      <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen" onclick={() => spieler.schliessen()}><i class="fa-solid fa-xmark"></i></button>
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <div class="m-zeitleiste" bind:this={zeitleiste} title="Themen des Videos - klicken zum Springen" onclick={zeitKlick}>
+      {#each spieler.video.themen as t, i (i)}
+        <div class="thema" class:aktiv={spieler.aktuellesThema === t} style="left: {links(t.start_s)}; width: {breite(t.start_s, t.end_s)}" title="{t.titel} ({zeitmarke(t.start_s)} bis {zeitmarke(t.end_s)})">{t.titel}</div>
+      {/each}
+      <div class="gespielt" style="width: {anteil}%"></div>
+      <div class="marke" style="left: {anteil}%"></div>
     </div>
   </footer>
 {/if}

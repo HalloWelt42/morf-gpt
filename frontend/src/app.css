@@ -19,7 +19,7 @@
   --m-serie: #6d3d9c;
   --m-serie-hell: #efe7f7;
   --m-kopf-h: 52px;
-  --m-spieler-h: 64px;
+  --m-spieler-h: 98px;
   --m-nav-b: 260px;
   --m-seite-b: 340px;
   --m-antwort-schrift: 1.1875rem; /* 19px - große Schrift für Antworten */
@@ -96,6 +96,7 @@ body {
   color: #ffffff;
   text-decoration: none;
   border-right: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
 }
 .m-marke .m-logo {
   width: 26px;
@@ -116,6 +117,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 0 16px;
+  white-space: nowrap;
   color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
   font-weight: 500;
@@ -650,31 +652,41 @@ body {
   color: var(--m-akzent);
 }
 
-/* ----- Audiospieler (Leiste unten, bleibt über Ansichten) ----- */
+/* ----- Audiospieler (Leiste unten, bleibt über Ansichten) -----
+   Zwei Zeilen: oben Titel, Thema, Knöpfe, Zeit und Tempo; unten die Zeitleiste mit den
+   Themen in voller Breite, damit die Themen lesbar bleiben. */
 .m-spieler {
   grid-area: spieler;
-  height: var(--m-spieler-h);
+  min-height: var(--m-spieler-h);
   background: var(--m-flaeche);
   border-top: 1px solid var(--m-rand-stark);
-  display: grid;
-  grid-template-columns: 300px auto 1fr auto;
-  align-items: center;
-  gap: 14px;
-  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 16px 10px 16px;
 }
 .m-spieler.leer {
   display: none;
 }
+.m-spieler .zeile1 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+}
 .m-spieler .titel {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .m-spieler .unter {
   color: var(--m-text-2);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .m-spieler .knoepfe {
   display: flex;
@@ -683,9 +695,14 @@ body {
 .m-spieler .knoepfe .btn {
   min-width: 40px;
 }
+.m-spieler .rechts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .m-zeitleiste {
   position: relative;
-  height: 22px;
+  height: 26px;
   background: var(--m-flaeche-3);
   cursor: pointer;
 }
@@ -695,15 +712,19 @@ body {
   bottom: 0;
   border-right: 1px solid var(--m-flaeche);
   background: var(--m-flaeche-2);
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   color: var(--m-text-2);
-  padding: 3px 6px;
+  padding: 5px 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .m-zeitleiste .thema:nth-child(even) {
   background: var(--m-flaeche-3);
+}
+.m-zeitleiste .thema.aktiv {
+  color: var(--m-text);
+  font-weight: 600;
 }
 .m-zeitleiste .marke {
   position: absolute;

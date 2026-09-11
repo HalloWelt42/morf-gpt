@@ -322,7 +322,8 @@
 
       <!-- Audiospieler (bleibt über alle Ansichten) -->
       <footer class="m-spieler">
-        <div>
+        <div class="zeile1">
+        <div style="min-width: 0">
           <div class="titel">Wieso passen unsere Geschichten fast nie zur Realität?</div>
           <div class="unter"><span class="m-serie">mmM#377</span> &middot; Thema: Was eine Geschichte leistet</div>
         </div>
@@ -333,8 +334,16 @@
           <button class="btn btn-outline-secondary" title="5 Sekunden vor"><i class="fa-solid fa-forward-step"></i></button>
           <button class="btn btn-outline-secondary" title="30 Sekunden vor"><i class="fa-solid fa-forward"></i></button>
         </div>
-        <div>
-          <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
+        
+        </div>
+        <div class="rechts">
+          <span class="zeiten">04:12 / 34:05</span>
+          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
+          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="https://youtu.be/xxxxxxxxxxx?t=252" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
+          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        </div>
+        <div class="m-zeitleiste" title="Themen des Videos - klicken zum Springen">
             <div class="thema" style="left: 0%; width: 10.8%">Warum wir Geschichten brauchen</div>
             <div class="thema" style="left: 10.8%; width: 13.4%">Was eine Geschichte leistet</div>
             <div class="thema" style="left: 24.2%; width: 14%">Die Realität hat keine Handlung</div>
@@ -344,14 +353,6 @@
             <div class="thema" style="left: 85.6%; width: 14.4%">Mit Geschichten rechnen</div>
             <div class="gespielt" style="width: 12.3%"></div>
             <div class="marke" style="left: 12.3%"></div>
-          </div>
-        </div>
-        <div class="d-flex align-items-center gap-3">
-          <span class="zeiten">04:12 / 34:05</span>
-          <select class="form-select form-select-sm" style="width: 84px" title="Tempo"><option>0,8x</option><option selected>1,0x</option><option>1,25x</option><option>1,5x</option><option>2,0x</option></select>
-          <a class="btn btn-sm btn-outline-secondary" title="Bei YouTube an dieser Stelle öffnen" href="https://youtu.be/xxxxxxxxxxx?t=252" target="_blank" rel="noreferrer"><i class="fa-brands fa-youtube"></i></a>
-          <button class="btn btn-sm btn-outline-secondary" title="Spieler schließen"><i class="fa-solid fa-xmark"></i></button>
-        </div>
       </footer>
     </div>
 
