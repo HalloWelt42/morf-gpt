@@ -127,16 +127,34 @@ def dateiendungen_aus(werte: Mapping[str, Any]) -> frozenset[str]:
     return lokal.endungen_parsen(werte.get("quelle.dateiendungen", lokal.ENDUNGEN_VORGABE))
 
 
+def tubevault_adresse(werte: Mapping[str, Any]) -> str:
+    """Die eine, zentral eingestellte Adresse der TubeVault-Schnittstelle (Einstellung quelle.tubevault_api)."""
+    adresse = str(werte.get("quelle.tubevault_api") or "").strip().rstrip("/")
+    if not adresse:
+        raise QuellenFehler("Die TubeVault-Adresse fehlt (Einstellungen, Quelle und Auswahl)")
+    return adresse
+
+
+def tubevault_videoseite(werte: Mapping[str, Any], extern_id: str) -> str:
+    """Sprung zur Videoseite in der TubeVault-Oberfläche; leer, wenn Adresse oder Kennung fehlt."""
+    basis = str(werte.get("quelle.tubevault_oberflaeche") or "").strip().rstrip("/")
+    pfad = str(werte.get("quelle.tubevault_videoseite") or "").strip()
+    if not basis or not pfad or not extern_id:
+        return ""
+    return basis + "/" + pfad.replace("{extern_id}", extern_id).lstrip("/")
+
+
 def baue_quelle(typ: str, basis_url: str, kanal_id: str, werte: Mapping[str, Any]) -> VideoQuelle:
     """Die Umsetzung zum Quellentyp. Unbekannte Typen sind ein sprechender Fehler.
 
-    `basis_url` ist bei TubeVault die Adresse des Dienstes, bei lokalen Dateien das
-    Verzeichnis; `kanal_id` braucht nur TubeVault.
+    TubeVault-Quellen nutzen die zentrale Adresse aus den Einstellungen; `basis_url` ist dort
+    ohne Bedeutung. Bei lokalen Dateien ist `basis_url` das Verzeichnis; `kanal_id` braucht
+    nur TubeVault.
     """
     if typ == tubevault.TYP_KENNUNG:
         if not kanal_id.strip():
             raise QuellenFehler("TubeVault braucht eine Kanalkennung")
-        return tubevault.TubeVault(basis_url, kanal_id, zeitgrenze_s=zeitgrenze_aus(werte))
+        return tubevault.TubeVault(tubevault_adresse(werte), kanal_id, zeitgrenze_s=zeitgrenze_aus(werte))
     if typ == lokal.TYP_KENNUNG:
         return lokal.LokaleDateien(basis_url, dateiendungen_aus(werte))
     raise QuellenFehler(f"Unbekannter Quellentyp '{typ}' (bekannt: {', '.join(TYPEN)})")

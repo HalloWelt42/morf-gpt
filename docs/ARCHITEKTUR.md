@@ -179,6 +179,12 @@ Jede Textstelle muss zur Originalquelle zurückführen. Darum gilt:
   als JSON abgelegt; das **Vorschaubild** wird lokal gespeichert (`data/miniaturen/`),
   die **Originaladresse** (bei TubeVault `https://youtu.be/<kennung>`, bei lokalen
   Dateien aus dem Beiblatt oder von Hand) ist ein Feld des Videos.
+- **Eine Adresse für TubeVault:** Schnittstelle (`quelle.tubevault_api`), Oberfläche
+  (`quelle.tubevault_oberflaeche`) und Pfad der Videoseite (`quelle.tubevault_videoseite`)
+  sind Einstellungen, nicht Felder der Quelle. Alle TubeVault-Quellen, der Audiobezug und
+  der Sprung zur Videoseite in den Videodetails lesen sie dort; ein neuer Rechnername oder
+  eine neue IP wird an genau einer Stelle geändert. Die Migration 4e6f9a1c2d35 hat die
+  Adresse der bestehenden Quelle dorthin übernommen.
 - **Zwei Quellenarten** hinter einer Schnittstelle (`dienste/quellen/basis.VideoQuelle`):
   `tubevault` (Kanal eines Dienstes) und `lokal` (Verzeichnis auf dem Rechner; Kennung
   aus dem relativen Pfad, Metadaten aus Beiblatt `name.json`, ffprobe und Dateiname,
@@ -305,6 +311,10 @@ Bedienelemente aus dem Bild (Sichtschutz), schaltet das Fenster von selbst auf V
   Vor und Zurück per Pfeilen, Eingabe und Umschalt + Eingabe; in der Suche über alle Themen
   führt der nächste Treffer ins nächste Thema, die Themenliste zeigt die Trefferzahl je Thema.
   Fundstellen werden im Text markiert, die aktive in die Mitte geholt.
+- **Bilder** in den Themen: `![Text](/hilfe/name.png)` mit kursiver Unterzeile. Der Renderer
+  macht daraus je Thema ein Bild (`name.png` hell, `name-dunkel.png` dunkel, gleicher
+  Ausschnitt) in Bildschirmpixeln (1:1, Maße aus `bildmasse.json`); CSS blendet die Fassung
+  des aktiven Themas ein. Erzeugt werden sie mit `tools/bildschirmfotos.mjs`.
 - **Hilfepunkte** (`InfoKnopf`, der Mini-i-Knopf) öffnen genau das passende Thema; mit
   `finde` wird dort gleich ein Begriff gesucht und markiert (Auffinden). Jede Fließbandstufe
   und jeder Reiter der Videoansicht trägt einen solchen Punkt.

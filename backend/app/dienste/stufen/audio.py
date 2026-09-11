@@ -26,6 +26,7 @@ from ..audio import bezug
 from ..auftraege import stufen
 from ..ereignisse import bus
 from ..quellen import abgleich, lokal
+from ..quellen.basis import QuellenFehler
 
 if TYPE_CHECKING:
     from ..auftraege.laeufer import AuftragKontext
@@ -49,7 +50,7 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
     if k.video_id is None:
         raise RuntimeError("Der Audio-Auftrag braucht ein Video")
     _abbruch_pruefen(k)
-    angaben = await _video_angaben(k.video_id)
+    angaben = await _video_angaben(k.video_id, k.werte)
     ziel = bezug.ziel_pfad(angaben.video_id)
     erneut = bool(parameter.get("erneut", False))
 
@@ -81,7 +82,8 @@ def _abbruch_pruefen(k: AuftragKontext) -> None:
         raise asyncio.CancelledError()
 
 
-async def _video_angaben(video_id: str) -> VideoAngaben:
+async def _video_angaben(video_id: str, werte: dict[str, Any]) -> VideoAngaben:
+    """TubeVault-Videos holen ihre Adresse zentral aus den Einstellungen, lokale aus dem Verzeichnis der Quelle."""
     async with sitzung() as s:
         video = await s.get(Video, video_id)
         if video is None:
@@ -89,14 +91,23 @@ async def _video_angaben(video_id: str) -> VideoAngaben:
         if not video.extern_id:
             raise RuntimeError(f"Das Video '{video.titel}' hat keine externe Kennung")
         quelle = await s.get(Quelle, video.quelle_id) if video.quelle_id else None
-        if quelle is None or not quelle.basis_url:
-            raise RuntimeError(f"Das Video '{video.titel}' hat keine Quelle mit Basisadresse")
+        if quelle is None:
+            raise RuntimeError(f"Das Video '{video.titel}' hat keine Quelle mehr")
+        if quelle.typ == lokal.TYP_KENNUNG:
+            basis_url = quelle.basis_url
+            if not basis_url:
+                raise RuntimeError(f"Die Quelle '{quelle.name}' hat kein Verzeichnis")
+        else:
+            try:
+                basis_url = abgleich.tubevault_adresse(werte)
+            except QuellenFehler as e:
+                raise RuntimeError(str(e)) from e
         return VideoAngaben(
             video_id=video.id,
             extern_id=video.extern_id,
             titel=video.titel,
             quelle_typ=quelle.typ,
-            basis_url=quelle.basis_url,
+            basis_url=basis_url,
             dauer_s=float(video.dauer_s) if video.dauer_s else None,
         )
 

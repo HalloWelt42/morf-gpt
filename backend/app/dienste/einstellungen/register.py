@@ -62,6 +62,31 @@ DEFINITIONEN: tuple[Definition, ...] = (
         "quelle",
     ),
     Definition(
+        "quelle.tubevault_api",
+        "TubeVault: Adresse der Schnittstelle",
+        "Basisadresse des TubeVault-Backends samt Port, ohne Pfad. Alle Quellen vom Typ TubeVault nutzen diese eine "
+        "Adresse; ändert sich Rechnername oder IP, genügt die Änderung hier.",
+        "text",
+        "http://192.168.178.49:8031",
+        "quelle",
+    ),
+    Definition(
+        "quelle.tubevault_oberflaeche",
+        "TubeVault: Adresse der Oberfläche",
+        "Basisadresse der TubeVault-Weboberfläche samt Port. Aus ihr entstehen die Sprünge zur Videoseite in TubeVault.",
+        "text",
+        "http://192.168.178.49:8032",
+        "quelle",
+    ),
+    Definition(
+        "quelle.tubevault_videoseite",
+        "TubeVault: Pfad der Videoseite",
+        "Pfad unterhalb der Oberfläche zu einem Video; {extern_id} wird durch die Videokennung ersetzt.",
+        "text",
+        "/watch/{extern_id}",
+        "quelle",
+    ),
+    Definition(
         "quelle.dateiendungen",
         "Dateiendungen lokaler Quellen",
         "Welche Dateien ein Verzeichnis als Videoquelle liefert (Video und Audio), durch Komma getrennt.",

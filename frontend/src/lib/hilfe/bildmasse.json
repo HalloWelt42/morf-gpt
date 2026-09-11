@@ -1,0 +1,94 @@
+{
+  "anbieter": {
+    "breite": 1212,
+    "hoehe": 222
+  },
+  "bibliothek-liste": {
+    "breite": 1470,
+    "hoehe": 278
+  },
+  "chat-antwort": {
+    "breite": 912,
+    "hoehe": 416
+  },
+  "chat-breite": {
+    "breite": 347,
+    "hoehe": 395
+  },
+  "chat-eingabe": {
+    "breite": 908,
+    "hoehe": 138
+  },
+  "chat-filter": {
+    "breite": 347,
+    "hoehe": 177
+  },
+  "chat-fundstellen": {
+    "breite": 323,
+    "hoehe": 454
+  },
+  "chat-werkzeuge": {
+    "breite": 347,
+    "hoehe": 631
+  },
+  "dokument-kapitel": {
+    "breite": 1464,
+    "hoehe": 484
+  },
+  "dokumente-liste": {
+    "breite": 1470,
+    "hoehe": 91
+  },
+  "einstellungen-gruppe": {
+    "breite": 1240,
+    "hoehe": 520
+  },
+  "fliessband-stufen": {
+    "breite": 1472,
+    "hoehe": 220
+  },
+  "hilfe-fenster": {
+    "breite": 640,
+    "hoehe": 640
+  },
+  "kopfleiste": {
+    "breite": 1500,
+    "hoehe": 52
+  },
+  "quellen-neu": {
+    "breite": 1212,
+    "hoehe": 249
+  },
+  "spieler": {
+    "breite": 1500,
+    "hoehe": 98
+  },
+  "stellen-liste": {
+    "breite": 1012,
+    "hoehe": 529
+  },
+  "umzug": {
+    "breite": 805,
+    "hoehe": 220
+  },
+  "video-bearbeiten": {
+    "breite": 752,
+    "hoehe": 950
+  },
+  "video-daten": {
+    "breite": 752,
+    "hoehe": 810
+  },
+  "video-kopf": {
+    "breite": 1160,
+    "hoehe": 56
+  },
+  "video-reiter": {
+    "breite": 1132,
+    "hoehe": 49
+  },
+  "werkzeuge-mcp": {
+    "breite": 1212,
+    "hoehe": 576
+  }
+}

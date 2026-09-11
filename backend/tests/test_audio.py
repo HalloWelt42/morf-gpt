@@ -464,7 +464,9 @@ class FakeBezug:
         return bezug.AudioErgebnis(ziel, self.kennung, await _sonde_fake(ziel))
 
 
-WERTE = {"audio.bezugsweg": "videostrom_ffmpeg", "audio.abtastrate": 24000, "audio.bitrate_kbit": 64}
+WERTE = {
+        "quelle.tubevault_api": "http://pi:8031",
+        "audio.bezugsweg": "videostrom_ffmpeg", "audio.abtastrate": 24000, "audio.bitrate_kbit": 64}
 
 
 def _video_und_quelle() -> tuple[Video, Quelle]:

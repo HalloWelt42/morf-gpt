@@ -16,4 +16,8 @@ Lokale Dateien: Jede Video- oder Audiodatei unter dem Verzeichnis (auch in Unter
 
 Die Kennung eines lokalen Videos ergibt sich aus seinem Pfad im Verzeichnis. Ein erneuter Abgleich erkennt dieselbe Datei wieder; eine umbenannte oder verschobene Datei gilt als neues Video.
 
+## TubeVault-Adresse
+
+Die Adresse von TubeVault steht an genau einer Stelle: Einstellungen, Quelle und Auswahl, "TubeVault: Adresse der Schnittstelle" und "TubeVault: Adresse der Oberfläche". Alle TubeVault-Quellen, der Audiobezug und der Sprung zur Videoseite in den Videodetails nutzen diese Einstellung. Bekommt der Rechner einen neuen Namen oder eine neue IP, genügt die Änderung dort; nichts muss neu angelegt werden. Der Pfad der Videoseite ("/watch/{extern_id}") ist ebenfalls einstellbar, falls TubeVault ihn einmal ändert.
+
 <div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Was die Quelle nicht liefert, pflegst du am Video von Hand nach (Bearbeiten in der Videoansicht): Serie und Folge, Datum, Originaladresse, Schlagworte, Vorschaubild. Diese Felder bleiben beim nächsten Abgleich stehen.</div>

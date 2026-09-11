@@ -961,14 +961,26 @@ body {
   padding: 5px 8px;
   text-align: left;
 }
+.m-hilfe-artikel .m-bild {
+  display: block;
+  margin: 10px 0 4px;
+}
 .m-hilfe-artikel img {
   display: block;
   max-width: 100%;
   height: auto;
   border: 1px solid var(--m-rand-stark);
-  margin: 10px 0 4px;
 }
-.m-hilfe-artikel img + em {
+.m-hilfe-artikel img.dunkel {
+  display: none;
+}
+:root[data-bs-theme="dark"] .m-hilfe-artikel img.hell {
+  display: none;
+}
+:root[data-bs-theme="dark"] .m-hilfe-artikel img.dunkel {
+  display: block;
+}
+.m-hilfe-artikel .m-bild + em {
   display: block;
   font-size: 0.9rem;
   color: var(--m-text-2);

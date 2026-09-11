@@ -323,6 +323,9 @@ async def detail(video_id: str, session: AsyncSession = Depends(sitzung_abhaengi
     )
     quelle = await session.get(Quelle, v.quelle_id) if v.quelle_id else None
     quelle_typ = quelle.typ if quelle else ""
+    tubevault_url = ""
+    if quelle_typ == "tubevault":
+        tubevault_url = abgleich.tubevault_videoseite(await einstellungen_dienst.alle(session), v.extern_id)
     return VideoDetail(
         **basis.model_dump(),
         beschreibung=v.beschreibung,
@@ -331,6 +334,7 @@ async def detail(video_id: str, session: AsyncSession = Depends(sitzung_abhaengi
         kanal_name=v.kanal_name,
         quelle_id=v.quelle_id,
         quelle_typ=quelle_typ,
+        tubevault_url=tubevault_url,
         quelle_heruntergeladen=v.quelle_heruntergeladen,
         datei_pfad=str((v.metadaten_original or {}).get("pfad") or "") if quelle_typ == lokal.TYP_KENNUNG else "",
         felder_manuell=list(v.felder_manuell or []),

@@ -12,6 +12,7 @@
 // Nutzertext; nur deshalb ist die Ausgabe per {@html} im Fenster unbedenklich.
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import bildmasse from "./bildmasse.json";
 
 export interface Thema {
   anker: string;
@@ -65,9 +66,27 @@ function kopfLesen(quelle: string): { meta: Record<string, string>; rumpf: strin
   return { meta, rumpf: treffer[2] };
 }
 
+type Bildmasse = Record<string, { breite: number; hoehe: number }>;
+const MASSE = bildmasse as Bildmasse;
+const BILD = /<img src="\/hilfe\/([a-z0-9-]+)\.png" alt="([^"]*)">/g;
+
+/** Bilder der Hilfe: je Thema eine Fassung (hell, dunkel) mit demselben Ausschnitt, gezeigt in Bildschirmpixeln (1:1). */
+function bilderJeThema(html: string): string {
+  return html.replace(BILD, (_treffer, name: string, alt: string) => {
+    const m = MASSE[name];
+    const masse = m ? ` width="${m.breite}" height="${m.hoehe}"` : "";
+    return (
+      `<span class="m-bild">` +
+      `<img class="hell" src="/hilfe/${name}.png"${masse} alt="${alt}" loading="lazy">` +
+      `<img class="dunkel" src="/hilfe/${name}-dunkel.png"${masse} alt="${alt}" loading="lazy">` +
+      `</span>`
+    );
+  });
+}
+
 function rendere(markdown: string): string {
   const html = marked.parse(markdown, { async: false, gfm: true, breaks: false }) as string;
-  return DOMPurify.sanitize(html, { ADD_ATTR: ["target", "rel"] });
+  return DOMPurify.sanitize(bilderJeThema(html), { ADD_ATTR: ["target", "rel", "loading"] });
 }
 
 const rohdateien = import.meta.glob("./themen/*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;

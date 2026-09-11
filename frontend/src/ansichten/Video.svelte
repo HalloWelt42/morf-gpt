@@ -276,6 +276,7 @@
       {#if v.original_url}
         <a class="btn btn-sm btn-outline-secondary" href={v.original_url} target="_blank" rel="noreferrer">{#if v.original_url.includes("youtu")}<i class="fa-brands fa-youtube"></i> Bei YouTube öffnen{:else}<i class="fa-solid fa-up-right-from-square"></i> Original öffnen{/if}</a>
       {/if}
+      {#if v.tubevault_url}<a class="btn btn-sm btn-outline-secondary" href={v.tubevault_url} target="_blank" rel="noreferrer" title="Die Videoseite in TubeVault öffnen"><i class="fa-solid fa-vault"></i> TubeVault</a>{/if}
       <button class="btn btn-sm btn-outline-secondary" class:active={bearbeiten} title="Titel, Datum, Serie, Adresse und weitere Metadaten von Hand pflegen" onclick={() => (bearbeiten ? (bearbeiten = false) : pflegeStarten())}><i class="fa-solid fa-pen"></i> Bearbeiten</button>
       <div class="dropdown">
         <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Einzelne Stufen neu anstoßen, auf eine Stufe zurücksetzen oder den Umfang ändern"><i class="fa-solid fa-diagram-next"></i> Fließband</button>
@@ -341,6 +342,7 @@
                 {#if v.aufrufe !== null}<dt class="col-sm-4 fw-normal text-secondary">Aufrufe</dt><dd class="col-sm-8">{zahl(v.aufrufe)}</dd>{/if}
                 <dt class="col-sm-4 fw-normal text-secondary">Kanal</dt><dd class="col-sm-8">{v.kanal_name || "-"}</dd>
                 <dt class="col-sm-4 fw-normal text-secondary">Originaladresse</dt><dd class="col-sm-8">{#if v.original_url}<a href={v.original_url} target="_blank" rel="noreferrer">{v.original_url}</a>{:else}<span class="text-secondary">keine (über Bearbeiten nachtragen)</span>{/if}</dd>
+                {#if v.tubevault_url}<dt class="col-sm-4 fw-normal text-secondary">TubeVault</dt><dd class="col-sm-8"><a href={v.tubevault_url} target="_blank" rel="noreferrer" title="Die Videoseite in TubeVault öffnen; die Adresse kommt aus den Einstellungen, Quelle und Auswahl">{v.tubevault_url}</a> <InfoKnopf anker="quellen" finde="TubeVault-Adresse" /></dd>{/if}
                 {#if v.datei_pfad}<dt class="col-sm-4 fw-normal text-secondary">Datei</dt><dd class="col-sm-8"><code>{v.datei_pfad}</code></dd>{/if}
                 <dt class="col-sm-4 fw-normal text-secondary">Quelle</dt><dd class="col-sm-8">{#if v.quelle_typ === "lokal"}lokale Datei aus dem Verzeichnis der Quelle{:else if !v.quelle_id}ohne Quelle{:else}{v.quelle_heruntergeladen ? "in der Quelle als Datei vorhanden" : "in der Quelle nicht heruntergeladen"}{/if} &middot; {v.ausgewaehlt ? "im Umfang" : "nicht im Umfang"}{v.auswahl_manuell ? " (von Hand entschieden)" : ""}</dd>
                 {#if v.felder_manuell.length}<dt class="col-sm-4 fw-normal text-secondary">Von Hand gepflegt</dt><dd class="col-sm-8">{v.felder_manuell.map((f) => FELD_TITEL[f] ?? f).join(", ")} <button class="btn btn-sm btn-link p-0 align-baseline" title="Der nächste Abgleich übernimmt wieder die Werte der Quelle" onclick={handpflegeAufheben}>aufheben</button> <InfoKnopf anker="pflege" /></dd>{/if}

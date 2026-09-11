@@ -115,12 +115,22 @@ async def test_fehlendes_verzeichnis_und_kennung(ordner: Path) -> None:
 
 
 def test_baue_quelle_kennt_beide_typen() -> None:
-    werte = {"quelle.dateiendungen": "mp4", "quelle.zeitgrenze_s": 5}
+    werte = {"quelle.dateiendungen": "mp4", "quelle.zeitgrenze_s": 5, "quelle.tubevault_api": "http://tv.example:8031/"}
     assert isinstance(abgleich.baue_quelle("lokal", "/tmp", "", werte), lokal.LokaleDateien)
     with pytest.raises(QuellenFehler):
-        abgleich.baue_quelle("tubevault", "http://x", "", werte)
+        abgleich.baue_quelle("tubevault", "", "", werte)
     with pytest.raises(QuellenFehler):
         abgleich.baue_quelle("fremd", "http://x", "k", werte)
+    assert abgleich.baue_quelle("tubevault", "", "UC1", werte).basis_url == "http://tv.example:8031"
+    with pytest.raises(QuellenFehler):
+        abgleich.baue_quelle("tubevault", "http://alt.example", "UC1", {"quelle.tubevault_api": ""})
+
+
+def test_tubevault_videoseite() -> None:
+    werte = {"quelle.tubevault_oberflaeche": "http://tv.example:8032/", "quelle.tubevault_videoseite": "/watch/{extern_id}"}
+    assert abgleich.tubevault_videoseite(werte, "abc123") == "http://tv.example:8032/watch/abc123"
+    assert abgleich.tubevault_videoseite(werte, "") == ""
+    assert abgleich.tubevault_videoseite({}, "abc") == ""
 
 
 def _quelle() -> Quelle:

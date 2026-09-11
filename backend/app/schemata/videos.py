@@ -128,6 +128,7 @@ class VideoDetail(VideoEintrag):
     kanal_name: str
     quelle_id: str | None
     quelle_typ: str  # tubevault, lokal oder leer (ohne Quelle)
+    tubevault_url: str  # Sprung zur Videoseite in der TubeVault-Oberfläche (zentrale Einstellung), sonst leer
     quelle_heruntergeladen: bool
     datei_pfad: str  # bei lokalen Quellen der Pfad relativ zum Verzeichnis, sonst leer
     felder_manuell: list[str]  # von Hand gepflegte Felder, die der Abgleich nicht mehr überschreibt

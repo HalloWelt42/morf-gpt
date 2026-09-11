@@ -12,14 +12,24 @@
 
   let quellen = $state<Quelle[]>([]);
   let typen = $state<Record<string, string>>({});
-  const ADRESSE_VORGABE: Record<string, string> = { tubevault: "http://192.168.178.49:8031", lokal: "" };
-  let neu = $state({ typ: "tubevault", name: "", basis_url: ADRESSE_VORGABE.tubevault, kanal_id: "" });
+  let neu = $state({ typ: "tubevault", name: "", basis_url: "", kanal_id: "" });
   const istLokal = $derived(neu.typ === "lokal");
+  // Die TubeVault-Adresse hat genau einen Ort: Einstellungen, Quelle und Auswahl.
+  let tubevaultAdresse = $state("");
 
   function typGewechselt(): void {
-    neu.basis_url = ADRESSE_VORGABE[neu.typ] ?? "";
+    neu.basis_url = "";
     neu.kanal_id = "";
     kanal = null;
+  }
+
+  async function ladeTubevaultAdresse(): Promise<void> {
+    try {
+      const alle = await api.get<{ schluessel: string; wert: unknown }[]>("/einstellungen");
+      tubevaultAdresse = String(alle.find((e) => e.schluessel === "quelle.tubevault_api")?.wert ?? "");
+    } catch {
+      // nicht kritisch
+    }
   }
   let kanal = $state<KanalAusgabe | null>(null);
   let pruefen = $state(false);
@@ -46,7 +56,7 @@
     pruefen = true;
     kanal = null;
     try {
-      kanal = await api.post<KanalAusgabe>("/quellen/pruefen", { typ: neu.typ, basis_url: neu.basis_url, kanal_id: istLokal ? "" : neu.kanal_id });
+      kanal = await api.post<KanalAusgabe>("/quellen/pruefen", { typ: neu.typ, basis_url: istLokal ? neu.basis_url : "", kanal_id: istLokal ? "" : neu.kanal_id });
       if (!neu.name) neu.name = kanal.name;
     } catch (e) {
       meldeFehler(e, "Kanal prüfen");
@@ -58,9 +68,9 @@
   async function anlegen(): Promise<void> {
     beschaeftigt = true;
     try {
-      await api.post<Quelle>("/quellen", { ...neu, kanal_id: istLokal ? "" : neu.kanal_id });
+      await api.post<Quelle>("/quellen", { ...neu, basis_url: istLokal ? neu.basis_url : "", kanal_id: istLokal ? "" : neu.kanal_id });
       meldungen.gut("Quelle angelegt");
-      neu = { typ: neu.typ, name: "", basis_url: istLokal ? "" : neu.basis_url, kanal_id: "" };
+      neu = { typ: neu.typ, name: "", basis_url: "", kanal_id: "" };
       kanal = null;
       await laden();
     } catch (e) {
@@ -121,7 +131,7 @@
       if (regeln.mindest_dauer_s !== "") r.mindest_dauer_s = Number(regeln.mindest_dauer_s);
       if (regeln.typen !== "") r.typen = regeln.typen;
       if (regeln.nur_heruntergeladene !== "") r.nur_heruntergeladene = regeln.nur_heruntergeladene === "true";
-      await api.put(`/quellen/${bearbeiten.id}`, { name: bearbeiten.name, basis_url: bearbeiten.basis_url, kanal_id: bearbeiten.kanal_id, regeln: r, aktiv: bearbeiten.aktiv });
+      await api.put(`/quellen/${bearbeiten.id}`, { name: bearbeiten.name, basis_url: bearbeiten.typ === "lokal" ? bearbeiten.basis_url : null, kanal_id: bearbeiten.kanal_id, regeln: r, aktiv: bearbeiten.aktiv });
       meldungen.gut("Quelle gespeichert");
       bearbeiten = null;
       await laden();
@@ -134,7 +144,10 @@
 
   // Nach einem Abgleich (läuft als Auftrag) die Zähler der Quellen auffrischen.
   const abo = ereignisse.abonniere("quelle", () => void laden());
-  onMount(() => void laden());
+  onMount(() => {
+    void laden();
+    void ladeTubevaultAdresse();
+  });
   onDestroy(() => abo());
 </script>
 
@@ -151,7 +164,7 @@
           <div class="d-flex align-items-start gap-3 flex-wrap">
             <div class="flex-grow-1">
               <div class="fs-5 fw-semibold">{q.name} <span class="badge text-bg-secondary">{q.typ_titel}</span>{#if !q.aktiv}<span class="badge text-bg-dark ms-1">deaktiviert</span>{/if}</div>
-              <div class="text-secondary">{#if q.typ === "lokal"}Verzeichnis {q.basis_url}{#if q.kanal_beschreibung} &middot; {q.kanal_beschreibung}{/if}{:else}{q.basis_url} &middot; Kanal {q.kanal_id}{#if q.kanal_name} ({q.kanal_name}){/if}{/if}</div>
+              <div class="text-secondary">{#if q.typ === "lokal"}Verzeichnis {q.basis_url}{#if q.kanal_beschreibung} &middot; {q.kanal_beschreibung}{/if}{:else}{q.basis_url || "keine TubeVault-Adresse eingestellt"}{#if q.adresse_zentral} <span title="Die Adresse hat genau einen Ort: Einstellungen, Quelle und Auswahl">(aus den Einstellungen)</span>{/if} &middot; Kanal {q.kanal_id}{#if q.kanal_name} ({q.kanal_name}){/if}{/if}</div>
               <div class="mt-1">{zahl(q.videos)} Videos, {zahl(q.videos_ausgewaehlt)} im Umfang &middot; zuletzt abgeglichen {q.zuletzt_abgeglichen ? vorZeit(q.zuletzt_abgeglichen) : "nie"}</div>
               <div class="small text-secondary mt-1">
                 Regeln: {q.regeln.mindest_dauer_s !== undefined && q.regeln.mindest_dauer_s !== null ? `Mindestdauer ${q.regeln.mindest_dauer_s} Sekunden` : "Mindestdauer aus den Einstellungen"},
@@ -174,7 +187,7 @@
               {#if bearbeiten.typ === "lokal"}
                 <div class="col-md-8"><label class="form-label" for="q-url">Verzeichnis</label><input class="form-control" id="q-url" bind:value={bearbeiten.basis_url} /></div>
               {:else}
-                <div class="col-md-5"><label class="form-label" for="q-url">Basisadresse</label><input class="form-control" id="q-url" bind:value={bearbeiten.basis_url} /></div>
+                <div class="col-md-5"><label class="form-label" for="q-url">TubeVault-Adresse</label><input class="form-control" id="q-url" value={bearbeiten.basis_url} disabled title="Zentral unter Einstellungen, Quelle und Auswahl einstellbar; gilt für alle TubeVault-Quellen" /><div class="form-text">Aus den Einstellungen <InfoKnopf anker="quellen" finde="TubeVault-Adresse" /></div></div>
                 <div class="col-md-3"><label class="form-label" for="q-kanal">Kanalkennung</label><input class="form-control" id="q-kanal" bind:value={bearbeiten.kanal_id} title="Kennung des Kanals, wie die Quelle sie führt (bei YouTube beginnt sie mit UC)" /></div>
               {/if}
               <div class="col-md-4"><label class="form-label" for="r-dauer">Mindestdauer (leer = Einstellungen)</label><div class="input-group"><input class="form-control" id="r-dauer" type="number" bind:value={regeln.mindest_dauer_s} title="Nur Videos, die länger sind als dieser Wert, kommen automatisch in den Umfang; leer heißt Wert aus den Einstellungen" /><span class="input-group-text">Sekunden</span></div></div>
@@ -201,11 +214,11 @@
           {#if istLokal}
             <div class="col-md-6"><label class="form-label" for="n-url">Verzeichnis auf diesem Rechner</label><input class="form-control" id="n-url" bind:value={neu.basis_url} placeholder="/Users/name/Videos/morf" title="Vollständiger Pfad des Verzeichnisses; Unterordner werden mitgelesen" /><div class="form-text">Alle Video- und Audiodateien darunter, auch in Unterordnern. Ein Beiblatt name.json und ein Bild name.jpg neben der Datei werden übernommen.</div></div>
           {:else}
-            <div class="col-md-3"><label class="form-label" for="n-url">Basisadresse der Quelle</label><input class="form-control" id="n-url" bind:value={neu.basis_url} title="Adresse des Dienstes samt Port, ohne Pfad" /></div>
+            <div class="col-md-3"><label class="form-label" for="n-url">TubeVault-Adresse</label><input class="form-control" id="n-url" value={tubevaultAdresse} disabled title="Zentral unter Einstellungen, Quelle und Auswahl einstellbar; gilt für alle TubeVault-Quellen" /><div class="form-text">Aus den Einstellungen <InfoKnopf anker="quellen" finde="TubeVault-Adresse" /></div></div>
             <div class="col-md-3"><label class="form-label" for="n-kanal">Kanalkennung</label><input class="form-control" id="n-kanal" bind:value={neu.kanal_id} placeholder="UC..." title="Kennung des Kanals, wie die Quelle sie führt (bei YouTube beginnt sie mit UC)" /></div>
           {/if}
           <div class="col-12 d-flex gap-2 align-items-center flex-wrap">
-            <button class="btn btn-outline-secondary" onclick={kanalPruefen} title="Fragt die Quelle nach dem Kanal oder liest das Verzeichnis, ohne etwas zu speichern" disabled={pruefen || !neu.basis_url || (!istLokal && !neu.kanal_id)}>{#if pruefen}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} {istLokal ? "Verzeichnis prüfen" : "Kanal prüfen"}</button>
+            <button class="btn btn-outline-secondary" onclick={kanalPruefen} title="Fragt die Quelle nach dem Kanal oder liest das Verzeichnis, ohne etwas zu speichern" disabled={pruefen || (istLokal ? !neu.basis_url : !neu.kanal_id)}>{#if pruefen}<i class="fa-solid fa-circle-notch fa-spin"></i>{/if} {istLokal ? "Verzeichnis prüfen" : "Kanal prüfen"}</button>
             {#if kanal}
               {#if istLokal}
                 <span class="text-success"><i class="fa-solid fa-circle-check"></i> Ordner gefunden: <b>{kanal.name}</b>, {zahl(kanal.videos_gesamt)} Dateien</span>

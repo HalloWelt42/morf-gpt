@@ -15,7 +15,7 @@ from ..db.modelle import Quelle, Video
 from ..dienste.auftraege.laeufer import auftrag_anlegen
 from ..dienste.einstellungen import dienst as einstellungen_dienst
 from ..dienste.ereignisse import bus
-from ..dienste.quellen import abgleich
+from ..dienste.quellen import abgleich, tubevault
 from ..dienste.quellen.basis import QuellenFehler
 from ..domaene.fliessband import Auftragsart
 
@@ -23,11 +23,12 @@ router = APIRouter(prefix="/quellen", tags=["quellen"])
 
 
 class QuelleEingabe(BaseModel):
-    """`basis_url`: Adresse des Dienstes oder, bei lokalen Dateien, das Verzeichnis. `kanal_id` nur bei TubeVault."""
+    """`basis_url`: bei lokalen Dateien das Verzeichnis; TubeVault nutzt die zentrale Adresse aus den
+    Einstellungen (quelle.tubevault_api). `kanal_id` nur bei TubeVault."""
 
     typ: str = "tubevault"
     name: str = Field(min_length=1, max_length=200)
-    basis_url: str = Field(min_length=1)
+    basis_url: str = ""
     kanal_id: str = ""
     regeln: dict[str, Any] = Field(default_factory=dict)
     aktiv: bool = True
@@ -43,7 +44,7 @@ class QuelleAenderung(BaseModel):
 
 class KanalPruefung(BaseModel):
     typ: str = "tubevault"
-    basis_url: str
+    basis_url: str = ""
     kanal_id: str = ""
 
 
@@ -60,7 +61,8 @@ class QuelleAusgabe(BaseModel):
     typ: str
     typ_titel: str
     name: str
-    basis_url: str
+    basis_url: str  # bei TubeVault die zentrale Adresse aus den Einstellungen
+    adresse_zentral: bool
     kanal_id: str
     kanal_name: str
     kanal_beschreibung: str
@@ -98,12 +100,18 @@ class AuftragAusgabe(BaseModel):
 async def _ausgabe(s: AsyncSession, q: Quelle) -> QuelleAusgabe:
     videos = int(await s.scalar(select(func.count(Video.id)).where(Video.quelle_id == q.id)) or 0)
     ausgewaehlt = int(await s.scalar(select(func.count(Video.id)).where(Video.quelle_id == q.id, Video.ausgewaehlt.is_(True))) or 0)
+    zentral = q.typ == tubevault.TYP_KENNUNG
+    adresse = q.basis_url
+    if zentral:
+        werte = await einstellungen_dienst.alle(s)
+        adresse = str(werte.get("quelle.tubevault_api") or "")
     return QuelleAusgabe(
         id=q.id,
         typ=q.typ,
         typ_titel=abgleich.TYPEN.get(q.typ, q.typ),
         name=q.name,
-        basis_url=q.basis_url,
+        basis_url=adresse,
+        adresse_zentral=zentral,
         kanal_id=q.kanal_id,
         kanal_name=q.kanal_name,
         kanal_beschreibung=q.kanal_beschreibung,
@@ -165,16 +173,20 @@ async def pruefen(e: KanalPruefung, session: AsyncSession = Depends(sitzung_abha
 @router.post("", response_model=QuelleAusgabe, status_code=201)
 async def anlegen(e: QuelleEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> QuelleAusgabe:
     werte = await einstellungen_dienst.alle(session)
-    kanal = await _kanal_pruefen(e.typ, e.basis_url.strip(), e.kanal_id.strip(), werte)
+    zentral = e.typ == tubevault.TYP_KENNUNG
+    basis_url = "" if zentral else e.basis_url.strip().rstrip("/")
+    if not zentral and not basis_url:
+        raise HTTPException(422, "Lokale Dateien brauchen ein Verzeichnis")
+    kanal = await _kanal_pruefen(e.typ, basis_url, e.kanal_id.strip(), werte)
     doppelt = await session.scalar(
-        select(func.count(Quelle.id)).where(Quelle.basis_url == e.basis_url.strip(), Quelle.kanal_id == e.kanal_id.strip())
+        select(func.count(Quelle.id)).where(Quelle.typ == e.typ, Quelle.basis_url == basis_url, Quelle.kanal_id == e.kanal_id.strip())
     )
     if doppelt:
-        raise HTTPException(409, "Diese Quelle mit diesem Kanal ist bereits angelegt")
+        raise HTTPException(409, "Diese Quelle ist bereits angelegt")
     q = Quelle(
         typ=e.typ,
         name=e.name.strip(),
-        basis_url=e.basis_url.strip().rstrip("/"),
+        basis_url=basis_url,
         kanal_id=e.kanal_id.strip(),
         kanal_name=kanal.name,
         kanal_beschreibung=kanal.beschreibung,
@@ -192,7 +204,7 @@ async def aendern(quelle_id: str, e: QuelleAenderung, session: AsyncSession = De
     q = await _laden(session, quelle_id)
     if e.name is not None:
         q.name = e.name.strip() or q.name
-    if e.basis_url is not None:
+    if e.basis_url is not None and q.typ != tubevault.TYP_KENNUNG:
         q.basis_url = e.basis_url.strip().rstrip("/") or q.basis_url
     if e.kanal_id is not None:
         q.kanal_id = e.kanal_id.strip() or q.kanal_id

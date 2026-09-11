@@ -3,8 +3,10 @@
 //
 // Keine Vollbilder, sondern genau die Stelle, um die es im Text geht (ein Regler, eine Karte,
 // eine Leiste). Läuft mit Chrome headless und dem DevTools-Protokoll über den WebSocket von
-// Node 22, ohne weitere Pakete. Die Bilder landen unter frontend/public/hilfe/<name>.png und
-// werden von der Hilfe (Markdown-Themen) und vom README eingebettet.
+// Node 22, ohne weitere Pakete. Jedes Motiv entsteht zweimal mit demselben Ausschnitt: hell als
+// <name>.png und dunkel als <name>-dunkel.png unter frontend/public/hilfe/. Die Maße in
+// Bildschirmpixeln stehen in frontend/src/lib/hilfe/bildmasse.json, damit Hilfe und README die
+// Bilder 1:1 zeigen. Die Hilfe blendet je nach Thema das passende Bild ein.
 //
 // Voraussetzung: die Anwendung läuft (./start.sh start), mit echten Daten.
 // Nutzung: node tools/bildschirmfotos.mjs [--basis http://127.0.0.1:5460] [--nur name,name]
@@ -17,11 +19,13 @@ import { fileURLToPath } from "node:url";
 
 const WURZEL = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ZIEL = path.join(WURZEL, "frontend", "public", "hilfe");
+const MASSE = path.join(WURZEL, "frontend", "src", "lib", "hilfe", "bildmasse.json");
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const BREITE = 1500;
 const HOEHE = 950;
 const PORT = 9333;
-const SCHAERFE = 2; // Retina
+const SCHAERFE = 2; // Retina: Gerätemaßstab der Seite; der Ausschnitt selbst wird mit Maßstab 1 geholt,
+// sonst multiplizieren sich beide und die Bilder werden vierfach groß.
 
 const argumente = process.argv.slice(2);
 const wert = (name, vorgabe) => {
@@ -39,6 +43,7 @@ window.__foto = {
   alle(sel, n) { const l = [...document.querySelectorAll(sel)].slice(0, n ?? 999); if (!l.length) throw new Error("nicht gefunden: " + sel); l[0].scrollIntoView({ block: "start" }); return this.union(l.map((e) => { const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, width: b.width, height: b.height }; })); },
   union(rs) { const x = Math.min(...rs.map((r) => r.x)), y = Math.min(...rs.map((r) => r.y)); return { x, y, width: Math.max(...rs.map((r) => r.x + r.width)) - x, height: Math.max(...rs.map((r) => r.y + r.height)) - y }; },
   mitText(sel, text) { const el = [...document.querySelectorAll(sel)].find((e) => e.textContent.includes(text)); if (!el) throw new Error("kein " + sel + " mit " + text); return el; },
+  thema(name) { document.documentElement.setAttribute("data-bs-theme", name); try { localStorage.setItem("m-thema", name); } catch {} },
   setze(el, wert) { const p = Object.getPrototypeOf(el); Object.getOwnPropertyDescriptor(p, "value").set.call(el, wert); el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true })); },
   warte(ms) { return new Promise((r) => setTimeout(r, ms)); },
 };
@@ -157,6 +162,7 @@ async function main() {
   });
   const dt = new DevTools(ws);
   let fehler = 0;
+  const masse = fs.existsSync(MASSE) ? JSON.parse(fs.readFileSync(MASSE, "utf8")) : {};
   try {
     await dt.ruf("Page.enable");
     await dt.ruf("Emulation.setDeviceMetricsOverride", { width: BREITE, height: HOEHE, deviceScaleFactor: SCHAERFE, mobile: false });
@@ -170,18 +176,28 @@ async function main() {
         await schlaf(m.warten ?? 1800);
         await dt.werte(HELFER);
         if (m.vorher) await dt.werte(`(async () => { ${m.vorher} })()`);
+        await dt.werte(`${"window.__foto"}.thema("light")`);
+        await schlaf(250);
         const r = await dt.werte(m.ausschnitt);
         const rand = m.rand ?? 0;
-        const clip = { x: Math.max(0, r.x - rand), y: Math.max(0, r.y - rand), width: Math.min(BREITE, r.width + 2 * rand), height: Math.min(HOEHE, r.height + 2 * rand), scale: SCHAERFE };
-        const bild = await dt.ruf("Page.captureScreenshot", { format: "png", clip, captureBeyondViewport: false });
-        fs.writeFileSync(path.join(ZIEL, `${m.name}.png`), Buffer.from(bild.data, "base64"));
-        console.log(`${m.name}: ${Math.round(clip.width)} x ${Math.round(clip.height)}`);
+        const clip = { x: Math.max(0, r.x - rand), y: Math.max(0, r.y - rand), width: Math.min(BREITE, r.width + 2 * rand), height: Math.min(HOEHE, r.height + 2 * rand), scale: 1 };
+        // Derselbe Ausschnitt in beiden Themen: erst hell, dann dunkel, ohne neu zu messen.
+        const hell = await dt.ruf("Page.captureScreenshot", { format: "png", clip, captureBeyondViewport: false });
+        fs.writeFileSync(path.join(ZIEL, `${m.name}.png`), Buffer.from(hell.data, "base64"));
+        await dt.werte(`${"window.__foto"}.thema("dark")`);
+        await schlaf(350);
+        const dunkel = await dt.ruf("Page.captureScreenshot", { format: "png", clip, captureBeyondViewport: false });
+        fs.writeFileSync(path.join(ZIEL, `${m.name}-dunkel.png`), Buffer.from(dunkel.data, "base64"));
+        await dt.werte(`${"window.__foto"}.thema("light")`);
+        masse[m.name] = { breite: Math.round(clip.width), hoehe: Math.round(clip.height) };
+        console.log(`${m.name}: ${Math.round(clip.width)} x ${Math.round(clip.height)} (hell und dunkel)`);
       } catch (e) {
         fehler++;
         console.error(`${m.name}: FEHLER ${e.message}`);
       }
     }
   } finally {
+    fs.writeFileSync(MASSE, JSON.stringify(Object.fromEntries(Object.entries(masse).sort()), null, 2) + "\n");
     ws.close();
     kind.kill();
     await schlaf(500); // Chrome schreibt beim Beenden noch ins Profil

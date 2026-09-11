@@ -11,7 +11,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 
 ## Was die Anwendung kann
 
-![Antwort mit Belegen](frontend/public/hilfe/chat-antwort.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/hilfe/chat-antwort-dunkel.png">
+  <img src="frontend/public/hilfe/chat-antwort.png" width="912" alt="Antwort mit Belegen">
+</picture>
 
 *Eine Antwort im Chat: jede Aussage trägt die Nummer ihrer Stelle, ein Klick springt zur Fundstelle.*
 
@@ -35,7 +38,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   Sie werden in Kapitel gelesen, je Kapitel gestückelt und eingebettet und stehen dem Chat
   neben den Videos zur Verfügung; ein Beleg springt ins Kapitel der Leseansicht. Im Chat
   lässt sich auf Videos, Dokumente oder ein einzelnes Dokument einschränken.
-  ![Kapitel und Leseansicht eines Dokuments](frontend/public/hilfe/dokument-kapitel.png)
+  <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/hilfe/dokument-kapitel-dunkel.png">
+  <img src="frontend/public/hilfe/dokument-kapitel.png" width="1464" alt="Kapitel und Leseansicht eines Dokuments">
+</picture>
 
   *Die Dokumentansicht: Kapitel mit der Zahl ihrer Stücke, daneben die Leseansicht.*
 
@@ -44,7 +50,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
 - **Fließband**: sechs Stufen mit Zählern, Durchsatz und Restzeit, Pause je Stufe,
   laufende und fehlgeschlagene Aufträge, Protokoll live. Jede Stufe hat einen Info-Knopf,
   der erklärt, was in dem Schritt passiert und warum er wichtig ist.
-  ![Stufen des Fließbands](frontend/public/hilfe/fliessband-stufen.png)
+  <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/hilfe/fliessband-stufen-dunkel.png">
+  <img src="frontend/public/hilfe/fliessband-stufen.png" width="1472" alt="Stufen des Fließbands">
+</picture>
 
   *Das Fließband: je Stufe Zähler, Durchsatz, Restzeit und der Schalter zum Anhalten; der Info-Knopf erklärt den Schritt.*
 
@@ -63,7 +72,10 @@ Die Architektur steht in [docs/ARCHITEKTUR.md](docs/ARCHITEKTUR.md).
   nur im gezeigten, mit Trefferzähler und Sprung von Treffer zu Treffer. Mini-i-Knöpfe
   öffnen genau das passende Thema, auf Wunsch gleich beim gesuchten Begriff.
 
-  ![Hilfefenster mit Suche](frontend/public/hilfe/hilfe-fenster.png)
+  <picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/hilfe/hilfe-fenster-dunkel.png">
+  <img src="frontend/public/hilfe/hilfe-fenster.png" width="640" alt="Hilfefenster mit Suche">
+</picture>
 
   *Das Hilfefenster: Suche über alle Themen mit Trefferzähler, Themenliste mit Trefferzahl, Fundstellen im Text markiert.*
 
@@ -103,9 +115,11 @@ Backend wendet ausstehende Migrationen bei jedem Start auch selbst an.
 
 ## Erste Schritte
 
-1. Einstellungen, Quellen: Quelle anlegen, entweder einen Kanal (Basisadresse und
-   Kanalkennung, Kanal prüfen) oder ein Verzeichnis mit eigenen Dateien (Verzeichnis
-   prüfen). Dann Jetzt abgleichen.
+1. Einstellungen, Quelle und Auswahl: die TubeVault-Adresse (Schnittstelle und
+   Oberfläche) eintragen; sie gilt an genau dieser einen Stelle für alle TubeVault-Quellen,
+   den Audiobezug und die Sprünge zur Videoseite. Dann unter Einstellungen, Quellen eine
+   Quelle anlegen: einen Kanal (Kanalkennung, Kanal prüfen) oder ein Verzeichnis mit
+   eigenen Dateien (Verzeichnis prüfen). Dann Jetzt abgleichen.
 2. Einstellungen, Anbieter: Sprachmodell und Einbettung prüfen, Rollen zuweisen.
 3. Fließband: Band auffüllen. Ab dann laufen die Stufen von selbst weiter; die
    Erklärserie kommt zuerst.
@@ -123,8 +137,11 @@ Danach das Paket unter Einstellungen, Umzug importieren und Anbieter einrichten.
 ## Bildschirmfotos für Hilfe und README
 
 Die Bilder unter `frontend/public/hilfe/` sind gezielte Ausschnitte aus der laufenden
-Anwendung (ein Regler, eine Karte, eine Leiste), keine Vollbilder. Sie entstehen
-reproduzierbar mit Chrome headless und dem DevTools-Protokoll, ohne weitere Pakete:
+Anwendung (ein Regler, eine Karte, eine Leiste), keine Vollbilder. Jedes Motiv gibt es mit
+demselben Ausschnitt hell und dunkel (`name.png`, `name-dunkel.png`); die Hilfe zeigt die
+Fassung des gewählten Themas, das README die des Betriebssystems, beide in
+Bildschirmpixeln (1:1). Die Maße stehen in `frontend/src/lib/hilfe/bildmasse.json`. Sie
+entstehen reproduzierbar mit Chrome headless und dem DevTools-Protokoll, ohne weitere Pakete:
 
 ```bash
 node tools/bildschirmfotos.mjs

@@ -226,6 +226,7 @@ export interface VideoDetail extends VideoEintrag {
   kanal_name: string;
   quelle_id: string | null;
   quelle_typ: string;
+  tubevault_url: string;
   quelle_heruntergeladen: boolean;
   datei_pfad: string;
   felder_manuell: string[];
@@ -573,6 +574,7 @@ export interface Quelle {
   typ_titel: string;
   name: string;
   basis_url: string;
+  adresse_zentral: boolean;
   kanal_id: string;
   kanal_name: string;
   kanal_beschreibung: string;
