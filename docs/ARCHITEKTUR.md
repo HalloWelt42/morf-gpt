@@ -279,6 +279,12 @@ Bedienelemente aus dem Bild (Sichtschutz), schaltet das Fenster von selbst auf V
 
 ## 10. Technik
 
+Beim Start bringt das Backend das Datenbankschema selbst auf den neuesten Stand
+(`db/migration.py`, Alembic `upgrade head`, abschaltbar über
+`MORF_MIGRATION_BEIM_START`), und zwar vor dem Auftragsläufer. Grund: uvicorn lädt nach
+einer Modelländerung sofort neu; ohne diesen Schritt trafen Aufträge auf Spalten, die in
+der Datenbank noch fehlten, und verbrauchten ihre Versuche.
+
 - Backend: Python 3.12, FastAPI, SQLAlchemy 2 (async, asyncpg), Alembic, Pydantic v2,
   httpx. Start über `start.sh` (Datenbank per Docker Compose, Backend, Frontend).
 - Frontend: Svelte 5 (Runes, TypeScript), Vite, Bootstrap 5 (npm, SCSS-Thema: kantig,

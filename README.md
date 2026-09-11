@@ -77,7 +77,8 @@ Container, richtet die Python-Umgebung ein, bringt das Schema auf den neuesten S
 startet Backend und Oberfläche. Adressen stehen danach in der Konsole (Vorgabe:
 Oberfläche `http://127.0.0.1:5460`, Backend `http://127.0.0.1:8460`, Doku `/docs`).
 
-Weitere Befehle: `./start.sh stop`, `restart`, `status`, `logs`, `migrate`, `db`.
+Weitere Befehle: `./start.sh stop`, `restart`, `status`, `logs`, `migrate`, `db`. Das
+Backend wendet ausstehende Migrationen bei jedem Start auch selbst an.
 
 ## Erste Schritte
 

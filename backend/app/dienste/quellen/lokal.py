@@ -230,7 +230,22 @@ def einzelbild_kommandozeile(ffmpeg: str, datei: Path, sekunde: float) -> list[s
 
 def bild_kommandozeile(ffmpeg: str, bild: Path) -> list[str]:
     """Beliebiges Bild nach JPEG (die Miniaturablage ist einheitlich JPEG)."""
-    return [ffmpeg, "-hide_banner", "-nostdin", "-loglevel", "error", "-i", str(bild), "-frames:v", "1", "-f", "image2", "-c:v", "mjpeg", "pipe:1"]
+    return [
+        ffmpeg,
+        "-hide_banner",
+        "-nostdin",
+        "-loglevel",
+        "error",
+        "-i",
+        str(bild),
+        "-frames:v",
+        "1",
+        "-f",
+        "image2",
+        "-c:v",
+        "mjpeg",
+        "pipe:1",
+    ]
 
 
 async def _ffmpeg_bytes(kommando: list[str]) -> bytes:

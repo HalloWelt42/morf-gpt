@@ -468,7 +468,9 @@ async def aendern(video_id: str, e: VideoAenderung, session: AsyncSession = Depe
 
 
 @router.post("/{video_id}/miniatur", response_model=VideoDetail)
-async def miniatur_hochladen(video_id: str, datei: UploadFile = File(...), session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> VideoDetail:
+async def miniatur_hochladen(
+    video_id: str, datei: UploadFile = File(...), session: AsyncSession = Depends(sitzung_abhaengigkeit)
+) -> VideoDetail:
     """Eigenes Vorschaubild setzen (JPEG, PNG oder WebP); wird als JPEG abgelegt und bleibt beim Abgleich stehen."""
     v = await _laden(session, video_id)
     roh = await datei.read()
@@ -507,7 +509,8 @@ async def auftrag(video_id: str, art: str, session: AsyncSession = Depends(sitzu
     if stufen_index(Stufe(v.stufe)) < stufen_index(noetig):
         raise HTTPException(
             409,
-            f"{AUFTRAGSART_TITEL[a_art]} braucht mindestens die Stufe '{STUFEN_TITEL[noetig]}', das Video steht auf '{STUFEN_TITEL[Stufe(v.stufe)]}'",
+            f"{AUFTRAGSART_TITEL[a_art]} braucht mindestens die Stufe '{STUFEN_TITEL[noetig]}', "
+            f"das Video steht auf '{STUFEN_TITEL[Stufe(v.stufe)]}'",
         )
     a = await auftrag_anlegen(session, a_art, v.id, prioritaet=10)
     if a is None:

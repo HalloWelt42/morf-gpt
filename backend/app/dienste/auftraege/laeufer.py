@@ -15,7 +15,7 @@ import traceback
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import and_, func, select, update
+from sqlalchemy import and_, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...db.engine import sitzung
@@ -88,6 +88,8 @@ class Laeufer:
         self._takt_s = 2.0
 
     # ------------------------------------------------------------------ Lebenszyklus
+    NEUSTART_MELDUNG = "Backend neu gestartet - Auftrag wird erneut ausgeführt"
+
     async def start(self) -> None:
         if self._task is not None:
             return
@@ -100,7 +102,8 @@ class Laeufer:
         self._stopp.set()
         for k in self._kontexte.values():
             k.abbruch.set()
-        for t in list(self._laufend.values()):
+        aufgaben = list(self._laufend.values())
+        for t in aufgaben:
             t.cancel()
         if self._task is not None:
             self._task.cancel()
@@ -109,6 +112,10 @@ class Laeufer:
             except (asyncio.CancelledError, Exception):
                 pass
             self._task = None
+        # Erst die abgebrochenen Aufgaben ihr Zurückstellen schreiben lassen, dann den Rest
+        # aufräumen; sonst überschreibt ihr Abschluss das Zurücksetzen (Auftrag blieb "abgebrochen").
+        if aufgaben:
+            await asyncio.gather(*aufgaben, return_exceptions=True)
         await self._verwaiste_zuruecksetzen()
         log.info("Auftragsläufer gestoppt")
 
@@ -129,13 +136,39 @@ class Laeufer:
         return True
 
     async def _verwaiste_zuruecksetzen(self) -> None:
-        """Nach einem Neustart: 'laeuft' ohne Prozess -> wieder 'wartend' (ehrlich, nicht fertig)."""
+        """Nach einem Neustart: 'laeuft' ohne Prozess -> wieder 'wartend' (ehrlich, nicht fertig).
+
+        Ebenso Aufträge, die ein Neustart als 'abgebrochen' hinterlassen hat (erkennbar an der
+        Neustart-Meldung): sie hat kein Nutzer abgebrochen, sie gehören wieder in die Reihe.
+        """
         async with sitzung() as s:
-            rows = (await s.execute(select(Auftrag).where(Auftrag.status == Auftragsstatus.LAEUFT))).scalars().all()
+            bedingung = or_(
+                Auftrag.status == Auftragsstatus.LAEUFT,
+                and_(Auftrag.status == Auftragsstatus.ABGEBROCHEN, Auftrag.meldung == self.NEUSTART_MELDUNG),
+            )
+            rows = (await s.execute(select(Auftrag).where(bedingung))).scalars().all()
             for a in rows:
+                text = "Backend beendet, Auftrag zurückgestellt" if a.status == Auftragsstatus.LAEUFT else "Nach Neustart wieder eingereiht"
                 a.status = Auftragsstatus.WARTEND
-                a.meldung = "Backend neu gestartet - Auftrag wird erneut ausgeführt"
-                s.add(AuftragProtokoll(auftrag_id=a.id, stufe="warn", text="Backend beendet, Auftrag zurückgestellt"))
+                a.meldung = self.NEUSTART_MELDUNG
+                a.fehler = ""
+                a.beendet = None
+                s.add(AuftragProtokoll(auftrag_id=a.id, stufe="warn", text=text))
+            await s.commit()
+            if rows:
+                log.info("%d Aufträge nach dem Neustart wieder eingereiht", len(rows))
+
+    async def _zurueckstellen(self, k: AuftragKontext) -> None:
+        """Beim Herunterfahren: den laufenden Auftrag ohne Zählung eines Versuchs wieder einreihen."""
+        async with sitzung() as s:
+            a = await s.get(Auftrag, k.auftrag_id)
+            if a is None or a.status not in (Auftragsstatus.LAEUFT, Auftragsstatus.WARTEND):
+                return
+            a.status = Auftragsstatus.WARTEND
+            a.meldung = self.NEUSTART_MELDUNG
+            a.fehler = ""
+            a.beendet = None
+            s.add(AuftragProtokoll(auftrag_id=a.id, stufe="warn", text="Backend beendet, Auftrag zurückgestellt"))
             await s.commit()
 
     # ------------------------------------------------------------------ Schleife
@@ -246,7 +279,10 @@ class Laeufer:
             await k.protokoll(f"Start: {stufen.TITEL[Auftragsart(k.art)]}")
             ergebnis = await ausfuehrer(k, parameter)
         except asyncio.CancelledError:
-            await self._abschluss(k, Auftragsstatus.ABGEBROCHEN, fehler="Abgebrochen")
+            if self._stopp.is_set():
+                await self._zurueckstellen(k)
+            else:
+                await self._abschluss(k, Auftragsstatus.ABGEBROCHEN, fehler="Abgebrochen")
             raise
         except Exception as e:
             kurz = f"{e.__class__.__name__}: {e}"[:2000]

@@ -18,6 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from .config import einstellungen
+from .db import migration
 from .db.engine import engine, engine_schliessen, sitzung
 from .dienste.anbieter import dienst as anbieter_dienst
 from .dienste.auftraege import stufen
@@ -53,6 +54,8 @@ async def lebenszyklus(app: FastAPI) -> AsyncIterator[None]:
     einstellungen.verzeichnisse_anlegen()
     async with engine().connect() as c:
         await c.execute(text("select 1"))
+    if einstellungen.migration_beim_start:
+        await migration.schema_aktualisieren()
     async with sitzung() as s:
         await anbieter_dienst.anlegen_wenn_leer(s)
         await s.commit()

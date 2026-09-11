@@ -45,6 +45,8 @@ class Einstellungen(BaseSettings):
 
     # Protokollstufe des Backends
     log_stufe: str = "INFO"
+    # Beim Start des Backends ausstehende Migrationen anwenden (vor dem Auftragsläufer).
+    migration_beim_start: bool = True
 
     @property
     def datenbank_url(self) -> str:
