@@ -61,9 +61,10 @@ OFFENE_STATUS = (Auftragsstatus.WARTEND, Auftragsstatus.LAEUFT)
 
 
 def _miniatur_url(v: Video) -> str | None:
+    """Nur das lokal gespeicherte Vorschaubild; nie eine fremde Bildadresse an den Browser geben."""
     if v.miniatur_pfad and Path(v.miniatur_pfad).exists():
         return f"/api/videos/{v.id}/miniatur"
-    return v.miniatur_url or None
+    return None
 
 
 def _eintrag(v: Video, hat_audio: bool, chunks: int, offener: Auftrag | None) -> VideoEintrag:

@@ -120,7 +120,7 @@ def _eintrag(c: Chunk, v: Video, anzahl: int, modelle: list[str]) -> ChunkEintra
         serie=v.serie,
         folge_nr=v.folge_nr,
         original_url=v.original_url,
-        miniatur_url=f"/api/videos/{v.id}/miniatur" if v.miniatur_pfad else (v.miniatur_url or None),
+        miniatur_url=f"/api/videos/{v.id}/miniatur" if v.miniatur_pfad else None,
         reihenfolge=c.reihenfolge,
         anzahl_im_video=anzahl,
         text=c.text,

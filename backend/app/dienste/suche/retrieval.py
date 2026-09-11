@@ -195,7 +195,7 @@ def miniatur_adresse(video: Video) -> str:
     """Lokales Vorschaubild über die eigene Route, sonst die Originaladresse der Quelle."""
     if video.miniatur_pfad:
         return MINIATUR_ROUTE.format(video_id=video.id)
-    return video.miniatur_url or ""
+    return ""
 
 
 def treffer_aus_zeile(chunk: Chunk, video: Video, wert: float) -> Treffer:
