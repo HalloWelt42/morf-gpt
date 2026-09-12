@@ -88,6 +88,24 @@ async def anlegen(e: AnbieterEingabe, session: AsyncSession = Depends(sitzung_ab
     return dienst.oeffentlich(a, schluessel_zeigen=True)
 
 
+# Feste Pfade vor den Pfaden mit Kennung: sonst fängt PUT /{anbieter_id} den Pfad /rollen ab und verlangt die Felder
+# eines Anbieters ("Field required").
+@router.put("/rollen", response_model=dict[str, str])
+async def rolle_setzen(e: RollenEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict[str, str]:
+    if e.rolle not in dienst.ROLLEN:
+        raise HTTPException(422, f"Unbekannte Rolle '{e.rolle}'")
+    a = await session.get(Anbieter, e.anbieter_id)
+    if a is None:
+        raise HTTPException(404, "Anbieter nicht gefunden")
+    erwartet = "einbettung" if e.rolle == "einbettung" else "sprachmodell"
+    if a.art != erwartet:
+        raise HTTPException(422, f"Die Rolle '{dienst.ROLLEN[e.rolle]}' braucht einen Anbieter der Art '{erwartet}'")
+    await einstellungen_dienst.setze(session, f"anbieter.{e.rolle}", a.id)
+    await session.commit()
+    bus.veroeffentliche("anbieter", aktion="rolle", rolle=e.rolle, anbieter_id=a.id)
+    return {r: str(await einstellungen_dienst.wert(session, f"anbieter.{r}")) for r in dienst.ROLLEN}
+
+
 @router.put("/{anbieter_id}", response_model=dict[str, Any])
 async def aendern(anbieter_id: str, e: AnbieterEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict[str, Any]:
     _validiere(e)
@@ -121,22 +139,6 @@ async def loeschen(anbieter_id: str, session: AsyncSession = Depends(sitzung_abh
     await session.delete(a)
     await session.commit()
     bus.veroeffentliche("anbieter", aktion="geloescht", anbieter_id=anbieter_id)
-
-
-@router.put("/rollen", response_model=dict[str, str])
-async def rolle_setzen(e: RollenEingabe, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict[str, str]:
-    if e.rolle not in dienst.ROLLEN:
-        raise HTTPException(422, f"Unbekannte Rolle '{e.rolle}'")
-    a = await session.get(Anbieter, e.anbieter_id)
-    if a is None:
-        raise HTTPException(404, "Anbieter nicht gefunden")
-    erwartet = "einbettung" if e.rolle == "einbettung" else "sprachmodell"
-    if a.art != erwartet:
-        raise HTTPException(422, f"Die Rolle '{dienst.ROLLEN[e.rolle]}' braucht einen Anbieter der Art '{erwartet}'")
-    await einstellungen_dienst.setze(session, f"anbieter.{e.rolle}", a.id)
-    await session.commit()
-    bus.veroeffentliche("anbieter", aktion="rolle", rolle=e.rolle, anbieter_id=a.id)
-    return {r: str(await einstellungen_dienst.wert(session, f"anbieter.{r}")) for r in dienst.ROLLEN}
 
 
 @router.post("/{anbieter_id}/pruefen", response_model=Pruefung)
