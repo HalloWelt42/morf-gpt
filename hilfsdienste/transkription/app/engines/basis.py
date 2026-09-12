@@ -69,6 +69,10 @@ class Engine(Protocol):
         """Speicherbedarf des geladenen Modells in Gigabyte, gemessen oder aus den Gewichten."""
         ...
 
+    def speicher_gb(self) -> float:
+        """Aktuell belegter Speicher des Prozesses für Modell und Zwischenergebnisse (nach einem Auftrag gemessen)."""
+        ...
+
     def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
         """Blockiert bis zum Ende; sprache_code None heißt Spracherkennung durch das Modell."""
         ...

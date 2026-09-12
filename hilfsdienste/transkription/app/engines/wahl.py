@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 from importlib.util import find_spec
+from typing import Any
 
 from ..konfiguration import Einstellungen
 from .basis import Engine, EngineBeschreibung
@@ -41,9 +42,11 @@ def beschreibung_fuer(e: Einstellungen) -> EngineBeschreibung:
     _, modul, klasse = MODULE[kennung]
     modell = e.modell or VORGABE_MODELL[kennung]
     cache = str((e.modelle_verzeichnis / "hf").resolve())
-    argumente: dict[str, str] = {"modell": modell, "cache": cache}
+    argumente: dict[str, Any] = {"modell": modell, "cache": cache}
     if kennung == "faster":
         argumente["rechner"] = e.rechner
+    if kennung == "mlx":
+        argumente["cache_limit_gb"] = e.mlx_cache_gb
     return EngineBeschreibung(kennung=kennung, modul=modul, klasse=klasse, argumente=argumente)
 
 

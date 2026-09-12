@@ -811,7 +811,7 @@ export interface TranskriptionsdienstStand {
   modell?: string;
   gewuenscht?: number;
   maximum?: number;
-  arbeiter?: { nummer: number; zustand: string; groesse_gb: number; auftraege: number; pid: number | null }[];
+  arbeiter?: { nummer: number; zustand: string; groesse_gb: number; speicher_gb: number; auftraege: number; pid: number | null }[];
   wartend?: number;
   modell_groesse_gb?: number;
   speicher?: { gesamt_gb: number; verfuegbar_gb: number; bekannt: boolean };

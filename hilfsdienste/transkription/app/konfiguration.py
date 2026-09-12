@@ -31,6 +31,9 @@ class Einstellungen(BaseSettings):
     modell: str = ""
     # Rechenwerk der Engine faster: auto, cpu oder cuda
     rechner: str = "auto"
+    # Engine mlx: Grenze des Puffer-Zwischenspeichers je Arbeiter (Gigabyte); ohne Grenze wächst er über
+    # lange Videos auf zig Gigabyte
+    mlx_cache_gb: float = 2.0
     # Ablage der Modelle (Zwischenspeicher der Modellablage darunter)
     modelle_verzeichnis: Path = Field(default=PROJEKT_WURZEL / "data" / "modelle")
     # Zwischenablage hochgeladener Audiodateien

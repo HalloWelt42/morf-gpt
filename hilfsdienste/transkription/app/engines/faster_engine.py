@@ -34,6 +34,9 @@ class FasterEngine:
     def groesse_gb(self) -> float:
         return self._groesse_gb
 
+    def speicher_gb(self) -> float:
+        return self._groesse_gb
+
     def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
         if self._modell is None:
             self.laden()

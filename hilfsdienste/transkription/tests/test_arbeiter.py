@@ -36,6 +36,7 @@ async def test_pool_arbeitet_parallel_und_baut_ab(pool_ablage: Path):
         assert pool.bereite() == 1
         stand = pool.stand()
         assert stand["gewuenscht"] == 1 and len(stand["arbeiter"]) == 1 and stand["arbeiter"][0]["auftraege"] == 1
+        assert stand["arbeiter"][0]["speicher_gb"] == 0.6, "der Speicher nach dem Auftrag kommt vom Arbeiter"
 
         with pytest.raises(ArbeiterFehler, match="unlesbar"):
             await pool.transkribiere(pool_ablage / "kaputt.wav", "de", True)

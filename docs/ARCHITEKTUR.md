@@ -106,6 +106,13 @@ mehr). Jeder einzelne Auftrag wird dabei langsamer (1,3-fache statt 3-fache Echt
 vier), die Grafikeinheit ist die gemeinsame Grenze; der Gewinn liegt im Durchsatz. Mehr als
 ein Arbeiter lohnt nur mit ebenso vielen parallelen Transkriptionen auf dem Fließband.
 
+Speicher der Engine mlx: MLX hält freigegebene Grafikpuffer in einem Zwischenspeicher.
+Ohne Grenze wuchs ein Arbeiter nach drei Videos von 40 Minuten auf 91 GB Grafikspeicher
+(`footprint`: IOAccelerator), den macOS komprimierte. Darum setzt die Engine
+`mx.set_cache_limit` (`MORF_TRANSKRIPTION_MLX_CACHE_GB`, Vorgabe 2) und leert den
+Zwischenspeicher nach jeder Datei; der Arbeiter meldet nach jedem Auftrag seinen belegten
+Speicher (`speicher_gb` im Stand, auf der Karte je Arbeiter).
+
 Für Rechner ohne Apple Silicon gibt es `docker/Dockerfile.transkription` (Profil
 `werkstatt` im Compose, Engine faster auf dem Prozessor).
 

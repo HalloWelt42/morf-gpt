@@ -60,7 +60,7 @@
               <div title="Arbeiter {a.nummer}: {ZUSTAND[a.zustand] ?? a.zustand}, {a.auftraege} Aufträge bisher">
                 <i class="fa-solid fa-microchip text-secondary"></i> Arbeiter {a.nummer}
                 <span class="badge" class:text-bg-success={a.zustand === "bereit"} class:text-bg-primary={a.zustand === "beschaeftigt"} class:text-bg-secondary={a.zustand !== "bereit" && a.zustand !== "beschaeftigt"}>{ZUSTAND[a.zustand] ?? a.zustand}</span>
-                {#if a.groesse_gb}<span class="text-secondary">{dezimal(a.groesse_gb)} GB</span>{/if}
+                {#if a.groesse_gb}<span class="text-secondary" title="Modell {dezimal(a.groesse_gb)} GB; belegt nach dem letzten Auftrag {dezimal(a.speicher_gb)} GB (Modell plus behaltene Puffer)">{dezimal(a.speicher_gb || a.groesse_gb)} GB</span>{/if}
                 <span class="text-secondary small">{a.auftraege} Aufträge</span>
               </div>
             {:else}

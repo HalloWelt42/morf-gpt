@@ -23,6 +23,9 @@ class AttrappenEngine:
     def groesse_gb(self) -> float:
         return 0.5
 
+    def speicher_gb(self) -> float:
+        return 0.6
+
     def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
         time.sleep(self._dauer_s)
         if "kaputt" in pfad.name:

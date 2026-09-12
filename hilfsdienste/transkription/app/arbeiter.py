@@ -58,9 +58,10 @@ def _arbeiter_lauf(verbindung: Connection, beschreibung: EngineBeschreibung) -> 
             return
         pfad, sprache_code, wortzeiten = auftrag
         try:
-            verbindung.send(("ergebnis", engine.transkribiere(Path(pfad), sprache_code, wortzeiten)))
+            ergebnis = engine.transkribiere(Path(pfad), sprache_code, wortzeiten)
+            verbindung.send(("ergebnis", ergebnis, engine.speicher_gb()))
         except Exception as e:  # noqa: BLE001
-            verbindung.send(("fehler", f"{e.__class__.__name__}: {e}"))
+            verbindung.send(("fehler", f"{e.__class__.__name__}: {e}", engine.speicher_gb()))
 
 
 @dataclass(slots=True)
@@ -69,7 +70,8 @@ class Arbeiter:
     prozess: Any
     verbindung: Connection
     zustand: str = "laedt"  # laedt | bereit | beschaeftigt | beendet
-    groesse_gb: float = 0.0
+    groesse_gb: float = 0.0  # Modell nach dem Laden
+    speicher_gb: float = 0.0  # nach dem letzten Auftrag: Modell plus behaltene Puffer
     auftraege: int = 0
     soll_enden: bool = False
     gestartet: float = field(default_factory=time.monotonic)
@@ -79,6 +81,7 @@ class Arbeiter:
             "nummer": self.nummer,
             "zustand": self.zustand,
             "groesse_gb": round(self.groesse_gb, 2),
+            "speicher_gb": round(self.speicher_gb or self.groesse_gb, 2),
             "auftraege": self.auftraege,
             "pid": self.prozess.pid,
         }
@@ -221,7 +224,9 @@ class Arbeiterpool:
                 raise ArbeiterFehler("Kein Arbeiter verfügbar: " + "; ".join(self._hinweise or ["Modell konnte nicht geladen werden"]))
         arbeiter = await self._nehmen()
         try:
-            art, wert = await asyncio.to_thread(self._auftrag, arbeiter, pfad, sprache_code, wortzeiten)
+            art, wert, speicher = await asyncio.to_thread(self._auftrag, arbeiter, pfad, sprache_code, wortzeiten)
+            if speicher:
+                arbeiter.speicher_gb = float(speicher)
         except asyncio.CancelledError:
             await self._ersetzen(arbeiter)
             raise
@@ -256,13 +261,14 @@ class Arbeiterpool:
                 self._wartend -= 1
 
     @staticmethod
-    def _auftrag(arbeiter: Arbeiter, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> tuple[str, Any]:
+    def _auftrag(arbeiter: Arbeiter, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> tuple[str, Any, float]:
         try:
             arbeiter.verbindung.send((str(pfad), sprache_code, wortzeiten))
-            return arbeiter.verbindung.recv()
+            antwort = arbeiter.verbindung.recv()
+            return antwort[0], antwort[1], float(antwort[2]) if len(antwort) > 2 else 0.0
         except (EOFError, OSError) as e:
             arbeiter.zustand = "beendet"
-            return "fehler", f"Arbeiter {arbeiter.nummer} ist während der Transkription ausgefallen ({e.__class__.__name__})"
+            return "fehler", f"Arbeiter {arbeiter.nummer} ist während der Transkription ausgefallen ({e.__class__.__name__})", 0.0
 
     async def _zurueckgeben(self, arbeiter: Arbeiter) -> None:
         arbeiter.auftraege += 1
