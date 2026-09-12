@@ -80,7 +80,7 @@
         <div class="table-responsive mt-2">
           <table class="table table-sm align-middle mb-0 m-arbeiter">
             <thead>
-              <tr><th>Arbeiter</th><th>Prozess</th><th>Zustand</th><th>Gerade</th><th>Zuletzt</th><th class="text-end">Aufträge</th><th class="text-end" title="Belegter Grafikspeicher nach dem letzten Auftrag (Modell plus behaltene Puffer)">Speicher</th></tr>
+              <tr><th>Arbeiter</th><th>Prozess</th><th>Zustand</th><th title="Das Video, das dieser Arbeiter gerade transkribiert, mit Laufzeit">Gerade</th><th title="Der zuletzt abgeschlossene Auftrag dieses Arbeiters: Video, Audiolänge und gebrauchte Zeit">Zuletzt</th><th class="text-end" title="Abgeschlossene Aufträge dieses Arbeiters; der laufende steht unter Gerade und zählt erst, wenn er fertig ist">Erledigt</th><th class="text-end" title="Belegter Grafikspeicher nach dem letzten Auftrag (Modell plus behaltene Puffer)">Speicher</th></tr>
             </thead>
             <tbody>
               {#each stand.arbeiter ?? [] as a (a.nummer)}
