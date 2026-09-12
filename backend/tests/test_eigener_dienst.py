@@ -46,8 +46,9 @@ async def test_transkription_liest_antwort_und_sendet_felder(audio: Path):
     assert b'filename="probe.m4a"' in koerper
 
     mit_titel = _dienst({"/transkription": httpx.Response(200, json=antwort)}, gesehen)
-    await mit_titel.transkribiere(audio, "german", 60, anzeige="Noteninflation | mmM#5")
+    await mit_titel.transkribiere(audio, "german", 60, anzeige="Noteninflation | mmM#5", kennung="auftrag-7")
     assert b'filename="Noteninflation | mmM#5.m4a"' in gesehen[-1].content, "der Videotitel geht als Anzeigename mit"
+    assert b'name="kennung"\r\n\r\nauftrag-7' in gesehen[-1].content, "die Auftragskennung geht mit"
 
     ohne = _dienst({"/transkription": httpx.Response(200, json=antwort)}, [], wortzeiten=False)
     e2 = await ohne.transkribiere(audio, "german", 60)
@@ -80,6 +81,11 @@ async def test_erreichbar_stand_und_arbeiter():
     ergebnis = await d.arbeiter_setzen(3)
     assert ergebnis["hinweise"] == ["Nicht genug freier Speicher"]
     assert json.loads(gesehen[-1].content) == {"anzahl": 3}
+
+    laufend = {"zustand": "laeuft", "arbeiter": 2, "verarbeitet_s": 61.5, "audio_s": 300, "anteil": 0.205}
+    stand_dienst = _dienst({"/auftraege/auftrag-7": httpx.Response(200, json=laufend)}, [])
+    zs = await stand_dienst.fortschritt("auftrag-7")
+    assert zs["zustand"] == "laeuft" and zs["arbeiter"] == 2 and zs["anteil"] == 0.205
 
     laedt = _dienst({"/health": httpx.Response(200, json={"status": "laedt", "arbeiter": 0})}, [])
     ok, hinweis = await laedt.erreichbar()

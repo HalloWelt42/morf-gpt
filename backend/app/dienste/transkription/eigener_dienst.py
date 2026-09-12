@@ -56,14 +56,21 @@ class EigenerDienst:
         return httpx.AsyncClient(timeout=zeitgrenzen(gesamt_s, self._verbindung_s), transport=self._transport)
 
     # ------------------------------------------------------------------ Transkription
-    async def transkribiere(self, pfad: Path, sprache: str, zeitgrenze_s: float, anzeige: str | None = None) -> TranskriptErgebnis:
-        """`anzeige` ist der Name, unter dem der Auftrag beim Dienst erscheint (etwa der Videotitel); Vorgabe Dateiname."""
+    async def transkribiere(
+        self, pfad: Path, sprache: str, zeitgrenze_s: float, anzeige: str | None = None, kennung: str | None = None
+    ) -> TranskriptErgebnis:
+        """`anzeige` ist der Name, unter dem der Auftrag beim Dienst erscheint (etwa der Videotitel); Vorgabe Dateiname.
+        `kennung` macht den Auftrag über `fortschritt` nachfragbar."""
         audiodatei_pruefen(pfad)
-        daten = await self._sende(pfad, sprache, zeitgrenze_s, anzeige)
+        daten = await self._sende(pfad, sprache, zeitgrenze_s, anzeige, kennung)
         return self._ergebnis(daten, sprache)
 
-    async def _sende(self, pfad: Path, sprache: str, zeitgrenze_s: float, anzeige: str | None = None) -> dict[str, Any]:
+    async def _sende(
+        self, pfad: Path, sprache: str, zeitgrenze_s: float, anzeige: str | None = None, kennung: str | None = None
+    ) -> dict[str, Any]:
         felder = {"sprache": sprache, "wortzeiten": "true" if self._wortzeiten_behalten else "false"}
+        if kennung:
+            felder["kennung"] = kennung
         name = f"{anzeige.strip()}{pfad.suffix}" if anzeige and anzeige.strip() else pfad.name
         try:
             async with asyncio.timeout(zeitgrenze_s):
@@ -129,6 +136,15 @@ class EigenerDienst:
         try:
             async with self._client(self._verbindung_s) as client:
                 resp = await client.get(f"{self._basis}/stand")
+        except httpx.HTTPError as e:
+            raise TranskriptionsFehler(f"{self._name()}: nicht erreichbar ({e.__class__.__name__})") from e
+        return self._json(resp)
+
+    async def fortschritt(self, kennung: str) -> dict[str, Any]:
+        """Zwischenstand eines Auftrags: zustand laeuft (arbeiter, verarbeitet_s, audio_s, anteil), wartet (position) oder unbekannt."""
+        try:
+            async with self._client(self._verbindung_s) as client:
+                resp = await client.get(f"{self._basis}/auftraege/{kennung}")
         except httpx.HTTPError as e:
             raise TranskriptionsFehler(f"{self._name()}: nicht erreichbar ({e.__class__.__name__})") from e
         return self._json(resp)

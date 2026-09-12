@@ -14,10 +14,14 @@ Warum das wichtig ist: Die Zeitmarken sind der Anker jeder Fundstelle. Jeder Abs
 
 ## Eigener Dienst
 
-Die Transkription läuft über den mitgelieferten Dienst (Whisper, großes Modell), nicht über ein fremdes Programm: er startet mit der Anwendung, lädt sein Modell beim ersten Mal selbst und nutzt auf Apple Silicon die Grafikeinheit, sonst den Prozessor. Unter Einstellungen, Transkription steht seine Adresse; die Karte darüber zeigt seinen Stand live: den Prozess des Dienstes, jeden Arbeiter mit eigener Prozesskennung, seinem Zustand, dem Video, das er gerade transkribiert (mit Laufzeit), seinem letzten Auftrag (Audiolänge und Dauer), der Zahl seiner erledigten Aufträge (der laufende zählt erst, wenn er fertig ist) und seinem Speicher; dazu wartende Aufträge und den Arbeitsspeicher des Rechners.
+Die Transkription läuft über den mitgelieferten Dienst (Whisper, großes Modell), nicht über ein fremdes Programm: er startet mit der Anwendung, lädt sein Modell beim ersten Mal selbst und nutzt auf Apple Silicon die Grafikeinheit, sonst den Prozessor. Unter Einstellungen, Transkription steht seine Adresse; die Karte darüber zeigt seinen Stand live: den Prozess des Dienstes, jeden Arbeiter mit eigener Prozesskennung, seinem Zustand, dem Video, das er gerade transkribiert (mit Laufzeit und echtem Stand: verarbeitete Minuten des Audios), seinem letzten Auftrag (Audiolänge und Dauer), der Zahl seiner erledigten Aufträge (der laufende zählt erst, wenn er fertig ist) und seinem Speicher; dazu wartende Aufträge und den Arbeitsspeicher des Rechners.
 
 ![Karte des Transkriptionsdienstes mit Arbeitern und Speicher](/hilfe/transkription-dienst.png)
 *Einstellungen, Transkription: der Dienst mit seinen Arbeitern, dem Arbeitsspeicher des Rechners und dem Speicherplatz des Projekts auf der Platte.*
+
+## Fortschritt
+
+Der Fortschritt eines Transkriptionsauftrags ist echt: Der Dienst zählt, wie viele Sekunden des Audios das Modell schon verarbeitet hat, und die Stufe fragt das alle paar Sekunden ab. Im Auftrag steht darum "12:34 von 43:16 transkribiert (Arbeiter 2)", der Balken wandert entsprechend; wartet der Auftrag noch auf einen freien Arbeiter, steht dort sein Platz in der Schlange. Nur bei einem fremden Dienst, der keinen Zwischenstand liefert, bleibt der Balken stehen und nur die Laufzeit wandert.
 
 ## Arbeiter und Parallelität
 

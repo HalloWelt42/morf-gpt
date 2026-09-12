@@ -20,7 +20,11 @@ async def test_http_schnittstelle():
             h = (await c.get("/health")).json()
             assert h["status"] == "ok" and h["engine"] == "attrappe" and h["arbeiter"] == 1
 
-            r = await c.post("/transkription", files={"datei": ("guten_tag.wav", b"RIFF...", "audio/wav")}, data={"sprache": "german"})
+            unbekannt = (await c.get("/auftraege/gibt-es-nicht")).json()
+            assert unbekannt["zustand"] == "unbekannt"
+            r = await c.post(
+                "/transkription", files={"datei": ("guten_tag.wav", b"RIFF...", "audio/wav")}, data={"sprache": "german", "kennung": "k-1"}
+            )
             assert r.status_code == 200, r.text
             d = r.json()
             assert d["text"] == "guten tag" and d["segmente"][0]["words"][0]["word"] == "guten" and d["sprache"] == "de"

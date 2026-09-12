@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from app.engines.basis import Rohtranskript, Segment, Wort
+from app.engines.basis import Fortschritt, Rohtranskript, Segment, Wort
 
 
 class AttrappenEngine:
@@ -26,8 +26,13 @@ class AttrappenEngine:
     def speicher_gb(self) -> float:
         return 0.6
 
-    def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
-        time.sleep(self._dauer_s)
+    def transkribiere(
+        self, pfad: Path, sprache_code: str | None, wortzeiten: bool, fortschritt: Fortschritt | None = None
+    ) -> Rohtranskript:
+        for schritt in range(1, 4):
+            time.sleep(self._dauer_s / 3)
+            if fortschritt:
+                fortschritt(schritt * 20.0, 60.0)
         if "kaputt" in pfad.name:
             raise ValueError("unlesbar")
         text = pfad.stem.split("-", 1)[-1].replace("_", " ")

@@ -58,8 +58,18 @@ def _arbeiter_lauf(verbindung: Connection, beschreibung: EngineBeschreibung) -> 
         if auftrag is None:
             return
         pfad, sprache_code, wortzeiten = auftrag
+        zuletzt_gemeldet = 0.0
+
+        def melde(verarbeitet_s: float, gesamt_s: float) -> None:
+            # Höchstens einmal je Sekunde, damit die Verbindung nicht mit Zwischenständen geflutet wird
+            nonlocal zuletzt_gemeldet
+            jetzt = time.monotonic()
+            if jetzt - zuletzt_gemeldet >= 1.0 or verarbeitet_s >= gesamt_s:
+                zuletzt_gemeldet = jetzt
+                verbindung.send(("fortschritt", verarbeitet_s, gesamt_s))
+
         try:
-            ergebnis = engine.transkribiere(Path(pfad), sprache_code, wortzeiten)
+            ergebnis = engine.transkribiere(Path(pfad), sprache_code, wortzeiten, fortschritt=melde)
             verbindung.send(("ergebnis", ergebnis, engine.speicher_gb()))
         except Exception as e:  # noqa: BLE001
             verbindung.send(("fehler", f"{e.__class__.__name__}: {e}", engine.speicher_gb()))
@@ -75,11 +85,27 @@ class Arbeiter:
     speicher_gb: float = 0.0  # nach dem letzten Auftrag: Modell plus behaltene Puffer
     auftraege: int = 0
     aktuell: str | None = None  # Datei des laufenden Auftrags
+    kennung: str | None = None  # Kennung des laufenden Auftrags (vom Aufrufer vergeben)
     seit: float | None = None  # Beginn des laufenden Auftrags (Uhrzeit)
+    verarbeitet_s: float = 0.0  # Zwischenstand des laufenden Auftrags
+    audio_s: float = 0.0  # Gesamtlänge des laufenden Auftrags, sobald bekannt
     zuletzt: dict[str, Any] | None = None  # letzter Auftrag: datei, dauer_s, audio_s, fehler
     soll_enden: bool = False
     gestartet: float = field(default_factory=time.monotonic)
     gestartet_uhr: float = field(default_factory=time.time)
+
+    def aktuell_dict(self) -> dict[str, Any] | None:
+        if not self.aktuell or not self.seit:
+            return None
+        return {
+            "datei": self.aktuell,
+            "kennung": self.kennung,
+            "seit": datetime.fromtimestamp(self.seit, UTC).isoformat(timespec="seconds"),
+            "laeuft_s": round(time.time() - self.seit, 1),
+            "verarbeitet_s": round(self.verarbeitet_s, 1),
+            "audio_s": round(self.audio_s, 1),
+            "anteil": round(min(1.0, self.verarbeitet_s / self.audio_s), 3) if self.audio_s else 0.0,
+        }
 
     def als_dict(self) -> dict[str, Any]:
         return {
@@ -90,15 +116,7 @@ class Arbeiter:
             "auftraege": self.auftraege,
             "pid": self.prozess.pid,
             "gestartet": datetime.fromtimestamp(self.gestartet_uhr, UTC).isoformat(timespec="seconds"),
-            "aktuell": (
-                {
-                    "datei": self.aktuell,
-                    "seit": datetime.fromtimestamp(self.seit, UTC).isoformat(timespec="seconds"),
-                    "laeuft_s": round(time.time() - self.seit, 1),
-                }
-                if self.aktuell and self.seit
-                else None
-            ),
+            "aktuell": self.aktuell_dict(),
             "zuletzt": self.zuletzt,
         }
 
@@ -114,6 +132,7 @@ class Arbeiterpool:
         self._naechste_nummer = 1
         self._gewuenscht = 1
         self._wartend = 0
+        self._warteschlange: list[str] = []  # Kennungen wartender Aufträge in Ankunftsreihenfolge
         self._hinweise: list[str] = []
         self._bedingung = asyncio.Condition()
         self._anpass_sperre = asyncio.Lock()
@@ -137,6 +156,15 @@ class Arbeiterpool:
     def groesse_gb(self) -> float:
         gemessen = [a.groesse_gb for a in self._alle if a.groesse_gb > 0]
         return max(gemessen) if gemessen else GROESSE_SCHAETZUNG_GB
+
+    def auftrag_stand(self, kennung: str) -> dict[str, Any]:
+        """Wo ein Auftrag steht: läuft (mit Arbeiter und Zwischenstand), wartet (mit Position) oder unbekannt."""
+        for arbeiter in self._alle:
+            if arbeiter.kennung == kennung and arbeiter.aktuell_dict():
+                return {"zustand": "laeuft", "arbeiter": arbeiter.nummer, "pid": arbeiter.prozess.pid, **(arbeiter.aktuell_dict() or {})}
+        if kennung in self._warteschlange:
+            return {"zustand": "wartet", "position": self._warteschlange.index(kennung) + 1, "wartend": len(self._warteschlange)}
+        return {"zustand": "unbekannt"}
 
     def stand(self) -> dict[str, Any]:
         return {
@@ -234,19 +262,32 @@ class Arbeiterpool:
 
     # ------------------------------------------------------------------ Aufträge
     async def transkribiere(
-        self, pfad: Path, sprache_code: str | None, wortzeiten: bool, anzeige: str | None = None
+        self,
+        pfad: Path,
+        sprache_code: str | None,
+        wortzeiten: bool,
+        anzeige: str | None = None,
+        kennung: str | None = None,
     ) -> tuple[Rohtranskript, Arbeiter]:
         """Transkribiert mit dem nächsten freien Arbeiter; gibt Ergebnis und Arbeiter (für die Herkunft) zurück.
 
-        `anzeige` ist der Name, unter dem der Auftrag im Stand erscheint (Vorgabe: Dateiname).
+        `anzeige` ist der Name, unter dem der Auftrag im Stand erscheint (Vorgabe: Dateiname); `kennung`
+        macht den Auftrag über `auftrag_stand` nachfragbar (Warteposition, Zwischenstand).
         """
         name = anzeige or pfad.name
+        kennung = kennung or f"{name}-{time.time():.3f}"
         if not self.lebendige():
             await self.anpassen(self._gewuenscht)
             if not self.lebendige():
                 raise ArbeiterFehler("Kein Arbeiter verfügbar: " + "; ".join(self._hinweise or ["Modell konnte nicht geladen werden"]))
-        arbeiter = await self._nehmen()
-        arbeiter.aktuell, arbeiter.seit = name, time.time()
+        self._warteschlange.append(kennung)
+        try:
+            arbeiter = await self._nehmen()
+        finally:
+            if kennung in self._warteschlange:
+                self._warteschlange.remove(kennung)
+        arbeiter.aktuell, arbeiter.kennung, arbeiter.seit = name, kennung, time.time()
+        arbeiter.verarbeitet_s, arbeiter.audio_s = 0.0, 0.0
         start = time.monotonic()
         try:
             art, wert, speicher = await asyncio.to_thread(self._auftrag, arbeiter, pfad, sprache_code, wortzeiten)
@@ -257,7 +298,7 @@ class Arbeiterpool:
             await self._ersetzen(arbeiter)
             raise
         finally:
-            arbeiter.aktuell, arbeiter.seit = None, None
+            arbeiter.aktuell, arbeiter.kennung, arbeiter.seit = None, None, None
             await self._zurueckgeben(arbeiter)
         dauer = round(time.monotonic() - start, 1)
         if art != "ergebnis":
@@ -295,8 +336,12 @@ class Arbeiterpool:
     def _auftrag(arbeiter: Arbeiter, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> tuple[str, Any, float]:
         try:
             arbeiter.verbindung.send((str(pfad), sprache_code, wortzeiten))
-            antwort = arbeiter.verbindung.recv()
-            return antwort[0], antwort[1], float(antwort[2]) if len(antwort) > 2 else 0.0
+            while True:
+                antwort = arbeiter.verbindung.recv()
+                if antwort[0] == "fortschritt":
+                    arbeiter.verarbeitet_s, arbeiter.audio_s = float(antwort[1]), float(antwort[2])
+                    continue
+                return antwort[0], antwort[1], float(antwort[2]) if len(antwort) > 2 else 0.0
         except (EOFError, OSError) as e:
             arbeiter.zustand = "beendet"
             return "fehler", f"Arbeiter {arbeiter.nummer} ist während der Transkription ausgefallen ({e.__class__.__name__})", 0.0

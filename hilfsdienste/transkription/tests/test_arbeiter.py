@@ -82,6 +82,27 @@ async def test_abbruch_ersetzt_den_arbeiter(pool_ablage: Path):
         await pool.beenden_alle()
 
 
+async def test_zwischenstand_und_warteposition(pool_ablage: Path):
+    langsam = EngineBeschreibung(kennung="attrappe", modul="tests.attrappe", klasse="AttrappenEngine", argumente={"dauer_s": 3.0})
+    pool = Arbeiterpool(langsam, maximum=1, reserve_gb=0, ladefrist_s=60)
+    try:
+        await pool.anpassen(1)
+        erster = asyncio.create_task(pool.transkribiere(pool_ablage / "erster.wav", "de", False, kennung="a-1"))
+        zweiter = asyncio.create_task(pool.transkribiere(pool_ablage / "zweiter.wav", "de", False, kennung="a-2"))
+        await asyncio.sleep(1.6)
+        laeuft = pool.auftrag_stand("a-1")
+        assert laeuft["zustand"] == "laeuft" and laeuft["arbeiter"] == 1 and laeuft["audio_s"] == 60.0
+        assert laeuft["verarbeitet_s"] >= 20.0 and 0 < laeuft["anteil"] < 1, laeuft
+        wartet = pool.auftrag_stand("a-2")
+        assert wartet == {"zustand": "wartet", "position": 1, "wartend": 1}
+        assert pool.stand()["arbeiter"][0]["aktuell"]["anteil"] == laeuft["anteil"]
+        await erster
+        await zweiter
+        assert pool.auftrag_stand("a-1")["zustand"] == "unbekannt" and pool.stand()["wartend"] == 0
+    finally:
+        await pool.beenden_alle()
+
+
 async def test_maximum_begrenzt():
     pool = Arbeiterpool(ATTRAPPE, maximum=1, reserve_gb=0, ladefrist_s=60)
     try:

@@ -80,7 +80,7 @@
         <div class="table-responsive mt-2">
           <table class="table table-sm align-middle mb-0 m-arbeiter">
             <thead>
-              <tr><th>Arbeiter</th><th>Prozess</th><th>Zustand</th><th title="Das Video, das dieser Arbeiter gerade transkribiert, mit Laufzeit">Gerade</th><th title="Der zuletzt abgeschlossene Auftrag dieses Arbeiters: Video, Audiolänge und gebrauchte Zeit">Zuletzt</th><th class="text-end" title="Abgeschlossene Aufträge dieses Arbeiters; der laufende steht unter Gerade und zählt erst, wenn er fertig ist">Erledigt</th><th class="text-end" title="Belegter Grafikspeicher nach dem letzten Auftrag (Modell plus behaltene Puffer)">Speicher</th></tr>
+              <tr><th>Arbeiter</th><th>Prozess</th><th>Zustand</th><th title="Das Video, das dieser Arbeiter gerade transkribiert, mit Laufzeit und echtem Stand (verarbeitete Audiosekunden)">Gerade</th><th title="Der zuletzt abgeschlossene Auftrag dieses Arbeiters: Video, Audiolänge und gebrauchte Zeit">Zuletzt</th><th class="text-end" title="Abgeschlossene Aufträge dieses Arbeiters; der laufende steht unter Gerade und zählt erst, wenn er fertig ist">Erledigt</th><th class="text-end" title="Belegter Grafikspeicher nach dem letzten Auftrag (Modell plus behaltene Puffer)">Speicher</th></tr>
             </thead>
             <tbody>
               {#each stand.arbeiter ?? [] as a (a.nummer)}
@@ -90,8 +90,16 @@
                   <td><span class="badge" class:text-bg-success={a.zustand === "bereit"} class:text-bg-primary={a.zustand === "beschaeftigt"} class:text-bg-secondary={a.zustand !== "bereit" && a.zustand !== "beschaeftigt"}>{ZUSTAND[a.zustand] ?? a.zustand}</span></td>
                   <td>
                     {#if a.aktuell}
-                      <span class="text-truncate d-inline-block" style="max-width: 260px" title={a.aktuell.datei}>{a.aktuell.datei}</span>
-                      <span class="text-secondary small">seit {zeitmarke(a.aktuell.laeuft_s)}</span>
+                      <div class="d-flex align-items-center gap-2">
+                        <span class="text-truncate d-inline-block" style="max-width: 260px" title={a.aktuell.datei}>{a.aktuell.datei}</span>
+                        <span class="text-secondary small text-nowrap">seit {zeitmarke(a.aktuell.laeuft_s)}</span>
+                      </div>
+                      {#if a.aktuell.audio_s}
+                        <div class="d-flex align-items-center gap-2" title="Echter Stand des Dienstes: verarbeitete Sekunden des Audios">
+                          <div class="progress flex-grow-1" style="height: 6px; max-width: 260px"><div class="progress-bar" style="width: {Math.round(a.aktuell.anteil * 100)}%"></div></div>
+                          <span class="text-secondary small text-nowrap">{zeitmarke(a.aktuell.verarbeitet_s)} von {zeitmarke(a.aktuell.audio_s)}</span>
+                        </div>
+                      {/if}
                     {:else}
                       <span class="text-secondary">-</span>
                     {/if}

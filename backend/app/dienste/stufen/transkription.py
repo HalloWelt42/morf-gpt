@@ -1,10 +1,11 @@
 """Stufe Transkription: das Audio eines Videos an die gewählte Engine geben, Transkript speichern.
 
-Der Dienst blockiert bis zum Ende (lange Videos: viele Minuten) und meldet keinen
-Zwischenstand. Darum läuft der Aufruf als eigene Task; daneben schickt die Stufe im
-Takt ein Lebenszeichen an den Auftrag, prüft den Abbruchwunsch und hält die Meldung
-in der Oberfläche frisch. Der Fortschrittsanteil bleibt während des Wartens ehrlich
-stehen - geraten wird nicht.
+Der Dienst blockiert bis zum Ende (lange Videos: viele Minuten). Darum läuft der Aufruf
+als eigene Task; daneben schickt die Stufe im Takt ein Lebenszeichen an den Auftrag, prüft
+den Abbruchwunsch und hält die Meldung in der Oberfläche frisch. Beim eigenen Dienst fragt
+sie dabei den echten Zwischenstand ab (verarbeitete Sekunden des Audios, Warteposition)
+und rechnet ihn in den Fortschrittsanteil um; bei fremden Diensten bleibt der Anteil
+ehrlich stehen - geraten wird nicht.
 
 Die Video-Stufe setzt allein der Läufer nach Erfolg.
 """
@@ -14,7 +15,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import time
-from collections.abc import Coroutine
+from collections.abc import Callable, Coroutine
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -39,10 +40,12 @@ if TYPE_CHECKING:
 # über werte.get(...) automatisch. Er muss unter band.herzschlag_frist_s (mindestens 60) liegen.
 HERZSCHLAG_TAKT_S_VORGABE: float = 30.0
 
-# Fortschrittsanteile: der Dienst liefert keinen Zwischenstand, darum feste Marken.
+# Fortschrittsanteile: feste Marken für Start, Warten und Speichern; dazwischen der echte Anteil des Dienstes.
 ANTEIL_GESTARTET: float = 0.05
 ANTEIL_WARTEND: float = 0.10
 ANTEIL_SPEICHERN: float = 0.95
+# So oft wird der Zwischenstand beim eigenen Dienst nachgefragt
+FORTSCHRITT_TAKT_S: float = 5.0
 
 
 @stufen.registriere(Auftragsart.TRANSKRIPTION)
@@ -64,11 +67,12 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
     )
     start = time.monotonic()
     if isinstance(engine, EigenerDienst):
-        # Der eigene Dienst zeigt den Auftrag unter diesem Namen (Karte, Protokoll), nicht als Dateikennung
-        aufruf = engine.transkribiere(pfad, sprache, zeitgrenze_s, anzeige=await _videotitel(k.video_id))
+        # Der eigene Dienst zeigt den Auftrag unter diesem Namen (Karte, Protokoll), nicht als Dateikennung,
+        # und liefert unter der Auftragskennung den echten Zwischenstand
+        aufruf = engine.transkribiere(pfad, sprache, zeitgrenze_s, anzeige=await _videotitel(k.video_id), kennung=k.auftrag_id)
+        ergebnis = await _mit_lebenszeichen(k, aufruf, takt_s, zwischenstand=_zwischenstand_abfrage(engine, k.auftrag_id))
     else:
-        aufruf = engine.transkribiere(pfad, sprache, zeitgrenze_s)
-    ergebnis = await _mit_lebenszeichen(k, aufruf, takt_s)
+        ergebnis = await _mit_lebenszeichen(k, engine.transkribiere(pfad, sprache, zeitgrenze_s), takt_s)
     dauer_s = time.monotonic() - start
 
     if not ergebnis.text.strip():
@@ -117,26 +121,65 @@ async def _arbeiter_anpassen(k: AuftragKontext, engine: Any) -> None:
 # ---------------------------------------------------------------- Warten mit Lebenszeichen
 
 
-async def _mit_lebenszeichen[T](k: AuftragKontext, aufruf: Coroutine[Any, Any, T], takt_s: float) -> T:
+Zwischenstand = Callable[[], Coroutine[Any, Any, tuple[float, str] | None]]
+
+
+def _zwischenstand_abfrage(engine: EigenerDienst, kennung: str) -> Zwischenstand:
+    """Fragt den eigenen Dienst nach dem Stand des Auftrags und formt Anteil und Meldung daraus."""
+
+    async def abfrage() -> tuple[float, str] | None:
+        try:
+            stand = await engine.fortschritt(kennung)
+        except TranskriptionsFehler:
+            return None
+        if stand.get("zustand") == "laeuft":
+            anteil = float(stand.get("anteil") or 0.0)
+            audio_s = float(stand.get("audio_s") or 0.0)
+            wo = f"Arbeiter {stand.get('arbeiter')}"
+            if audio_s:
+                text = f"{_dauer_text(float(stand.get('verarbeitet_s') or 0.0))} von {_dauer_text(audio_s)} transkribiert ({wo})"
+            else:
+                text = f"Transkription beginnt ({wo})"
+            return ANTEIL_WARTEND + (ANTEIL_SPEICHERN - ANTEIL_WARTEND) * anteil, text
+        if stand.get("zustand") == "wartet":
+            return ANTEIL_WARTEND, f"wartet auf einen freien Arbeiter (Platz {stand.get('position')} von {stand.get('wartend')})"
+        return None
+
+    return abfrage
+
+
+async def _mit_lebenszeichen[T](
+    k: AuftragKontext, aufruf: Coroutine[Any, Any, T], takt_s: float, zwischenstand: Zwischenstand | None = None
+) -> T:
     """Führt den blockierenden Aufruf als Task aus und meldet sich im Takt beim Auftrag.
 
-    Bei gesetztem Abbruchwunsch (oder Abbruch dieser Task von außen) wird der innere
-    Aufruf abgebrochen und asyncio.CancelledError weitergegeben.
+    Mit `zwischenstand` wird alle paar Sekunden der echte Stand abgefragt und als Anteil und
+    Meldung gemeldet; ohne bleibt der Anteil stehen und nur die Laufzeit wandert. Bei gesetztem
+    Abbruchwunsch (oder Abbruch dieser Task von außen) wird der innere Aufruf abgebrochen und
+    asyncio.CancelledError weitergegeben.
     """
     task: asyncio.Task[T] = asyncio.ensure_future(aufruf)
     start = time.monotonic()
+    letzter_herzschlag = start
     letzte_meldung = ""
+    warte_s = min(takt_s, FORTSCHRITT_TAKT_S) if zwischenstand else takt_s
     try:
         while True:
-            fertig, _ = await asyncio.wait({task}, timeout=takt_s)
+            fertig, _ = await asyncio.wait({task}, timeout=warte_s)
             if fertig:
                 return task.result()
             if k.abbruch.is_set():
                 raise asyncio.CancelledError()
-            await k.herzschlag()
-            meldung = f"Transkription läuft seit {_dauer_text(time.monotonic() - start)}"
+            if time.monotonic() - letzter_herzschlag >= takt_s:
+                await k.herzschlag()
+                letzter_herzschlag = time.monotonic()
+            anteil, meldung = ANTEIL_WARTEND, f"Transkription läuft seit {_dauer_text(time.monotonic() - start)}"
+            if zwischenstand:
+                stand = await zwischenstand()
+                if stand:
+                    anteil, meldung = stand
             if meldung != letzte_meldung:
-                await k.fortschritt(ANTEIL_WARTEND, meldung)
+                await k.fortschritt(anteil, meldung)
                 letzte_meldung = meldung
     finally:
         if not task.done():

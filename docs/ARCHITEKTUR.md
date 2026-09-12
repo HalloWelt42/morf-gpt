@@ -94,8 +94,20 @@ dem Projekt ausgeliefert, hat sein eigenes venv (`start.sh` legt es an und start
   getrennt an Pausen ab 0,3 Sekunden; Wortzeiten bleiben erhalten.
 - `main.py`: `GET /health` (ok, sobald ein Arbeiter bereit ist; das Modell lädt im
   Hintergrund), `GET /stand`, `POST /arbeiter {anzahl}`, `POST /transkription`
-  (multipart `datei`, `sprache`, `wortzeiten`; Antwort `text`, `segmente` in der
-  Speicherform der Bibliothek, `sprache`, `modell`, `engine`, `dauer_s`).
+  (multipart `datei`, `sprache`, `wortzeiten`, `kennung`; Antwort `text`, `segmente` in der
+  Speicherform der Bibliothek, `sprache`, `modell`, `engine`, `dauer_s`, `arbeiter`),
+  `GET /auftraege/{kennung}` (Zwischenstand: läuft mit Arbeiter, verarbeitete und gesamte
+  Sekunden, Anteil; oder wartet mit Position).
+- Echter Fortschritt: die Engines rufen während der Arbeit einen Rückruf mit (verarbeitete
+  Sekunden, Gesamtsekunden). Bei MLX gibt es dafür keine Schnittstelle, die Bibliothek zählt
+  nur über einen Fortschrittsbalken; die Engine setzt darum für die Dauer eines Aufrufs an
+  die Stelle von `tqdm` im Modul `mlx_whisper.transcribe` einen eigenen Balken, der die
+  Rahmen (10 ms) in Sekunden umrechnet (das Paket überdeckt sein Untermodul mit der
+  gleichnamigen Funktion, darum der Zugriff über `sys.modules`). Bei CTranslate2 kommt der
+  Stand aus dem Ende jedes gelieferten Segments. Der Arbeiterprozess schickt den Stand
+  höchstens einmal je Sekunde über die Verbindung, der Pool hält ihn je Arbeiter, die Stufe
+  im Backend fragt ihn alle fünf Sekunden ab und rechnet ihn in den Fortschrittsanteil des
+  Auftrags um ("12:34 von 43:16 transkribiert (Arbeiter 2)", wartend: Platz in der Schlange).
 
 Im Backend ist er die Engine `morf` (`dienste/transkription/eigener_dienst.py`, Vorgabe
 der Einstellung `transkription.engine`). Die Stufe Transkription bringt den Dienst vor jedem

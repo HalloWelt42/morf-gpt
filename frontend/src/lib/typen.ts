@@ -819,7 +819,7 @@ export interface TranskriptionsdienstStand {
     auftraege: number;
     pid: number | null;
     gestartet: string;
-    aktuell: { datei: string; seit: string; laeuft_s: number } | null;
+    aktuell: { datei: string; kennung: string | null; seit: string; laeuft_s: number; verarbeitet_s: number; audio_s: number; anteil: number } | null;
     zuletzt: { datei: string; dauer_s: number; audio_s: number | null; fehler: string } | null;
   }[];
   dienst?: { pid: number; gestartet: string };

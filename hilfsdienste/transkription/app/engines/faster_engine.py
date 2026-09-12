@@ -9,7 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .basis import Rohtranskript, Segment, Wort
+from .basis import Fortschritt, Rohtranskript, Segment, Wort
 
 
 class FasterEngine:
@@ -37,7 +37,9 @@ class FasterEngine:
     def speicher_gb(self) -> float:
         return self._groesse_gb
 
-    def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
+    def transkribiere(
+        self, pfad: Path, sprache_code: str | None, wortzeiten: bool, fortschritt: Fortschritt | None = None
+    ) -> Rohtranskript:
         if self._modell is None:
             self.laden()
         segmente_roh, info = self._modell.transcribe(
@@ -50,9 +52,12 @@ class FasterEngine:
             beam_size=5,
         )
         segmente: list[Segment] = []
+        gesamt = float(getattr(info, "duration", 0.0) or 0.0)
         for s in segmente_roh:
             woerter = [Wort(w.word, float(w.start), float(w.end)) for w in (s.words or []) if w.word.strip()] if wortzeiten else []
             segmente.append(Segment(float(s.start), float(s.end), s.text, woerter))
+            if fortschritt and gesamt:
+                fortschritt(float(s.end), gesamt)
         text = " ".join(s.text.strip() for s in segmente if s.text.strip())
         sprache = str(getattr(info, "language", "") or sprache_code or "")
         return Rohtranskript(text=text, segmente=segmente, sprache=sprache, modell=self.modell)

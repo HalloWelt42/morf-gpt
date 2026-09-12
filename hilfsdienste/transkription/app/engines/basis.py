@@ -6,9 +6,13 @@ Die Segmentform folgt der Speicherform der Bibliothek: start, end, text, words[{
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
+
+# Zwischenstand einer laufenden Transkription: (verarbeitete Sekunden, Gesamtsekunden des Audios)
+Fortschritt = Callable[[float, float], None]
 
 
 @dataclass(slots=True)
@@ -73,8 +77,13 @@ class Engine(Protocol):
         """Aktuell belegter Speicher des Prozesses für Modell und Zwischenergebnisse (nach einem Auftrag gemessen)."""
         ...
 
-    def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
-        """Blockiert bis zum Ende; sprache_code None heißt Spracherkennung durch das Modell."""
+    def transkribiere(
+        self, pfad: Path, sprache_code: str | None, wortzeiten: bool, fortschritt: Fortschritt | None = None
+    ) -> Rohtranskript:
+        """Blockiert bis zum Ende; sprache_code None heißt Spracherkennung durch das Modell.
+
+        `fortschritt` wird während der Arbeit mit (verarbeitete Sekunden, Gesamtsekunden) gerufen.
+        """
         ...
 
 

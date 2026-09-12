@@ -4,8 +4,10 @@ Schnittstelle:
   GET  /health                 Zustand kurz (status ok, sobald ein Arbeiter bereit ist)
   GET  /stand                  Engine, Modell, Arbeiter, Wartende, Speicher
   POST /arbeiter {anzahl}      Zahl der Arbeiter anpassen (mit Speicherprüfung)
-  POST /transkription          multipart: datei, sprache (Name oder Code, "auto"), wortzeiten (true/false)
-                               Antwort: text, segmente (Speicherform), sprache, modell, engine, dauer_s
+  POST /transkription          multipart: datei, sprache (Name oder Code, "auto"), wortzeiten (true/false),
+                               kennung (frei wählbar, für den Zwischenstand)
+                               Antwort: text, segmente (Speicherform), sprache, modell, engine, dauer_s, arbeiter
+  GET  /auftraege/{kennung}    Zwischenstand: laeuft (Arbeiter, verarbeitet_s, audio_s, anteil) oder wartet (position)
 """
 
 from __future__ import annotations
@@ -132,12 +134,18 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
             await asyncio.wait({aufgabe}, timeout=AUFLEGEN_TAKT_S)
         return aufgabe.result()
 
+    @app.get("/auftraege/{kennung}")
+    async def auftrag(kennung: str) -> dict[str, Any]:
+        """Zwischenstand eines laufenden oder wartenden Auftrags (Kennung aus dem Feld kennung der Transkription)."""
+        return pool().auftrag_stand(kennung)
+
     @app.post("/transkription")
     async def transkription(
         request: Request,
         datei: UploadFile = File(...),
         sprache: str = Form("german"),
         wortzeiten: bool = Form(True),
+        kennung: str | None = Form(None),
     ) -> dict[str, Any]:
         try:
             code = sprachen.code_fuer(sprache)
@@ -146,7 +154,7 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
         pfad = await _ablegen(datei)
         start = time.monotonic()
         try:
-            aufgabe = asyncio.create_task(pool().transkribiere(pfad, code, wortzeiten, anzeige=datei.filename))
+            aufgabe = asyncio.create_task(pool().transkribiere(pfad, code, wortzeiten, anzeige=datei.filename, kennung=kennung))
             roh, arbeiter = await _bis_fertig_oder_aufgelegt(request, aufgabe)
         except ArbeiterFehler as fehler:
             log.error("Transkription fehlgeschlagen: %s", fehler)
