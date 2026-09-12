@@ -14,7 +14,7 @@ Warum das wichtig ist: Die Zeitmarken sind der Anker jeder Fundstelle. Jeder Abs
 
 ## Eigener Dienst
 
-Die Transkription läuft über den mitgelieferten Dienst (Whisper, großes Modell), nicht über ein fremdes Programm: er startet mit der Anwendung, lädt sein Modell beim ersten Mal selbst und nutzt auf Apple Silicon die Grafikeinheit, sonst den Prozessor. Unter Einstellungen, Transkription steht seine Adresse; die Karte darüber zeigt seinen Stand live: den Prozess des Dienstes, jeden Arbeiter mit eigener Prozesskennung, seinem Zustand, der Datei, die er gerade transkribiert (mit Laufzeit), seinem letzten Auftrag (Audiolänge und Dauer), der Zahl seiner Aufträge und seinem Speicher; dazu wartende Aufträge und den Arbeitsspeicher des Rechners.
+Die Transkription läuft über den mitgelieferten Dienst (Whisper, großes Modell), nicht über ein fremdes Programm: er startet mit der Anwendung, lädt sein Modell beim ersten Mal selbst und nutzt auf Apple Silicon die Grafikeinheit, sonst den Prozessor. Unter Einstellungen, Transkription steht seine Adresse; die Karte darüber zeigt seinen Stand live: den Prozess des Dienstes, jeden Arbeiter mit eigener Prozesskennung, seinem Zustand, dem Video, das er gerade transkribiert (mit Laufzeit), seinem letzten Auftrag (Audiolänge und Dauer), der Zahl seiner Aufträge und seinem Speicher; dazu wartende Aufträge und den Arbeitsspeicher des Rechners.
 
 ![Karte des Transkriptionsdienstes mit Arbeitern und Speicher](/hilfe/transkription-dienst.png)
 *Einstellungen, Transkription: der Dienst mit seinen Arbeitern, dem Arbeitsspeicher des Rechners und dem Speicherplatz des Projekts auf der Platte.*

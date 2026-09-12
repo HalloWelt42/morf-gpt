@@ -22,7 +22,7 @@ from sqlalchemy import select, update
 
 from ...config import einstellungen
 from ...db.engine import sitzung
-from ...db.modelle import Audio, Transkript, neue_id
+from ...db.modelle import Audio, Transkript, Video, neue_id
 from ...domaene.fliessband import Auftragsart
 from ..auftraege import stufen
 from ..ereignisse import bus
@@ -63,7 +63,12 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
         f"Audio ({_megabyte(pfad)} Megabyte, {_dauer_text(audio.dauer_s)}) geht an {register.titel_fuer(engine.kennung)}",
     )
     start = time.monotonic()
-    ergebnis = await _mit_lebenszeichen(k, engine.transkribiere(pfad, sprache, zeitgrenze_s), takt_s)
+    if isinstance(engine, EigenerDienst):
+        # Der eigene Dienst zeigt den Auftrag unter diesem Namen (Karte, Protokoll), nicht als Dateikennung
+        aufruf = engine.transkribiere(pfad, sprache, zeitgrenze_s, anzeige=await _videotitel(k.video_id))
+    else:
+        aufruf = engine.transkribiere(pfad, sprache, zeitgrenze_s)
+    ergebnis = await _mit_lebenszeichen(k, aufruf, takt_s)
     dauer_s = time.monotonic() - start
 
     if not ergebnis.text.strip():
@@ -141,6 +146,11 @@ async def _mit_lebenszeichen[T](k: AuftragKontext, aufruf: Coroutine[Any, Any, T
 
 
 # ---------------------------------------------------------------- Datenbank
+
+
+async def _videotitel(video_id: str) -> str:
+    async with sitzung() as s:
+        return str(await s.scalar(select(Video.titel).where(Video.id == video_id)) or "")
 
 
 async def _audio_laden(video_id: str) -> Audio:

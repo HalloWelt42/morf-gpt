@@ -43,6 +43,11 @@ async def test_transkription_liest_antwort_und_sendet_felder(audio: Path):
     assert len(e.segmente) == 1 and e.segmente[0].woerter[0].wort == "Guten"
     koerper = gesehen[0].content
     assert b'name="sprache"\r\n\r\ngerman' in koerper and b'name="wortzeiten"\r\n\r\ntrue' in koerper and b'name="datei"' in koerper
+    assert b'filename="probe.m4a"' in koerper
+
+    mit_titel = _dienst({"/transkription": httpx.Response(200, json=antwort)}, gesehen)
+    await mit_titel.transkribiere(audio, "german", 60, anzeige="Noteninflation | mmM#5")
+    assert b'filename="Noteninflation | mmM#5.m4a"' in gesehen[-1].content, "der Videotitel geht als Anzeigename mit"
 
     ohne = _dienst({"/transkription": httpx.Response(200, json=antwort)}, [], wortzeiten=False)
     e2 = await ohne.transkribiere(audio, "german", 60)

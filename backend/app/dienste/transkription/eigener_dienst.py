@@ -56,19 +56,21 @@ class EigenerDienst:
         return httpx.AsyncClient(timeout=zeitgrenzen(gesamt_s, self._verbindung_s), transport=self._transport)
 
     # ------------------------------------------------------------------ Transkription
-    async def transkribiere(self, pfad: Path, sprache: str, zeitgrenze_s: float) -> TranskriptErgebnis:
+    async def transkribiere(self, pfad: Path, sprache: str, zeitgrenze_s: float, anzeige: str | None = None) -> TranskriptErgebnis:
+        """`anzeige` ist der Name, unter dem der Auftrag beim Dienst erscheint (etwa der Videotitel); Vorgabe Dateiname."""
         audiodatei_pruefen(pfad)
-        daten = await self._sende(pfad, sprache, zeitgrenze_s)
+        daten = await self._sende(pfad, sprache, zeitgrenze_s, anzeige)
         return self._ergebnis(daten, sprache)
 
-    async def _sende(self, pfad: Path, sprache: str, zeitgrenze_s: float) -> dict[str, Any]:
+    async def _sende(self, pfad: Path, sprache: str, zeitgrenze_s: float, anzeige: str | None = None) -> dict[str, Any]:
         felder = {"sprache": sprache, "wortzeiten": "true" if self._wortzeiten_behalten else "false"}
+        name = f"{anzeige.strip()}{pfad.suffix}" if anzeige and anzeige.strip() else pfad.name
         try:
             async with asyncio.timeout(zeitgrenze_s):
                 with pfad.open("rb") as datei:
                     async with self._client(zeitgrenze_s) as client:
                         resp = await client.post(
-                            f"{self._basis}/transkription", data=felder, files={"datei": (pfad.name, datei, mime_typ_fuer(pfad))}
+                            f"{self._basis}/transkription", data=felder, files={"datei": (name, datei, mime_typ_fuer(pfad))}
                         )
         except (TimeoutError, httpx.TimeoutException) as e:
             raise TranskriptionsFehler(f"{self._name()}: Zeitgrenze von {int(zeitgrenze_s)} Sekunden überschritten") from e
