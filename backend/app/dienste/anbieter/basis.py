@@ -72,6 +72,10 @@ class Antwort:
     tokens_aus: int | None = None
     roh: dict[str, Any] = field(default_factory=dict)
     werkzeugaufrufe: list[Werkzeugaufruf] = field(default_factory=list)
+    # Token, die das Modell für unsichtbares Denken verbraucht hat (Denkmodus), und ob die Antwort am
+    # Token-Budget abgeschnitten wurde: zusammen erklären sie eine leere Antwort.
+    denk_tokens: int = 0
+    abgeschnitten: bool = False
 
 
 @dataclass(slots=True)

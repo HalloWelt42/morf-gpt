@@ -45,8 +45,8 @@ async def modelle_mit_zustand(basis_url: str) -> list[dict[str, Any]]:
 
 
 class LmStudio(OpenAiKompatibel):
-    def __init__(self, info: AnbieterInfo, api_schluessel: str = "", zusatz: dict[str, Any] | None = None) -> None:
-        super().__init__(info, api_schluessel, zusatz)
+    def __init__(self, info: AnbieterInfo, api_schluessel: str = "", zusatz: dict[str, Any] | None = None, denken: str = "") -> None:
+        super().__init__(info, api_schluessel, zusatz, denken)
 
     async def modelle(self) -> list[dict[str, Any]]:
         alle = await modelle_mit_zustand(self.info.basis_url)

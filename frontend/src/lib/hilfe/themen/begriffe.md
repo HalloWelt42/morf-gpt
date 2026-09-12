@@ -23,6 +23,7 @@ Wo ein Fachwort in der Oberfläche auftaucht, steht es hier. Die Erklärungen si
 - Token: Die Einheit, in der ein Sprachmodell Text zählt: ein Wortstück, im Deutschen etwa drei Viertel eines Wortes. Eine Antwort von 4000 Tokens sind grob 3000 Wörter.
 - Temperatur: Wie frei das Modell formuliert. 0 heißt immer die wahrscheinlichste Fortsetzung, also nüchtern und wiederholbar; höhere Werte erlauben freiere, wechselnde Formulierungen.
 - Kontext: Alles, was das Modell für eine Antwort zu lesen bekommt: die Frage, die Stellen, die Zusammenfassungen und die letzten Nachrichten der Unterhaltung. Der Kontext ist begrenzt, darum gibt es Grenzen für Verlauf und Stellen.
+- Denkmodus: Manche Modelle schreiben vor der Antwort einen unsichtbaren Gedankengang und zählen ihn zum Token-Budget; für Korrektur und Chat schaltet man ihn beim Anbieter aus, sonst kann die Antwort leer bleiben.
 - Kontextkopf: Der Videotitel und das Thema, die jedem Stück vor dem Einbetten vorangestellt werden, damit die Suche den Zusammenhang eines Stücks kennt.
 - Werkzeug: Ein fremder Dienst, den der Chat zusätzlich befragen darf. MCP-Server: ein Programm, das seine Werkzeuge über ein offenes Protokoll (Model Context Protocol) anbietet und beschreibt. HTTP-Dienst: eine Webadresse, die auf eine Anfrage Daten liefert. JSON: das Textformat, in dem solche Dienste antworten, aus benannten Feldern und Listen.
 

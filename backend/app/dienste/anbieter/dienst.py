@@ -48,10 +48,11 @@ def baue_sprachmodell(a: Anbieter) -> SprachmodellAnbieter:
     if a.art != "sprachmodell":
         raise AnbieterFehler(f"Anbieter '{a.name}' ist kein Sprachmodell")
     zusatz = a.parameter.get("zusatz") if isinstance(a.parameter, dict) else None
+    denken = str(a.parameter.get("denken") or "") if isinstance(a.parameter, dict) else ""
     if a.typ == "lmstudio":
-        return LmStudio(_info(a), a.api_schluessel, zusatz)
+        return LmStudio(_info(a), a.api_schluessel, zusatz, denken)
     if a.typ == "openai_kompatibel":
-        return OpenAiKompatibel(_info(a), a.api_schluessel, zusatz)
+        return OpenAiKompatibel(_info(a), a.api_schluessel, zusatz, denken)
     raise AnbieterFehler(f"Unbekannter Sprachmodell-Typ '{a.typ}'")
 
 
@@ -132,6 +133,8 @@ async def anlegen_wenn_leer(session: AsyncSession) -> None:
                 basis_url=HETZNER_URL,
                 api_schluessel=hetzner_schluessel,
                 modell="Qwen/Qwen3.6-35B-A3B-FP8",
+                # Qwen denkt sonst vor jeder Antwort und verbraucht damit das Token-Budget der Korrektur
+                parameter={"denken": "aus"},
             )
         )
     await session.flush()

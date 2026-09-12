@@ -192,6 +192,7 @@
                   Modell <code>{a.modell || "-"}</code>
                   {#if a.basis_url}&middot; {a.basis_url}{/if}
                   {#if a.parameter.dimension}&middot; {String(a.parameter.dimension)} Dimensionen{/if}
+                  {#if a.parameter.denken}&middot; Denkmodus {a.parameter.denken === "aus" ? "aus" : "an"}{/if}
                 </div>
                 {#if a.hat_schluessel}
                   <div class="mt-1 d-flex align-items-center gap-2">
@@ -271,6 +272,16 @@
       <label class="form-label" for="f-modell">Modell</label>
       <input class="form-control" id="f-modell" bind:value={formular.modell} placeholder={formular.typ === "fastembed" ? "BAAI/bge-m3" : "Modellkennung beim Anbieter"} />
     </div>
+    {#if formular.art === "sprachmodell" && formular.typ !== "fastembed"}
+      <div class="col-md-3">
+        <label class="form-label" for="f-denken">Denkmodus</label>
+        <select class="form-select" id="f-denken" value={String(formular.parameter.denken ?? "")} onchange={(ev) => (formular.parameter.denken = (ev.target as HTMLSelectElement).value)} title="Manche Modelle (etwa Qwen) denken vor der Antwort in einem eigenen Textteil und verbrauchen damit das Token-Budget; für Korrektur und Chat sollte das aus sein. Nicht steuern: der Dienst entscheidet; aus oder an: wird mit jeder Anfrage gesendet (Feld chat_template_kwargs, verstehen vLLM-artige Dienste wie Hetzner)">
+          <option value="">nicht steuern</option>
+          <option value="aus">aus (empfohlen)</option>
+          <option value="an">an</option>
+        </select>
+      </div>
+    {/if}
     {#if formular.art === "einbettung"}
       <div class="col-md-3">
         <label class="form-label" for="f-dim">Dimension</label>

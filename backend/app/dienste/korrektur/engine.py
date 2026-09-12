@@ -114,6 +114,8 @@ class Korrekturergebnis:
     themen: list[Thema] = field(default_factory=list)
     zusammenfassung: str = ""
     themen_fehler: str = ""
+    # Der Hinweis auf verbrauchte Denk-Token steht je Auftrag nur einmal im Protokoll
+    denkhinweis_gegeben: bool = False
 
     @property
     def aehnlichkeit(self) -> float | None:
@@ -288,6 +290,14 @@ async def korrigiere(
         )
         if pruefung.verworfen:
             await schreibe(f"Block {block.index + 1}: {pruefung.grund} - Rohtext bleibt", "warn")
+            if pruefung.grund == "Antwort leer" and antwort.denk_tokens and not ergebnis.denkhinweis_gegeben:
+                ergebnis.denkhinweis_gegeben = True
+                await schreibe(
+                    f"Die Antwort ist leer, weil das Modell {antwort.denk_tokens} Token mit unsichtbarem Denken verbraucht hat"
+                    + (" und am Token-Budget abgeschnitten wurde" if antwort.abgeschnitten else "")
+                    + ". Beim Anbieter den Denkmodus auf aus stellen (Einstellungen, Anbieter).",
+                    "warn",
+                )
         ergebnis.absaetze.extend(absaetze_aus_block(block, pruefung.text, pruefung.verworfen))
 
     if p.themen and ergebnis.absaetze:

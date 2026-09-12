@@ -12,4 +12,8 @@ stichworte: lm studio, hetzner, fastembed, rolle, schlüssel, modell
 
 Ein Anbieter ist ein Dienst, der ein Sprachmodell oder eine Einbettung liefert. Drei Rollen zeigen auf je einen Anbieter: Chat-Antworten, Korrektur und Einbettung. Prüfen fragt die Erreichbarkeit ab, Probe senden macht einen echten kurzen Aufruf.
 
+## Denkmodus
+
+Manche Sprachmodelle (etwa die Qwen-Familie bei der Hetzner-Inferenz) denken vor jeder Antwort in einem eigenen, unsichtbaren Textteil. Das kostet Zeit und Token: Bei der Korrektur eines Blocks verbrauchte das Denken das ganze Token-Budget, die eigentliche Antwort blieb leer und der Rohtext blieb stehen. Darum hat jeder Sprachmodell-Anbieter die Option Denkmodus: aus (empfohlen für Korrektur und Chat), an, oder nicht steuern (der Dienst entscheidet). Die Einstellung geht als Feld mit jeder Anfrage mit; Dienste, die es nicht kennen, ignorieren es. Meldet die Korrektur "Antwort leer" mit dem Hinweis auf Denk-Token, ist genau das der Grund.
+
 <div class="m-hinweis warnung"><i class="fa-solid fa-triangle-exclamation"></i> Die Einbettung baut den Index. Wechselst du das Einbettungsmodell, müssen alle Stücke neu eingebettet werden; die Suche nutzt immer das Modell, das den Index gebaut hat.</div>

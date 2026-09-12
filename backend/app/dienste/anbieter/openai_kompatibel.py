@@ -40,6 +40,17 @@ def _fehlertext(resp: httpx.Response) -> str:
     return resp.text[:400] or f"HTTP {resp.status_code}"
 
 
+def denk_tokens_aus(nutzung: dict[str, Any]) -> int:
+    """Token für unsichtbares Denken aus dem Nutzungsblock (OpenAI-Form completion_tokens_details.reasoning_tokens)."""
+    details = nutzung.get("completion_tokens_details")
+    if isinstance(details, dict):
+        try:
+            return int(details.get("reasoning_tokens") or 0)
+        except (TypeError, ValueError):
+            return 0
+    return 0
+
+
 def _werkzeugaufrufe_lesen(roh: Any) -> list[Werkzeugaufruf]:
     """tool_calls der OpenAI-Antwort in Werkzeugaufrufe wandeln; kaputte Argumente werden leer."""
     aus: list[Werkzeugaufruf] = []
@@ -68,11 +79,14 @@ def _werkzeugaufrufe_lesen(roh: Any) -> list[Werkzeugaufruf]:
 class OpenAiKompatibel:
     """Sprachmodell über /v1/chat/completions."""
 
-    def __init__(self, info: AnbieterInfo, api_schluessel: str = "", zusatz: dict[str, Any] | None = None) -> None:
+    def __init__(self, info: AnbieterInfo, api_schluessel: str = "", zusatz: dict[str, Any] | None = None, denken: str = "") -> None:
         self.info = info
         self._basis = info.basis_url.rstrip("/")
         self._schluessel = api_schluessel
         self._zusatz = zusatz or {}
+        # Denkmodus: "aus" oder "an" wird als chat_template_kwargs.enable_thinking gesendet (vLLM-artige
+        # Dienste wie Hetzner); "" lässt den Dienst entscheiden.
+        self._denken = denken
 
     def _kopf(self) -> dict[str, str]:
         kopf = {"Content-Type": "application/json"}
@@ -103,6 +117,8 @@ class OpenAiKompatibel:
         if p.werkzeuge:
             nutzlast["tools"] = p.werkzeuge
             nutzlast["tool_choice"] = "auto"
+        if self._denken in ("aus", "an"):
+            nutzlast["chat_template_kwargs"] = {"enable_thinking": self._denken == "an"}
         nutzlast.update(self._zusatz)
         return nutzlast
 
@@ -132,6 +148,8 @@ class OpenAiKompatibel:
             tokens_aus=nutzung.get("completion_tokens"),
             roh=daten,
             werkzeugaufrufe=_werkzeugaufrufe_lesen(nachricht.get("tool_calls")),
+            denk_tokens=denk_tokens_aus(nutzung),
+            abgeschnitten=str(daten["choices"][0].get("finish_reason") or "") == "length",
         )
 
     async def streame(self, nachrichten: list[Nachricht], parameter: Antwortparameter) -> AsyncIterator[Delta]:
