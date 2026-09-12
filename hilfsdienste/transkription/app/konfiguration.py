@@ -41,7 +41,7 @@ class Einstellungen(BaseSettings):
 
     # Arbeiter: je einer hält das Modell geladen und transkribiert eine Datei zur Zeit
     arbeiter: int = 1
-    arbeiter_maximum: int = 4
+    arbeiter_maximum: int = 8
     # So viel Speicher muss nach dem Laden eines weiteren Arbeiters frei bleiben
     speicher_reserve_gb: float = 8.0
     # Frist für das Laden eines Arbeiters (erster Start lädt das Modell aus dem Netz)

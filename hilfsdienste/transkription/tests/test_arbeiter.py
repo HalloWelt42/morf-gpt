@@ -23,7 +23,7 @@ async def test_pool_arbeitet_parallel_und_baut_ab(pool_ablage: Path):
         assert await pool.anpassen(2) == []
         assert pool.bereite() == 2
         start = time.monotonic()
-        a, b = await asyncio.gather(
+        (a, wer_a), (b, wer_b) = await asyncio.gather(
             pool.transkribiere(pool_ablage / "hallo_welt.wav", "de", True),
             pool.transkribiere(pool_ablage / "zweite_datei.wav", None, False),
         )
@@ -31,6 +31,8 @@ async def test_pool_arbeitet_parallel_und_baut_ab(pool_ablage: Path):
         assert a.text == "hallo welt" and [w.wort for w in a.segmente[0].woerter] == ["hallo", "welt"]
         assert b.text == "zweite datei" and b.segmente[0].woerter == []
         assert dauer < 0.55, f"zwei Arbeiter sollten gleichzeitig arbeiten, gebraucht: {dauer:.2f} s"
+        assert wer_a.nummer != wer_b.nummer and wer_a.prozess.pid != wer_b.prozess.pid, "zwei verschiedene Prozesse"
+        assert wer_a.zuletzt["datei"] == "hallo_welt.wav" and wer_a.zuletzt["fehler"] == "" and wer_a.aktuell is None
 
         await pool.anpassen(1)
         assert pool.bereite() == 1
@@ -74,7 +76,7 @@ async def test_abbruch_ersetzt_den_arbeiter(pool_ablage: Path):
         await pool._ersatz
         stand = pool.stand()
         assert pool.bereite() == 1 and stand["arbeiter"][0]["pid"] != alter_pid, "ein neuer Arbeiter ersetzt den abgebrochenen"
-        schnell = await pool.transkribiere(pool_ablage / "danach.wav", "de", False)
+        schnell, _ = await pool.transkribiere(pool_ablage / "danach.wav", "de", False)
         assert schnell.text == "danach"
     finally:
         await pool.beenden_alle()

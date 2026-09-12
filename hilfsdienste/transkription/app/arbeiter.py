@@ -22,6 +22,7 @@ import logging
 import multiprocessing as mp
 import time
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from multiprocessing.connection import Connection
 from pathlib import Path
 from typing import Any
@@ -73,8 +74,12 @@ class Arbeiter:
     groesse_gb: float = 0.0  # Modell nach dem Laden
     speicher_gb: float = 0.0  # nach dem letzten Auftrag: Modell plus behaltene Puffer
     auftraege: int = 0
+    aktuell: str | None = None  # Datei des laufenden Auftrags
+    seit: float | None = None  # Beginn des laufenden Auftrags (Uhrzeit)
+    zuletzt: dict[str, Any] | None = None  # letzter Auftrag: datei, dauer_s, audio_s, fehler
     soll_enden: bool = False
     gestartet: float = field(default_factory=time.monotonic)
+    gestartet_uhr: float = field(default_factory=time.time)
 
     def als_dict(self) -> dict[str, Any]:
         return {
@@ -84,6 +89,17 @@ class Arbeiter:
             "speicher_gb": round(self.speicher_gb or self.groesse_gb, 2),
             "auftraege": self.auftraege,
             "pid": self.prozess.pid,
+            "gestartet": datetime.fromtimestamp(self.gestartet_uhr, UTC).isoformat(timespec="seconds"),
+            "aktuell": (
+                {
+                    "datei": self.aktuell,
+                    "seit": datetime.fromtimestamp(self.seit, UTC).isoformat(timespec="seconds"),
+                    "laeuft_s": round(time.time() - self.seit, 1),
+                }
+                if self.aktuell and self.seit
+                else None
+            ),
+            "zuletzt": self.zuletzt,
         }
 
 
@@ -217,24 +233,39 @@ class Arbeiterpool:
                 await self._beenden(arbeiter)
 
     # ------------------------------------------------------------------ Aufträge
-    async def transkribiere(self, pfad: Path, sprache_code: str | None, wortzeiten: bool) -> Rohtranskript:
+    async def transkribiere(
+        self, pfad: Path, sprache_code: str | None, wortzeiten: bool, anzeige: str | None = None
+    ) -> tuple[Rohtranskript, Arbeiter]:
+        """Transkribiert mit dem nächsten freien Arbeiter; gibt Ergebnis und Arbeiter (für die Herkunft) zurück.
+
+        `anzeige` ist der Name, unter dem der Auftrag im Stand erscheint (Vorgabe: Dateiname).
+        """
+        name = anzeige or pfad.name
         if not self.lebendige():
             await self.anpassen(self._gewuenscht)
             if not self.lebendige():
                 raise ArbeiterFehler("Kein Arbeiter verfügbar: " + "; ".join(self._hinweise or ["Modell konnte nicht geladen werden"]))
         arbeiter = await self._nehmen()
+        arbeiter.aktuell, arbeiter.seit = name, time.time()
+        start = time.monotonic()
         try:
             art, wert, speicher = await asyncio.to_thread(self._auftrag, arbeiter, pfad, sprache_code, wortzeiten)
             if speicher:
                 arbeiter.speicher_gb = float(speicher)
         except asyncio.CancelledError:
+            arbeiter.zuletzt = {"datei": name, "dauer_s": round(time.monotonic() - start, 1), "audio_s": None, "fehler": "abgebrochen"}
             await self._ersetzen(arbeiter)
             raise
         finally:
+            arbeiter.aktuell, arbeiter.seit = None, None
             await self._zurueckgeben(arbeiter)
+        dauer = round(time.monotonic() - start, 1)
         if art != "ergebnis":
+            arbeiter.zuletzt = {"datei": name, "dauer_s": dauer, "audio_s": None, "fehler": str(wert)[:200]}
             raise ArbeiterFehler(str(wert))
-        return wert
+        audio_s = round(wert.segmente[-1].end) if wert.segmente else 0
+        arbeiter.zuletzt = {"datei": name, "dauer_s": dauer, "audio_s": audio_s, "fehler": ""}
+        return wert, arbeiter
 
     async def _ersetzen(self, arbeiter: Arbeiter) -> None:
         """Beendet einen Arbeiter mitten im Auftrag (Abbruch) und ersetzt ihn im Hintergrund."""

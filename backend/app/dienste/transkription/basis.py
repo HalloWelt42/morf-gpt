@@ -90,6 +90,7 @@ class TranskriptErgebnis:
     sprache: str
     modell: str
     engine: str
+    arbeiter: str = ""  # Herkunft beim eigenen Dienst, etwa "Arbeiter 2 (PID 4711)"
 
     @property
     def zeichen(self) -> int:

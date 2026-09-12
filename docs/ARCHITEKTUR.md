@@ -79,8 +79,12 @@ dem Projekt ausgeliefert, hat sein eigenes venv (`start.sh` legt es an und start
   CTranslate2, Prozessor oder CUDA, alle anderen Rechner), `wahl.py` (auto: mlx wenn
   installiert, sonst faster; Vorgabemodelle `whisper-large-v3` als MLX-Gewichte bzw.
   `large-v3-turbo`). Modelle liegen unter `data/modelle/hf` (HF_HOME), nie im Home.
-- `arbeiter.py`: Pool von Prozessen, je einer hält ein geladenes Modell und transkribiert
-  eine Datei zur Zeit; Aufträge über der Zahl der Arbeiter warten. `anpassen(n)` lädt
+- `arbeiter.py`: Pool von Prozessen (1 bis `MORF_TRANSKRIPTION_ARBEITER_MAXIMUM`, Vorgabe 8),
+  je einer hält ein geladenes Modell und transkribiert eine Datei zur Zeit; Aufträge über der
+  Zahl der Arbeiter warten. Je Arbeiter sind PID, Zustand, laufende Datei mit Beginn und
+  letzter Auftrag (Audiolänge, Dauer, Fehler) im Stand sichtbar; die Antwort einer
+  Transkription nennt den Arbeiter (`arbeiter: {nummer, pid}`), das Backend schreibt ihn ins
+  Auftragsprotokoll. So ist nachprüfbar, dass die Arbeiter unabhängig laufen. `anpassen(n)` lädt
   weitere Arbeiter nur, wenn nach dem Laden die Speicherreserve frei bleibt (Modellgröße
   am ersten Arbeiter gemessen, Speicher aus `vm_stat` bzw. `/proc/meminfo`), und baut
   überzählige ab (freie sofort, beschäftigte nach ihrem Auftrag). Ein abgestürzter Arbeiter
@@ -96,7 +100,9 @@ dem Projekt ausgeliefert, hat sein eigenes venv (`start.sh` legt es an und start
 Im Backend ist er die Engine `morf` (`dienste/transkription/eigener_dienst.py`, Vorgabe
 der Einstellung `transkription.engine`). Die Stufe Transkription bringt den Dienst vor jedem
 Auftrag auf `transkription.arbeiter` Arbeiter und protokolliert Stand und Hinweise; Router
-`/api/transkription/dienst` (Stand, Arbeiter anpassen) für die Einstellungsseite.
+`/api/transkription/dienst` (Stand; `POST .../arbeiter {anzahl}` speichert die Zahl als
+Einstellung und bringt den Dienst sofort darauf) für die Karte, die sich alle drei Sekunden
+auffrischt und die Zahl per Knopf 1 bis 8 wählen lässt.
 
 Messung (Whisper large-v3, MLX, Videos von 5 bis 7 Minuten, 80B nebenbei geladen): ein
 Arbeiter etwa dreifache Echtzeit (733 s Audio in 245 s). Zwei Arbeiter mit je einer Datei:

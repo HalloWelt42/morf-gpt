@@ -145,14 +145,14 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "band.parallel.transkription",
         "Parallele Transkriptionen",
-        "Beim eigenen Dienst höchstens so viele wie Arbeiter dort (Einstellung Transkription); die Grafikeinheit ist "
-        "geteilt, gemessen schaffen zwei Arbeiter etwa 40 Prozent mehr als einer, vier etwa zwei Drittel mehr. "
-        "Bei den txt2voice-Diensten bringt mehr als 1 nichts.",
+        "So viele Transkriptionsaufträge laufen gleichzeitig; sinnvoll sind höchstens so viele wie der Transkriptionsdienst "
+        "Arbeiter hat (Einstellung Transkription), sonst wartet der Rest dort in der Schlange. Die Grafikeinheit ist "
+        "geteilt: gemessen schaffen zwei Arbeiter etwa 40 Prozent mehr als einer, vier etwa zwei Drittel mehr.",
         "ganzzahl",
         1,
         "band",
         minimum=1,
-        maximum=2,
+        maximum=8,
     ),
     Definition(
         "band.parallel.korrektur",
@@ -276,15 +276,16 @@ DEFINITIONEN: tuple[Definition, ...] = (
     Definition(
         "transkription.arbeiter",
         "Arbeiter des eigenen Dienstes",
-        "Je Arbeiter hält der Dienst ein geladenes Modell (etwa 3,5 GB) und transkribiert eine Datei zur Zeit. Die Stufe "
-        "bringt den Dienst vor jedem Auftrag auf diese Zahl, soweit der freie Speicher reicht. Mehr als ein Arbeiter "
-        "lohnt nur zusammen mit ebenso vielen parallelen Transkriptionen (Fließband). Gemessen: zwei Arbeiter schaffen "
-        "zusammen etwa 40 Prozent mehr als einer, vier etwa zwei Drittel mehr; jeder einzelne Auftrag wird dabei langsamer.",
+        "Je Arbeiter hält der Dienst einen eigenen Prozess mit geladenem Modell (etwa 3 GB) und transkribiert eine Datei "
+        "zur Zeit. Die Stufe bringt den Dienst vor jedem Auftrag auf diese Zahl, soweit der freie Speicher reicht; die "
+        "Karte oben zeigt jeden Arbeiter mit Prozess, laufender Datei und letztem Auftrag. Mehr als ein Arbeiter lohnt nur "
+        "zusammen mit ebenso vielen parallelen Transkriptionen (Fließband). Gemessen: zwei Arbeiter schaffen zusammen etwa "
+        "40 Prozent mehr als einer, vier etwa zwei Drittel mehr; jeder einzelne Auftrag wird dabei langsamer.",
         "ganzzahl",
         1,
         "transkription",
         minimum=1,
-        maximum=4,
+        maximum=8,
         schritt=1,
     ),
     Definition(

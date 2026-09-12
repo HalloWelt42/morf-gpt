@@ -24,7 +24,7 @@ async def test_http_schnittstelle():
             assert r.status_code == 200, r.text
             d = r.json()
             assert d["text"] == "guten tag" and d["segmente"][0]["words"][0]["word"] == "guten" and d["sprache"] == "de"
-            assert d["engine"] == "attrappe" and d["dauer_s"] >= 0
+            assert d["engine"] == "attrappe" and d["dauer_s"] >= 0 and d["arbeiter"]["nummer"] == 1 and d["arbeiter"]["pid"] > 0
 
             r = await c.post("/transkription", files={"datei": ("leer.wav", b"", "audio/wav")})
             assert r.status_code == 422
@@ -36,5 +36,6 @@ async def test_http_schnittstelle():
             r = await c.post("/arbeiter", json={"anzahl": 3})
             assert r.status_code == 422
             s = (await c.get("/stand")).json()
-            assert s["gewuenscht"] == 2 and s["speicher"]["gesamt_gb"] >= 0
+            assert s["gewuenscht"] == 2 and s["speicher"]["gesamt_gb"] >= 0 and s["dienst"]["pid"] > 0
+            assert s["arbeiter"][0]["zuletzt"]["datei"] == "guten_tag.wav" and s["arbeiter"][0]["aktuell"] is None
     assert not list((ABLAGE / "uploads").glob("*")), "hochgeladene Dateien werden nach der Arbeit gelöscht"

@@ -128,9 +128,11 @@ und antwortet auf Port 8463 (`MORF_TRANSKRIPTION_PORT`). Wer stattdessen einen a
 Dienst nutzt, setzt `MORF_TRANSKRIPTION_AKTIV=false` und wählt ihn unter Einstellungen,
 Transkription.
 
-Der Dienst hält einen oder mehrere Arbeiter, je einer mit geladenem Modell (etwa 3,5 GB).
-Die Zahl steht unter Einstellungen, Transkription; die Stufe Transkribieren bringt den
-Dienst vor jedem Auftrag darauf und lädt nur nach, wenn der freie Speicher reicht. Gemessen
+Der Dienst hält einen bis acht Arbeiter, je einer ein eigener Prozess mit geladenem Modell
+(etwa 3 GB). Die Zahl wählst du auf der Karte unter Einstellungen, Transkription, die jeden
+Arbeiter live mit Prozess, laufender Datei und letztem Auftrag zeigt; die Stufe
+Transkribieren bringt den Dienst vor jedem Auftrag auf diese Zahl und lädt nur nach, wenn
+der freie Speicher reicht. Gemessen
 auf der Grafikeinheit: ein Arbeiter etwa dreifache Echtzeit, zwei Arbeiter zusammen etwa
 40 Prozent mehr, vier etwa zwei Drittel mehr. Mehrere Arbeiter arbeiten nur, wenn unter
 Fließband ebenso viele parallele Transkriptionen erlaubt sind.
@@ -140,7 +142,7 @@ Fließband ebenso viele parallele Transkriptionen erlaubt sind.
   <img src="frontend/public/hilfe/transkription-dienst.png" width="912" alt="Karte des Transkriptionsdienstes mit Arbeitern und Speicher">
 </picture>
 
-  *Einstellungen, Transkription: Arbeiter des Dienstes, ihr Zustand, der Arbeitsspeicher des Rechners und der Speicherplatz des Projekts auf der Platte.*
+  *Einstellungen, Transkription: Wahl der Arbeiter, je Arbeiter Prozess, Zustand, laufende Datei und letzter Auftrag, dazu Arbeitsspeicher und Speicherplatz des Projekts.*
 
 ## Erste Schritte
 

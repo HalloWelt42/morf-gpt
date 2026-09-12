@@ -19,7 +19,7 @@ NICHT_EIGENER = "Der gewählte Transkriptionsdienst ist nicht der eigene; Arbeit
 
 
 class ArbeiterWunsch(BaseModel):
-    anzahl: int | None = Field(default=None, ge=1, le=16, description="leer: Wert der Einstellung transkription.arbeiter")
+    anzahl: int | None = Field(default=None, ge=1, le=8, description="leer: Wert der Einstellung transkription.arbeiter")
 
 
 async def _engine(session: AsyncSession) -> tuple[dict[str, Any], TranskriptionsEngine, dict[str, Any]]:
@@ -53,10 +53,21 @@ async def dienst(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict
 
 @router.post("/dienst/arbeiter")
 async def arbeiter(wunsch: ArbeiterWunsch, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> dict[str, Any]:
-    """Bringt den eigenen Dienst auf die gewünschte Zahl Arbeiter (ohne Angabe: die Einstellung); er prüft den Speicher."""
+    """Bringt den eigenen Dienst auf die gewünschte Zahl Arbeiter; er prüft den Speicher.
+
+    Mit Angabe wird die Zahl zugleich als Einstellung transkription.arbeiter gespeichert (eine Wahrheit:
+    die Stufe bringt den Dienst vor jedem Auftrag auf die Einstellung). Ohne Angabe gilt die Einstellung.
+    """
     _, engine, grund = await _engine(session)
     if not isinstance(engine, EigenerDienst):
         raise HTTPException(409, NICHT_EIGENER)
+    if wunsch.anzahl:
+        try:
+            await einstellungen_dienst.setze(session, "transkription.arbeiter", wunsch.anzahl)
+        except ValueError as e:
+            raise HTTPException(422, str(e)) from e
+        await session.commit()
+        grund["arbeiter_einstellung"] = wunsch.anzahl
     anzahl = wunsch.anzahl or int(grund["arbeiter_einstellung"])
     try:
         stand = await engine.arbeiter_setzen(anzahl)

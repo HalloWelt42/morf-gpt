@@ -92,12 +92,14 @@ class EigenerDienst:
             raise TranskriptionsFehler(f"{self._name()}: Antwort enthält weder Text noch Segmente")
         segmente = segmente_aus_json(daten.get("segmente"), self._wortzeiten_behalten)
         text = str(daten.get("text") or "").strip() or volltext_aus_segmenten(segmente)
+        wer = daten.get("arbeiter") if isinstance(daten.get("arbeiter"), dict) else {}
         return TranskriptErgebnis(
             text=text,
             segmente=segmente,
             sprache=str(daten.get("sprache") or sprache),
             modell=str(daten.get("modell") or ""),
             engine=self.kennung,
+            arbeiter=f"Arbeiter {wer.get('nummer')} (PID {wer.get('pid')})" if wer.get("nummer") else "",
         )
 
     # ------------------------------------------------------------------ Zustand und Arbeiter

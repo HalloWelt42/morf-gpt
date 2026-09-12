@@ -19,6 +19,7 @@ import time
 import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -89,9 +90,14 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
             "arbeiter": p.bereite(),
         }
 
+    gestartet = datetime.now(UTC).isoformat(timespec="seconds")
+
+    def _stand(p: Arbeiterpool) -> dict[str, Any]:
+        return {**p.stand(), "dienst": {"pid": os.getpid(), "gestartet": gestartet}, "version": VERSION}
+
     @app.get("/stand")
     async def stand() -> dict[str, Any]:
-        return {**pool().stand(), "version": VERSION}
+        return _stand(pool())
 
     @app.post("/arbeiter")
     async def arbeiter(wunsch: ArbeiterWunsch) -> dict[str, Any]:
@@ -99,7 +105,7 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
         if wunsch.anzahl > e.arbeiter_maximum:
             raise HTTPException(422, f"Höchstens {e.arbeiter_maximum} Arbeiter (MORF_TRANSKRIPTION_ARBEITER_MAXIMUM)")
         hinweise = await p.anpassen(wunsch.anzahl)
-        return {**p.stand(), "hinweise": hinweise, "version": VERSION}
+        return {**_stand(p), "hinweise": hinweise}
 
     async def _ablegen(datei: UploadFile) -> Path:
         """Legt den Upload blockweise in der Zwischenablage ab; der Name bleibt lesbar, eine Kennung davor macht ihn eindeutig."""
@@ -116,7 +122,7 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
         return pfad
 
     async def _bis_fertig_oder_aufgelegt(request: Request, aufgabe: asyncio.Task[Any]) -> Any:
-        """Wartet auf die Aufgabe; legt der Aufrufer vorher auf, wird die Aufgabe abgebrochen (Arbeiter wird ersetzt)."""
+        """Wartet auf die Aufgabe; legt der Aufrufer vorher auf, wird die Aufgabe abgebrochen (Arbeiter wird ersetzt)."""  # noqa: E501
         while not aufgabe.done():
             if await request.is_disconnected():
                 aufgabe.cancel()
@@ -140,7 +146,8 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
         pfad = await _ablegen(datei)
         start = time.monotonic()
         try:
-            roh = await _bis_fertig_oder_aufgelegt(request, asyncio.create_task(pool().transkribiere(pfad, code, wortzeiten)))
+            aufgabe = asyncio.create_task(pool().transkribiere(pfad, code, wortzeiten, anzeige=datei.filename))
+            roh, arbeiter = await _bis_fertig_oder_aufgelegt(request, aufgabe)
         except ArbeiterFehler as fehler:
             log.error("Transkription fehlgeschlagen: %s", fehler)
             raise HTTPException(500, str(fehler)) from fehler
@@ -148,8 +155,17 @@ def erstelle_app(beschreibung: EngineBeschreibung | None = None, werte: Einstell
             pfad.unlink(missing_ok=True)
         dauer = time.monotonic() - start
         segmente = nachbearbeitung.nachbearbeiten(roh.segmente, regeln)
-        log.info("%s: %d Segmente, %.1f s Audio in %.1f s", datei.filename, len(segmente), segmente[-1].end if segmente else 0.0, dauer)
+        log.info(
+            "%s: %d Segmente, %.1f s Audio in %.1f s (Arbeiter %d, PID %s)",
+            datei.filename,
+            len(segmente),
+            segmente[-1].end if segmente else 0.0,
+            dauer,
+            arbeiter.nummer,
+            arbeiter.prozess.pid,
+        )
         return {
+            "arbeiter": {"nummer": arbeiter.nummer, "pid": arbeiter.prozess.pid},
             "text": nachbearbeitung.volltext(segmente) or roh.text.strip(),
             "segmente": [s.als_speicherform() for s in segmente],
             "sprache": roh.sprache,

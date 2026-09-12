@@ -811,7 +811,18 @@ export interface TranskriptionsdienstStand {
   modell?: string;
   gewuenscht?: number;
   maximum?: number;
-  arbeiter?: { nummer: number; zustand: string; groesse_gb: number; speicher_gb: number; auftraege: number; pid: number | null }[];
+  arbeiter?: {
+    nummer: number;
+    zustand: string;
+    groesse_gb: number;
+    speicher_gb: number;
+    auftraege: number;
+    pid: number | null;
+    gestartet: string;
+    aktuell: { datei: string; seit: string; laeuft_s: number } | null;
+    zuletzt: { datei: string; dauer_s: number; audio_s: number | null; fehler: string } | null;
+  }[];
+  dienst?: { pid: number; gestartet: string };
   wartend?: number;
   modell_groesse_gb?: number;
   speicher?: { gesamt_gb: number; verfuegbar_gb: number; bekannt: boolean };

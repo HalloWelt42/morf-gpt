@@ -74,6 +74,7 @@ async def ausfuehren(k: AuftragKontext, parameter: dict[str, Any]) -> dict[str, 
     await k.protokoll(
         f"Transkript gespeichert: {len(ergebnis.segmente)} Segmente, {ergebnis.zeichen} Zeichen, "
         f"Modell '{ergebnis.modell or 'unbekannt'}', Dauer {_dauer_text(dauer_s)}"
+        + (f", transkribiert von {ergebnis.arbeiter}" if ergebnis.arbeiter else "")
     )
     bus.veroeffentliche("transkript", aktion="angelegt", video_id=k.video_id, transkript_id=transkript_id)
     return {
