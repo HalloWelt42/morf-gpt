@@ -82,6 +82,7 @@ class BandUebersicht(BaseModel):
     wartend_gesamt: int
     laufend_gesamt: int
     fehler_gesamt: int
+    abgebrochen_gesamt: int
 
 
 class PauseEingabe(BaseModel):

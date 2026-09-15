@@ -14,7 +14,7 @@ from sqlalchemy import ColumnElement, delete, extract, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..db.engine import sitzung_abhaengigkeit
-from ..db.modelle import Auftrag, AuftragProtokoll, Video, jetzt
+from ..db.modelle import Auftrag, AuftragProtokoll, Dokument, Video, jetzt
 from ..dienste.auftraege.laeufer import band_auffuellen, laeufer
 from ..dienste.einstellungen import dienst as einstellungen_dienst
 from ..dienste.ereignisse import bus
@@ -23,7 +23,9 @@ from ..domaene.fliessband import (
     STUFEN_TITEL,
     Auftragsart,
     Auftragsstatus,
+    Dokumentstufe,
     Stufe,
+    dokument_vorstufe,
     stufen_index,
     vorstufe,
 )
@@ -53,6 +55,52 @@ AUFRAEUM_TAGE_VORGABE: int = 7
 WIEDERHOLBARE_STATUS: tuple[Auftragsstatus, ...] = (Auftragsstatus.FEHLER, Auftragsstatus.ABGEBROCHEN)
 OFFENE_STATUS: tuple[Auftragsstatus, ...] = (Auftragsstatus.WARTEND, Auftragsstatus.LAEUFT)
 ERLEDIGTE_STATUS: tuple[Auftragsstatus, ...] = (Auftragsstatus.FERTIG, Auftragsstatus.ABGEBROCHEN)
+
+
+# ------------------------------------------------------------------ abgebrochene Aufträge
+async def abgebrochene_offen(session: AsyncSession, art: Auftragsart | None = None) -> list[Auftrag]:
+    """Abgebrochene Aufträge, die ein Werk noch aufhalten: das Video (im Umfang) oder Dokument steht genau
+    auf der Vorstufe dieses Auftrags und hat keinen wartenden oder laufenden Auftrag. Ein Stopp-Klick
+    hinterlässt sonst ein Werk, das in keinem Zähler mehr auftaucht.
+    """
+    offen_je_werk = {
+        wid
+        for wid in (
+            await session.execute(
+                select(func.coalesce(Auftrag.video_id, Auftrag.dokument_id)).where(Auftrag.status.in_([s.value for s in OFFENE_STATUS]))
+            )
+        ).scalars()
+        if wid
+    }
+    bedingungen: list[ColumnElement[bool]] = [Auftrag.status == Auftragsstatus.ABGEBROCHEN.value]
+    if art is not None:
+        bedingungen.append(Auftrag.art == art.value)
+    rows = (
+        await session.execute(
+            select(Auftrag, Video.ausgewaehlt, Video.stufe, Dokument.stufe)
+            .outerjoin(Video, Video.id == Auftrag.video_id)
+            .outerjoin(Dokument, Dokument.id == Auftrag.dokument_id)
+            .where(*bedingungen)
+            .order_by(Auftrag.beendet.desc().nulls_last(), Auftrag.erstellt.desc())
+        )
+    ).all()
+    aus: list[Auftrag] = []
+    gesehen: set[str] = set()
+    for a, ausgewaehlt, video_stufe, dokument_stufe in rows:
+        werk = a.video_id or a.dokument_id
+        if not werk or werk in offen_je_werk or werk in gesehen:
+            continue
+        try:
+            if a.video_id:
+                passt = bool(ausgewaehlt) and Stufe(video_stufe) == vorstufe(Auftragsart(a.art))
+            else:
+                passt = Dokumentstufe(dokument_stufe) == dokument_vorstufe(Auftragsart(a.art))
+        except (ValueError, KeyError):
+            passt = False
+        if passt:
+            gesehen.add(werk)
+            aus.append(a)
+    return aus
 
 
 # ------------------------------------------------------------------ reine Helfer
@@ -205,8 +253,18 @@ async def liste(
     je_seite: int = Query(50, ge=1, le=500),
     session: AsyncSession = Depends(sitzung_abhaengigkeit),
 ) -> AuftragSeite:
-    """Aufträge seitenweise, neueste zuerst, mit Titel, Serie und Folge des Videos."""
+    """Aufträge seitenweise, neueste zuerst, mit Titel, Serie und Folge des Videos.
+
+    Abgebrochene Aufträge zeigt die Liste nur, solange sie ein Werk aufhalten (siehe abgebrochene_offen);
+    alte Abbrüche eines längst weitergelaufenen Werks bleiben draußen.
+    """
     bedingungen: list[ColumnElement[bool]] = []
+    if status and status_pruefen(status) == Auftragsstatus.ABGEBROCHEN:
+        offene = await abgebrochene_offen(session, auftragsart_pruefen(art) if art else None)
+        if video_id:
+            offene = [a for a in offene if a.video_id == video_id]
+        bedingungen.append(Auftrag.id.in_([a.id for a in offene] or [""]))
+        status = None
     if status:
         bedingungen.append(Auftrag.status == status_pruefen(status).value)
     if art:
@@ -277,6 +335,10 @@ async def uebersicht(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> 
         if d is not None
     }
 
+    abgebrochen_je_art: dict[str, int] = {}
+    for a in await abgebrochene_offen(session):
+        abgebrochen_je_art[a.art] = abgebrochen_je_art.get(a.art, 0) + 1
+
     arten: list[ArtUebersicht] = []
     for art in Auftragsart:
         pausierbar = f"band.pause.{art.value}" in werte
@@ -292,7 +354,7 @@ async def uebersicht(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> 
                 laufend=laufend,
                 fertig=zaehler.get((art.value, Auftragsstatus.FERTIG.value), 0),
                 fehler=zaehler.get((art.value, Auftragsstatus.FEHLER.value), 0),
-                abgebrochen=zaehler.get((art.value, Auftragsstatus.ABGEBROCHEN.value), 0),
+                abgebrochen=abgebrochen_je_art.get(art.value, 0),
                 pausiert=bool(werte.get(f"band.pause.{art.value}", False)),
                 pausierbar=pausierbar,
                 parallel=parallel,
@@ -309,6 +371,7 @@ async def uebersicht(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> 
         wartend_gesamt=sum(a.wartend for a in arten),
         laufend_gesamt=sum(a.laufend for a in arten),
         fehler_gesamt=sum(a.fehler for a in arten),
+        abgebrochen_gesamt=sum(a.abgebrochen for a in arten),
     )
 
 
@@ -319,6 +382,16 @@ async def fehler_wiederholen(art: str | None = None, session: AsyncSession = Dep
     if art:
         bedingungen.append(Auftrag.art == auftragsart_pruefen(art).value)
     rows = (await session.execute(select(Auftrag).where(*bedingungen).order_by(Auftrag.erstellt))).scalars().all()
+    for a in rows:
+        _wieder_einreihen(session, a)
+    await session.commit()
+    return WiederholenErgebnis(anzahl=len(rows), auftrag_ids=[a.id for a in rows])
+
+
+@router.post("/abgebrochene/wiederholen", response_model=WiederholenErgebnis)
+async def abgebrochene_wiederholen(art: str | None = None, session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> WiederholenErgebnis:
+    """Alle abgebrochenen Aufträge, die ein Werk noch aufhalten (wahlweise nur einer Art), erneut einreihen."""
+    rows = await abgebrochene_offen(session, auftragsart_pruefen(art) if art else None)
     for a in rows:
         _wieder_einreihen(session, a)
     await session.commit()

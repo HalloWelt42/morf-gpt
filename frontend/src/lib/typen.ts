@@ -469,6 +469,7 @@ export interface BandUebersicht {
   wartend_gesamt: number;
   laufend_gesamt: number;
   fehler_gesamt: number;
+  abgebrochen_gesamt: number;
 }
 
 // --- Chat ---------------------------------------------------------------------

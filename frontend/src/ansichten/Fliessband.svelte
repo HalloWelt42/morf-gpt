@@ -31,7 +31,7 @@
   let band = $state<BandUebersicht | null>(null);
   let uebersicht = $state<Uebersicht | null>(null);
   let quellen = $state<Quelle[]>([]);
-  let status = $state<"laeuft" | "wartend" | "fehler" | "fertig">("laeuft");
+  let status = $state<"laeuft" | "wartend" | "fehler" | "abgebrochen" | "fertig">("laeuft");
   let auftraege = $state<Seite<AuftragEintrag> | null>(null);
   let seite = $state(1);
   let jeSeite = $state(50);
@@ -161,6 +161,16 @@
     }
   }
 
+  async function abgebrocheneEinreihen(): Promise<void> {
+    try {
+      const r = await api.post<{ anzahl: number }>("/auftraege/abgebrochene/wiederholen");
+      meldungen.gut(`${zahl(r.anzahl)} abgebrochene Aufträge wieder eingereiht`);
+      await laden();
+    } catch (e) {
+      meldeFehler(e, "Wieder einreihen");
+    }
+  }
+
   async function aufraeumen(): Promise<void> {
     beschaeftigt = true;
     try {
@@ -236,7 +246,7 @@
   <div class="m-ansicht-kopf">
     <h1>Fließband</h1>
     <span class="m-unter">
-      {zahl(uebersicht?.videos_ausgewaehlt)} Videos im Umfang &middot; {zahl(band?.laufend_gesamt)} laufen &middot; {zahl(band?.wartend_gesamt)} warten &middot; {zahl(band?.fehler_gesamt)} Fehler
+      {zahl(uebersicht?.videos_ausgewaehlt)} Videos im Umfang &middot; {zahl(band?.laufend_gesamt)} laufen &middot; {zahl(band?.wartend_gesamt)} warten &middot; {zahl(band?.fehler_gesamt)} Fehler{#if band?.abgebrochen_gesamt} &middot; <span class="text-warning" title="Von Hand gestoppte Aufträge, deren Video noch auf diesen Schritt wartet; unter dem Reiter Abgebrochen wieder einreihen">{zahl(band.abgebrochen_gesamt)} abgebrochen</span>{/if}
     </span>
     <InfoKnopf anker="fliessband" />
     <span class="m-luecke"></span>
@@ -271,7 +281,7 @@
         <div class="m-band-stufe {stufe}">
           <div class="titel d-flex align-items-center gap-1"><i class="fa-solid {ICON_JE_ART[a.art]}"></i> {a.titel} <InfoKnopf anker="stufe-{a.art}" titel="Was in diesem Schritt passiert und warum er wichtig ist" /></div>
           <div class="zahl">{zahl(fertig)}</div>
-          <div class="klein">fertig &middot; {a.laufend} {a.laufend === 1 ? "läuft" : "laufen"} &middot; {zahl(a.wartend)} warten{#if a.fehler} &middot; <span class="text-danger">{a.fehler} Fehler</span>{/if}</div>
+          <div class="klein">fertig &middot; {a.laufend} {a.laufend === 1 ? "läuft" : "laufen"} &middot; {zahl(a.wartend)} warten{#if a.fehler} &middot; <span class="text-danger">{a.fehler} Fehler</span>{/if}{#if a.abgebrochen} &middot; <span class="text-warning" title="Von Hand gestoppt; das Video wartet noch auf diesen Schritt">{a.abgebrochen} abgebrochen</span>{/if}</div>
           <div class="m-fortschritt" class:laeuft={a.laufend > 0}><span style="width: {gesamt ? Math.round((fertig / gesamt) * 100) : 0}%"></span></div>
           <div class="zeile"><span>Durchsatz</span><span>{a.durchsatz_fenster} je Stunde</span></div>
           <div class="zeile"><span>Rest</span><span>{a.restzeit_s !== null ? `etwa ${dauerWorte(a.restzeit_s)}` : "-"}</span></div>
@@ -286,10 +296,13 @@
     <div class="d-flex gap-3 flex-grow-1" style="min-height: 0">
       <div class="d-flex flex-column flex-grow-1" style="min-width: 0; min-height: 0">
         <ul class="nav nav-tabs">
-          {#each [["laeuft", "Laufend", band?.laufend_gesamt ?? 0, "primary"], ["wartend", "Wartend", band?.wartend_gesamt ?? 0, "secondary"], ["fehler", "Fehler", band?.fehler_gesamt ?? 0, "danger"], ["fertig", "Fertig", null, "success"]] as [s, titel, n, farbe]}
-            <li class="nav-item"><a class="nav-link" class:active={status === s} href="#/fliessband" onclick={(e) => { e.preventDefault(); wechsle(s as typeof status); }}>{titel} {#if n !== null}<span class="badge text-bg-{farbe}">{zahl(n as number)}</span>{/if}</a></li>
+          {#each [["laeuft", "Laufend", band?.laufend_gesamt ?? 0, "primary"], ["wartend", "Wartend", band?.wartend_gesamt ?? 0, "secondary"], ["fehler", "Fehler", band?.fehler_gesamt ?? 0, "danger"], ["abgebrochen", "Abgebrochen", band?.abgebrochen_gesamt ?? 0, "warning"], ["fertig", "Fertig", null, "success"]] as [s, titel, n, farbe]}
+            <li class="nav-item"><a class="nav-link" class:active={status === s} href="#/fliessband" title={s === "abgebrochen" ? "Von Hand gestoppte Aufträge, deren Video noch auf diesen Schritt wartet" : undefined} onclick={(e) => { e.preventDefault(); wechsle(s as typeof status); }}>{titel} {#if n !== null}<span class="badge text-bg-{farbe}">{zahl(n as number)}</span>{/if}</a></li>
           {/each}
           <li class="nav-item ms-auto d-flex align-items-center gap-2 pe-1">
+            {#if band?.abgebrochen_gesamt}
+              <button class="btn btn-sm btn-outline-warning" title="Alle von Hand gestoppten Aufträge, deren Video noch wartet, wieder in die Reihe stellen (beginnen von vorn)" onclick={abgebrocheneEinreihen}><i class="fa-solid fa-rotate-left"></i> Abgebrochene einreihen</button>
+            {/if}
             <button class="btn btn-sm btn-outline-secondary" title="Alle fehlgeschlagenen Aufträge erneut versuchen" onclick={fehlerWiederholen}><i class="fa-solid fa-rotate-right"></i> Fehler wiederholen</button>
             <button class="btn btn-sm btn-outline-secondary" title="Fertige Aufträge älter als 7 Tage aufräumen" onclick={() => (aufraeumDialog = true)}><i class="fa-solid fa-broom"></i> Aufräumen</button>
           </li>
@@ -301,7 +314,7 @@
             </thead>
             <tbody>
               {#each auftraege?.eintraege ?? [] as a (a.id)}
-                <tr class:table-danger={a.status === "fehler"} onclick={() => ui.gehe("auftrag", a.id)}>
+                <tr class:table-danger={a.status === "fehler"} class:table-warning={a.status === "abgebrochen"} onclick={() => ui.gehe("auftrag", a.id)}>
                   <td><Abzeichen stufe={STUFE_JE_ART[a.art] ?? "entdeckt"} titel={a.art_titel} /></td>
                   <td class="text-truncate" style="max-width: 420px">{a.video_titel || a.art_titel}{#if a.fehler}<small class="text-danger ms-2">{a.fehler}</small>{/if}</td>
                   <td>{#if a.video_serie}<Abzeichen serie={a.video_serie} folgeNr={a.video_folge_nr} />{/if}</td>
@@ -314,7 +327,7 @@
                     {#if a.status === "laeuft" || a.status === "wartend"}
                       <button class="btn btn-sm btn-outline-danger" title="Auftrag abbrechen" onclick={(e) => { e.stopPropagation(); void abbrechen(a); }}><i class="fa-solid fa-stop"></i></button>
                     {:else if a.status === "fehler" || a.status === "abgebrochen"}
-                      <button class="btn btn-sm btn-outline-secondary" title="Erneut versuchen" onclick={(e) => { e.stopPropagation(); void wiederholen(a); }}><i class="fa-solid fa-rotate-right"></i></button>
+                      <button class="btn btn-sm btn-outline-secondary" title={a.status === "abgebrochen" ? "Wieder einreihen; der Auftrag beginnt von vorn" : "Erneut versuchen"} onclick={(e) => { e.stopPropagation(); void wiederholen(a); }}><i class="fa-solid fa-rotate-right"></i></button>
                     {/if}
                   </td>
                 </tr>
