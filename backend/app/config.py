@@ -76,6 +76,11 @@ class Einstellungen(BaseSettings):
         return self.daten_verzeichnis / "export"
 
     @property
+    def uebergabe_verzeichnis(self) -> Path:
+        """Fertige Übergaben (je Kennung ein Ordner zum Hochladen) und der Eingang geholter Übergaben."""
+        return self.daten_verzeichnis / "uebergabe"
+
+    @property
     def modelle_verzeichnis(self) -> Path:
         """Ablage lokaler Modelle (fastembed) - im Projekt, nie im Home-Verzeichnis."""
         return self.daten_verzeichnis / "modelle"

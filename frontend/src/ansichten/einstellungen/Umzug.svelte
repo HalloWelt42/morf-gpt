@@ -8,6 +8,7 @@
   import { bytes, datumZeit } from "../../lib/format";
   import InfoKnopf from "../../lib/komponenten/InfoKnopf.svelte";
   import Bestaetigung from "../../lib/komponenten/Bestaetigung.svelte";
+  import Uebergabe from "./Uebergabe.svelte";
 
   let status = $state<ExportStatus | null>(null);
   let pakete = $state<PaketInfo[]>([]);
@@ -93,7 +94,7 @@
         <div class="card mb-3">
           <div class="card-header fw-semibold">Exportieren</div>
           <div class="card-body">
-            <p>Das Paket enthält Videodaten, Korrekturen, Stücke, Vektoren und Vorschaubilder. Audio bleibt hier; der Sprung zu YouTube bleibt überall möglich.</p>
+            <p>Das Paket enthält Videodaten, Korrekturen, Stücke, Vektoren, Vorschaubilder und die Dokumente mit ihren Dateien. Audio bleibt hier; der Sprung zu YouTube bleibt überall möglich. Für eine vollständige Weitergabe mit Audio und Modellen gibt es unten die Übergabe.</p>
             <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="mt" bind:checked={mitTranskripten} title="Auch die Rohtranskripte mit Zeitmarken ins Paket nehmen; macht es deutlich größer" /><label class="form-check-label" for="mt">Rohtranskripte mitnehmen (größer)</label></div>
             {#if status?.laeuft}
               <div class="m-fortschritt laeuft mb-1"><span style="width: {Math.round(status.fortschritt * 100)}%"></span></div>
@@ -119,7 +120,7 @@
             </table>
           </div>
         </div>
-        <div class="card">
+        <div class="card mb-3">
           <div class="card-header fw-semibold">Importieren</div>
           <div class="card-body">
             <p>Ein Paket aus einer anderen Installation einlesen. Videos werden über ihre Kennung abgeglichen; das Einbettungsmodell und die Dimension müssen zur Datenbank passen.</p>
@@ -132,6 +133,8 @@
             {/if}
           </div>
         </div>
+        <h2 class="h5 mt-4 mb-3">Übergabe an einen Empfänger</h2>
+        <Uebergabe />
       </div>
     </div>
   </div>

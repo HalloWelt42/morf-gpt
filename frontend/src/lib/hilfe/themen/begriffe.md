@@ -39,3 +39,5 @@ Wo ein Fachwort in der Oberfläche auftaucht, steht es hier. Die Erklärungen si
 - ffmpeg: Das Werkzeug, das Ton und Video liest und wandelt; es muss auf dem Rechner installiert sein.
 - LM Studio: Das Programm, das die lokalen Modelle (Sprachmodell, Einbettung) lädt und über eine Schnittstelle bereitstellt. fastembed: eine Alternative für die Einbettung ohne LM Studio, die mit dem kleinen Modell bge-m3 auf dem Prozessor läuft.
 - Serie und Folge: Die Erklärserie des Kanals (mmM) und ihre Nummer, aus dem Titel erkannt; sie steuert Reihenfolge und Anzeige.
+- Übergabe: Ein Ordner mit zufälliger Kennung, der alles Entstandene (Bibliothek, Audio, Modelle) für einen Empfänger bündelt; die Kennung in der Adresse ist der Zugang. Prüfsumme (SHA-256): ein Fingerabdruck einer Datei, mit dem sich prüfen lässt, dass sie unverändert und vollständig angekommen ist.
+- Modellfamilie: Dasselbe Einbettungsmodell unter verschiedenen Anbieternamen (bge-m3 in LM Studio heißt text-embedding-bge-m3, bei fastembed BAAI/bge-m3); die Suche behandelt sie als eines.

@@ -633,6 +633,36 @@ export interface ExportStatus {
   fehler: string;
 }
 
+export interface UebergabeTeil {
+  name: string;
+  art: "bibliothek" | "audio" | "modelle";
+  bytes: number;
+  sha256: string;
+  eintraege: number;
+}
+
+export interface UebergabeInfo {
+  kennung: string;
+  erstellt: string;
+  version: string;
+  gesamt_bytes: number;
+  teile: UebergabeTeil[];
+  audio_dateien: number;
+  audio_bytes: number;
+  modelle: string[];
+  zaehler: Record<string, number>;
+  ordner: string;
+}
+
+export interface UebergabeLauf {
+  laeuft: boolean;
+  gestartet: string | null;
+  fortschritt: number;
+  meldung: string;
+  fehler: string;
+  ergebnis: Record<string, unknown> | null;
+}
+
 export interface PaketInfo {
   name: string;
   groesse_bytes: number;

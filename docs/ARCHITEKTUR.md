@@ -328,6 +328,34 @@ Kennung; Abschnitte und Stücke eines Werks werden ersetzt, Kennungen bleiben er
 Ein Leser der Version 2 liest Pakete der Version 1 unverändert. Audio wird nicht
 mitgenommen (Sprung zu YouTube bleibt immer möglich); Transkripte optional.
 
+### 8a. Übergabe an einen Empfänger
+
+`dienste/export/uebergabe.py` schreibt unter `data/uebergabe/<uuid>/` alles, was ein
+Empfänger braucht, der die Bibliothek ohne die Werkstatt weiterbetreibt: das
+Bibliothekspaket (mit Transkripten und Dokumenten), die Audiodateien als unkomprimierte
+tar-Teile zu höchstens 2 GB (`audio-NN.tar`, AAC ist schon komprimiert), die lokalen Modelle
+(`modelle.tar`: Hugging-Face-Ordner nur mit dem Schnappschuss aus `refs/main`, Verknüpfungen
+aufgelöst, keine Blobs), `uebergabe.json` (Kennung, Teile mit Größe und SHA-256, Zähler),
+`PRUEFSUMMEN.sha256` und `ANLEITUNG.md`. Geheimnisse (Schlüssel, Anbieter, Einstellungen,
+Aufträge, Unterhaltungen) sind nie enthalten. Die UUID im Pfad ist der Zugang: auf einem
+Webspace ohne Verzeichnislisten abgelegt, findet die Dateien nur, wer die Adresse kennt.
+
+`dienste/export/holen.py` holt eine Übergabe von einer Webadresse (Teile in
+`data/uebergabe/eingang/<uuid>`, Fortsetzen über HTTP-Bereiche) oder aus einem Ordner (an
+Ort und Stelle), prüft jede Prüfsumme, importiert das Paket, entpackt Audio nach
+`data/audio` (und legt die `audios`-Zeilen an) und Modelle nach `data/modelle`. Router
+`/api/uebergabe` (erstellen, Status, Liste, Datei ausliefern, löschen, holen); die
+Dateiroute liefert Bereiche, darum lässt sich eine Übergabe auch direkt vom Werkstattrechner
+holen. Gemessen: 22,5 GB über die eigene Adresse in 117 s, alle Prüfsummen, 1.491 Videos,
+660 Audiodateien, 17 Modelldateien.
+
+Modellfamilien (`dienste/einbettung/familie.py`): der Index trägt den Modellnamen des
+erzeugenden Anbieters (`text-embedding-bge-m3` aus LM Studio); ein Empfänger mit fastembed
+fragt mit `BAAI/bge-m3`. Beide liefern dieselben Vektoren (gemessen Cosinus 0,9995), darum
+vergleichen Suche und Neu-Einbettung über die Familie statt über den Namen. bge-m3 kennt
+fastembed nicht von Haus aus; `fastembed_anbieter.py` meldet die ONNX-Fassung aus dem
+Hugging-Face-Ordner als eigenes Modell an (CLS-Pooling, normalisiert, 1024 Dimensionen).
+
 ## 9. Fremde Dienste und Werkzeuge
 
 Werkzeuge sind eine Zusatzoption der Bibliothek, keine Voraussetzung: ohne angelegte
@@ -443,6 +471,7 @@ der Datenbank noch fehlten, und verbrauchten ihre Versuche.
 | PostgreSQL (Docker) | `127.0.0.1:5462`, Daten als Bind-Mount unter `data/postgres` |
 | TubeVault (Quelle) | `http://192.168.178.49:8031` (Backend-API) |
 | Eigener Transkriptionsdienst | `http://127.0.0.1:8463` (per `MORF_TRANSKRIPTION_PORT`), Modelle unter `data/modelle/hf` |
+| Übergaben | `data/uebergabe/<uuid>/` (zum Hochladen), Eingang unter `data/uebergabe/eingang/` |
 | txt2voice-Worker (Whisper, alternativ) | `http://127.0.0.1:10033` |
 | LM Studio | `http://127.0.0.1:1234` |
 

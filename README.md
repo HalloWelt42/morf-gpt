@@ -156,6 +156,28 @@ Fließband ebenso viele parallele Transkriptionen erlaubt sind.
    Erklärserie kommt zuerst.
 4. Chat: sobald die ersten Videos eingebettet sind, antwortet er aus ihnen.
 
+## Übergabe an einen Empfänger
+
+Unter Einstellungen, Umzug erstellt "Übergabe erstellen" einen Ordner mit zufälliger
+Kennung, der alles Entstandene bündelt: das Bibliothekspaket mit Transkripten und
+Dokumenten, wahlweise alle Audiodateien in Teilen zu 2 GB und die lokalen Modelle
+(Spracherkennung, Einbettung), dazu Prüfsummen und eine Anleitung für den Empfänger.
+Zugangsschlüssel, Anbieter und Einstellungen bleiben draußen. Den Ordner lädt man auf einen
+Webspace (Verzeichnislisten aus); wer die Adresse mit der Kennung kennt, trägt sie beim
+eigenen morf-gpt unter Umzug, "Übergabe holen" ein. morf-gpt lädt die Teile mit
+Fortsetzen nach Abbruch, prüft die Prüfsummen und übernimmt Bibliothek, Audio und Modelle;
+danach fehlt nur ein eigenes Sprachmodell. Die Einbettung läuft beim Empfänger über das
+mitgelieferte bge-m3 mit fastembed, das dieselben Vektoren liefert wie der Index.
+Zum Hochladen auf einen Webspace per SSH gibt es `tools/uebergabe-hochladen.sh`, das eine
+`.htaccess` ohne Verzeichnisliste mitlegt.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/hilfe/uebergabe-dunkel.png">
+  <img src="frontend/public/hilfe/uebergabe.png" width="912" alt="Karte einer vorhandenen Übergabe">
+</picture>
+
+  *Einstellungen, Umzug: eine erstellte Übergabe mit Kennung, Teilen, Größen und Prüfsummen.*
+
 ## Betrieb an einem anderen Ort
 
 ```bash

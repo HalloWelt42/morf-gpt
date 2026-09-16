@@ -316,13 +316,23 @@ def _mit_filtern(q: Select[Any], p: Suchparameter) -> Select[Any]:
     return q
 
 
+async def modellnamen_der_familie(session: AsyncSession, modell: str) -> list[str]:
+    """Alle im Index vorkommenden Modellnamen derselben Familie wie `modell` (siehe einbettung.familie)."""
+    from ..einbettung.familie import gleiche_familie
+
+    namen = (await session.execute(select(Einbettung.modell).distinct())).scalars().all()
+    passend = [n for n in namen if gleiche_familie(n, modell)]
+    return passend or [modell]
+
+
 async def kandidaten_aus_datenbank(session: AsyncSession, vektor: list[float], modell: str, p: Suchparameter, grenze: int) -> list[Treffer]:
-    """Cosinus-Suche in pgvector: die `grenze` nächsten Stücke desselben Einbettungsmodells."""
+    """Cosinus-Suche in pgvector: die `grenze` nächsten Stücke derselben Modellfamilie (der Index kann
+    das Modell unter dem Namen eines anderen Anbieters tragen, etwa nach einer Übergabe)."""
     abstand = Einbettung.vektor.cosine_distance(vektor)
     aehnlichkeit = (1 - abstand).label("aehnlichkeit")
     q: Select[Any] = _mit_werken(
         select(Chunk, Video, Dokument, DokumentAbschnitt, aehnlichkeit).join(Einbettung, Einbettung.chunk_id == Chunk.id)
-    ).where(Einbettung.modell == modell)
+    ).where(Einbettung.modell.in_(await modellnamen_der_familie(session, modell)))
     q = _mit_filtern(q, p).order_by(abstand).limit(grenze)
     zeilen = (await session.execute(q)).all()
     return [treffer_aus_zeile(chunk, video, float(wert), dokument, abschnitt) for chunk, video, dokument, abschnitt, wert in zeilen]
@@ -488,7 +498,10 @@ class Suche:
         kandidaten = await self._kandidaten(session, vektor, modell, p, p.kandidaten_grenze)
         ergebnis = Suchergebnis(stellen=[], einbettungsmodell=modell, neubewertung=p.neubewertung)
         if not kandidaten:
-            ergebnis.hinweise.append("Keine eingebetteten Stellen für dieses Modell und diese Filter gefunden.")
+            ergebnis.hinweise.append(
+                "Keine eingebetteten Stellen für dieses Einbettungsmodell und diese Filter gefunden. Trägt der Index ein anderes "
+                "Modell (Einstellungen, Anbieter, Rolle Einbettung), müssen die Stücke damit neu eingebettet werden."
+            )
             return ergebnis
         gesiebt = begrenze_je_video(filtere_mindest_aehnlichkeit(kandidaten, p.mindest_aehnlichkeit), p.max_je_video)
         if not gesiebt:

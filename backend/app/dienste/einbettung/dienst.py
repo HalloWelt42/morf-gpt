@@ -1,7 +1,8 @@
 """Einbettungsdienst: Einbettungstext mit Kontextkopf, Stapelverarbeitung, Frage einbetten.
 
-Der Index gehört zu genau einem Modell; die Suche fragt mit demselben Modell. Die
-Dimension wird gegen die Konfiguration geprüft (Spalte vector(N)).
+Der Index gehört zu genau einer Modellfamilie (siehe familie.py); die Suche fragt mit einem
+Modell derselben Familie, auch wenn ein anderer Anbieter es anders nennt. Die Dimension
+wird gegen die Konfiguration geprüft (Spalte vector(N)).
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from ...db.modelle import Chunk, Dokument, Einbettung, Video
 from ..anbieter import dienst as anbieter_dienst
 from ..anbieter.basis import AnbieterFehler, EinbettungsAnbieter
 from ..einstellungen import dienst as einstellungen_dienst
+from .familie import gleiche_familie
 
 Fortschrittsmelder = Callable[[float, str], Awaitable[None]]
 
@@ -116,6 +118,9 @@ async def chunks_einbetten(
     stapelgroesse = int(werte["einbettung.stapel"])
     zeitgrenze = float(werte["einbettung.zeitgrenze_s"])
     modell = anbieter.info.modell
+    async with sitzung() as s:
+        vorhandene = (await s.execute(select(Einbettung.modell).distinct())).scalars().all()
+    familie_namen = [n for n in vorhandene if gleiche_familie(n, modell)] + [modell]
     dimension = einstellungen.einbettung_dimension
     stapel = _stapel(chunks, stapelgroesse)
     # Instanzen (nur LM Studio) und gleichzeitige Anfragen: Stapel werden im Wechsel verteilt
@@ -137,7 +142,9 @@ async def chunks_einbetten(
                 raise AnbieterFehler(f"{anbieter_name}: {len(vektoren)} Vektoren für {len(gruppe)} Stücke")
             dimension = dimension_pruefen(vektoren, anbieter_name)
             async with sitzung() as s:
-                await s.execute(delete(Einbettung).where(Einbettung.chunk_id.in_([c.id for c in gruppe]), Einbettung.modell == modell))
+                # Alte Vektoren derselben Familie weichen (auch unter dem Namen eines anderen Anbieters)
+                kennungen = [c.id for c in gruppe]
+                await s.execute(delete(Einbettung).where(Einbettung.chunk_id.in_(kennungen), Einbettung.modell.in_(familie_namen)))
                 for c, v in zip(gruppe, vektoren, strict=True):
                     s.add(Einbettung(chunk_id=c.id, anbieter=anbieter_name, modell=modell, dimension=dimension, vektor=v))
                 await s.commit()

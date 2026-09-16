@@ -20,3 +20,11 @@ def _fehlende_felder(methode: str, pfad: str) -> set[str]:
 def test_rollen_route_vor_anbieterkennung():
     assert _fehlende_felder("PUT", "/api/anbieter/rollen") == {"rolle", "anbieter_id"}
     assert "name" in _fehlende_felder("PUT", "/api/anbieter/irgendeine-kennung")
+
+
+def test_uebergabe_feste_pfade_vor_kennung():
+    assert _fehlende_felder("POST", "/api/uebergabe/holen") == {"adresse"}
+    client = TestClient(app)
+    assert client.get("/api/uebergabe/holen/status").status_code == 200
+    assert client.get("/api/uebergabe/erstellen/status").status_code == 200
+    assert client.get("/api/uebergabe/keine-uuid/datei").status_code == 422
