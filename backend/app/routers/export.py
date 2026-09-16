@@ -197,7 +197,9 @@ async def paket_loeschen(name: str) -> None:
 @router.post("/import", response_model=paket.ImportErgebnis)
 async def importieren(datei: UploadFile = File(...), session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> paket.ImportErgebnis:
     pfad = await _upload_ablegen(datei)
-    ziel = paket.DatenbankZiel(session, einstellungen.daten_verzeichnis, einstellungen.miniaturen_verzeichnis)
+    ziel = paket.DatenbankZiel(
+        session, einstellungen.daten_verzeichnis, einstellungen.miniaturen_verzeichnis, einstellungen.dokumente_verzeichnis
+    )
     try:
         ergebnis = await paket.importiere(pfad, ziel, erwartete_dimension=einstellungen.einbettung_dimension, melde=_melde_import)
     except paket.PaketFehler as e:

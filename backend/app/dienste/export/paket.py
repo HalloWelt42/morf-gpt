@@ -1,8 +1,10 @@
 """Export und Import der Bibliothek als Paket (tar.gz).
 
 Ein Paket trägt alles, was die Bibliothek zum Suchen und Antworten braucht: Videos mit
-Metadaten, aktuelle Korrekturen, Chunks, Einbettungen, Vorschaubilder und wahlweise die
-Rohtranskripte. Audio bleibt in der Werkstatt (docs/ARCHITEKTUR.md, Abschnitt 8).
+Metadaten, aktuelle Korrekturen, Chunks, Einbettungen, Vorschaubilder, wahlweise die
+Rohtranskripte, dazu die Dokumente (zweite Werkart) mit Abschnitten, Stücken und
+Originaldateien. Audio bleibt in der Werkstatt (docs/ARCHITEKTUR.md, Abschnitt 8); die
+Übergabe (uebergabe.py) legt es als eigene Teile daneben.
 
 Aufbau eines Pakets (die Reihenfolge ist verbindlich, der Leser arbeitet streamend):
 
@@ -10,9 +12,13 @@ Aufbau eines Pakets (die Reihenfolge ist verbindlich, der Leser arbeitet streame
     videos.jsonl             eine Zeile je Video
     transkripte.jsonl        nur mit Schalter, nur aktuelle Transkripte
     korrekturen.jsonl        nur aktuelle Korrekturen
-    chunks.jsonl
-    einbettungen.jsonl       chunk_id, modell, anbieter, dimension, vektor
+    chunks.jsonl             Stücke der Videos
+    dokumente.jsonl          eine Zeile je Dokument (Formatversion 2)
+    dokument_abschnitte.jsonl
+    dokument_chunks.jsonl    Stücke der Dokumente
+    einbettungen.jsonl       chunk_id, modell, anbieter, dimension, vektor (Videos und Dokumente)
     miniaturen/<extern_id>.jpg
+    dokumente/<dokument_id>.<endung>   Originaldateien der Dokumente
 
 Die Datenbankzugriffe stecken hinter zwei Schnittstellen (Datenquelle für den Export,
 Datenziel für den Import). Schreiben und Lesen des Pakets kennen keine Datenbank und
@@ -39,8 +45,8 @@ from sqlalchemy import Row, Select, delete, func, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...db.engine import sitzung
-from ...db.modelle import Chunk, Einbettung, Korrektur, Transkript, Video, jetzt, neue_id
-from ...domaene.fliessband import Stufe, stufen_index
+from ...db.modelle import Chunk, Dokument, DokumentAbschnitt, Einbettung, Korrektur, Transkript, Video, jetzt, neue_id
+from ...domaene.fliessband import Dokumentstufe, Stufe, stufen_index
 
 log = logging.getLogger(__name__)
 
@@ -48,15 +54,21 @@ log = logging.getLogger(__name__)
 PAKET_PRAEFIX = "morf-gpt-bibliothek-"
 PAKET_ENDUNG = ".tar.gz"
 FORMAT_KENNUNG = "morf-gpt-bibliothek"
-FORMAT_VERSION = 1
+# 2: Dokumente (dokumente.jsonl, dokument_abschnitte.jsonl, dokument_chunks.jsonl, dokumente/). Ein Leser
+# dieser Version liest Pakete der Version 1 unverändert; die Dokumenttabellen fehlen dort einfach.
+FORMAT_VERSION = 2
 
 MANIFEST = "manifest.json"
 VIDEOS = "videos.jsonl"
 TRANSKRIPTE = "transkripte.jsonl"
 KORREKTUREN = "korrekturen.jsonl"
 CHUNKS = "chunks.jsonl"
+DOKUMENTE = "dokumente.jsonl"
+DOKUMENT_ABSCHNITTE = "dokument_abschnitte.jsonl"
+DOKUMENT_CHUNKS = "dokument_chunks.jsonl"
 EINBETTUNGEN = "einbettungen.jsonl"
 MINIATUREN_ORDNER = "miniaturen"
+DOKUMENTE_ORDNER = "dokumente"
 EINGANG_ORDNER = "eingang"
 
 # Technische Vorgaben ohne Nutzerregler (siehe Bericht, Abschnitt "register_ergaenzungen").
@@ -72,10 +84,15 @@ VEKTOR_NACHKOMMASTELLEN = 8
 ABSCHNITTE: dict[str, tuple[float, float]] = {
     VIDEOS: (0.0, 0.15),
     TRANSKRIPTE: (0.15, 0.3),
-    KORREKTUREN: (0.3, 0.45),
-    CHUNKS: (0.45, 0.6),
+    KORREKTUREN: (0.3, 0.42),
+    CHUNKS: (0.42, 0.52),
+    DOKUMENTE: (0.52, 0.54),
+    DOKUMENT_ABSCHNITTE: (0.54, 0.57),
+    DOKUMENT_CHUNKS: (0.57, 0.6),
     EINBETTUNGEN: (0.6, 0.9),
 }
+_DOKUMENT_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
+_ENDUNG = re.compile(r"^\.[A-Za-z0-9]{1,8}$")
 
 _PAKETNAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,200}\.tar\.gz$")
 _EXTERN_ID = re.compile(r"^[A-Za-z0-9_-][A-Za-z0-9._-]{0,63}$")
@@ -170,6 +187,61 @@ class ChunkZeile(Kindzeile):
     erstellt: datetime
 
 
+class DokumentZeile(Zeile):
+    """Ein Dokument (E-Book, Markdown, Text). Die Kennung ist zugleich die Identität beim Import."""
+
+    id: str
+    titel: str = ""
+    autor: str = ""
+    art: str = "text"
+    sprache: str = "de"
+    beschreibung: str = ""
+    veroeffentlicht: datetime | None = None
+    dateiname: str = ""
+    groesse_bytes: int | None = None
+    zeichen: int = 0
+    metadaten_original: dict[str, Any] = Field(default_factory=dict)
+    felder_manuell: list[str] = Field(default_factory=list)
+    notizen: str = ""
+    # Zur Information; der Import bestimmt die Stufe aus dem tatsächlichen Inhalt.
+    stufe: str = ""
+    # Liegt die Originaldatei unter dokumente/<id><endung> im Paket?
+    datei: bool = False
+    endung: str = ""
+
+
+class DokumentKindzeile(Zeile):
+    id: str
+    dokument_id: str
+
+
+class AbschnittZeile(DokumentKindzeile):
+    reihenfolge: int
+    ebene: int = 1
+    titel: str = ""
+    text: str = ""
+    zeichen: int = 0
+    anker: str = ""
+    seite_von: int | None = None
+    seite_bis: int | None = None
+    position_von: int = 0
+    erstellt: datetime
+
+
+class DokumentChunkZeile(DokumentKindzeile):
+    abschnitt_id: str | None = None
+    reihenfolge: int
+    text: str
+    zeichen: int = 0
+    thema: str = ""
+    ueberlappung_vor: int = 0
+    ueberlappung_nach: int = 0
+    position_von: int | None = None
+    position_bis: int | None = None
+    manuell_bearbeitet: bool = False
+    erstellt: datetime
+
+
 class EinbettungZeile(Zeile):
     """Ohne eigene Kennung: (chunk_id, modell) ist eindeutig, die Kennung wird beim Import neu vergeben."""
 
@@ -187,6 +259,10 @@ class Zaehler(BaseModel):
     chunks: int = 0
     einbettungen: int = 0
     miniaturen: int = 0
+    dokumente: int = 0
+    dokument_abschnitte: int = 0
+    dokument_chunks: int = 0
+    dokument_dateien: int = 0
 
 
 class Manifest(Zeile):
@@ -208,6 +284,11 @@ class ImportErgebnis(BaseModel):
     chunks: int = 0
     einbettungen: int = 0
     miniaturen: int = 0
+    dokumente_neu: int = 0
+    dokumente_aktualisiert: int = 0
+    dokument_abschnitte: int = 0
+    dokument_chunks: int = 0
+    dokument_dateien: int = 0
     einbettung_modelle: list[str] = Field(default_factory=list)
     paket_version: str = ""
     paket_erstellt: datetime | None = None
@@ -260,6 +341,19 @@ def _anteil(abschnitt: tuple[float, float], anzahl: int, erwartet: int) -> float
 async def _melde(melde: Fortschrittsmelder | None, anteil: float, meldung: str) -> None:
     if melde is not None:
         await melde(anteil, meldung)
+
+
+def _pruefe_dokument_id(dokument_id: str) -> str:
+    if not _DOKUMENT_ID.match(dokument_id):
+        raise PaketFehler(f"Ungültige Dokumentkennung '{dokument_id}'")
+    return dokument_id
+
+
+def _pruefe_endung(endung: str) -> str:
+    endung = endung.lower()
+    if not _ENDUNG.match(endung):
+        raise PaketFehler(f"Ungültige Dateiendung '{endung}' einer Dokumentdatei")
+    return endung
 
 
 def _pruefe_extern_id(extern_id: str) -> str:
@@ -324,8 +418,11 @@ class PaketSchreiber:
         self._arbeit = arbeitsverzeichnis
         self._miniaturen = arbeitsverzeichnis / MINIATUREN_ORDNER
         self._miniaturen.mkdir(parents=True, exist_ok=True)
+        self._dokumente = arbeitsverzeichnis / DOKUMENTE_ORDNER
+        self._dokumente.mkdir(parents=True, exist_ok=True)
         self._tabellen: list[str] = []
         self.miniaturen = 0
+        self.dokument_dateien = 0
 
     def tabelle(self, name: str) -> JsonlSchreiber:
         self._tabellen.append(name)
@@ -335,6 +432,14 @@ class PaketSchreiber:
         ziel = self._miniaturen / f"{_pruefe_extern_id(extern_id)}.jpg"
         shutil.copyfile(quelle, ziel)
         self.miniaturen += 1
+
+    def dokument_datei_ablegen(self, dokument_id: str, quelle: Path) -> str:
+        """Legt die Originaldatei unter dokumente/<id><endung> ab und gibt die Endung zurück."""
+        endung = _pruefe_endung(quelle.suffix)
+        ziel = self._dokumente / f"{_pruefe_dokument_id(dokument_id)}{endung}"
+        shutil.copyfile(quelle, ziel)
+        self.dokument_dateien += 1
+        return endung
 
     def abschliessen(self, manifest: Manifest, ziel: Path) -> Path:
         """Schreibt Manifest und Archiv. Blockierend: im Backend über einen Thread aufrufen."""
@@ -347,6 +452,8 @@ class PaketSchreiber:
                     tar.add(self._arbeit / name, arcname=name)
                 for datei in sorted(self._miniaturen.iterdir()):
                     tar.add(datei, arcname=f"{MINIATUREN_ORDNER}/{datei.name}")
+                for datei in sorted(self._dokumente.iterdir()):
+                    tar.add(datei, arcname=f"{DOKUMENTE_ORDNER}/{datei.name}")
             teil.replace(ziel)
         except BaseException:
             teil.unlink(missing_ok=True)
@@ -430,6 +537,12 @@ class Videoexport:
     miniatur_datei: Path | None
 
 
+@dataclass(slots=True)
+class Dokumentexport:
+    zeile: DokumentZeile
+    datei: Path | None
+
+
 class Datenquelle(Protocol):
     """Woher der Export seine Zeilen bekommt. Alle Ströme liefern nur aktuelle Ergebnisse."""
 
@@ -443,7 +556,15 @@ class Datenquelle(Protocol):
 
     def chunks(self) -> AsyncIterator[ChunkZeile]: ...
 
-    def einbettungen(self) -> AsyncIterator[EinbettungZeile]: ...
+    def dokumente(self) -> AsyncIterator[Dokumentexport]: ...
+
+    def dokument_abschnitte(self) -> AsyncIterator[AbschnittZeile]: ...
+
+    def dokument_chunks(self) -> AsyncIterator[DokumentChunkZeile]: ...
+
+    def einbettungen(self) -> AsyncIterator[EinbettungZeile]:
+        """Einbettungen aller Stücke, Videos wie Dokumente."""
+        ...
 
 
 @dataclass(slots=True)
@@ -492,6 +613,28 @@ class Datenziel(Protocol):
 
     async def video_abschliessen(self, video_id: str, stufe: Stufe, miniatur_pfad: str | None) -> None: ...
 
+    async def vorhandene_dokumente(self) -> dict[str, str]:
+        """Kennung -> Stufe aller Dokumente im Ziel."""
+        ...
+
+    async def dokument_anlegen(self, zeile: DokumentZeile) -> None: ...
+
+    async def dokument_aktualisieren(self, zeile: DokumentZeile) -> None: ...
+
+    async def dokument_abschnitte_loeschen(self, dokument_id: str) -> None: ...
+
+    async def dokument_chunks_loeschen(self, dokument_id: str) -> None: ...
+
+    async def dokument_abschnitte_einfuegen(self, zeilen: list[AbschnittZeile]) -> None: ...
+
+    async def dokument_chunks_einfuegen(self, zeilen: list[DokumentChunkZeile]) -> None: ...
+
+    async def dokument_datei_ablegen(self, dokument_id: str, endung: str, daten: IO[bytes]) -> str:
+        """Legt die Originaldatei ab und gibt den Pfad zurück, der im Dokument gespeichert wird."""
+        ...
+
+    async def dokument_abschliessen(self, dokument_id: str, stufe: Dokumentstufe, datei_pfad: str | None) -> None: ...
+
     async def abschliessen(self) -> None:
         """Alles festschreiben."""
         ...
@@ -522,6 +665,15 @@ async def _videos_mit_miniaturen(schreiber: PaketSchreiber, quelle: Datenquelle)
         if export.miniatur_datei is not None:
             schreiber.miniatur_ablegen(zeile.extern_id, export.miniatur_datei)
             zeile = zeile.model_copy(update={"miniatur": True})
+        yield zeile
+
+
+async def _dokumente_mit_dateien(schreiber: PaketSchreiber, quelle: Datenquelle) -> AsyncIterator[DokumentZeile]:
+    async for export in quelle.dokumente():
+        zeile = export.zeile
+        if export.datei is not None and export.datei.is_file():
+            endung = schreiber.dokument_datei_ablegen(zeile.id, export.datei)
+            zeile = zeile.model_copy(update={"datei": True, "endung": endung})
         yield zeile
 
 
@@ -563,6 +715,15 @@ async def exportiere(
             schreiber, KORREKTUREN, "Korrekturen", quelle.korrekturen(), erwartet.korrekturen, melde
         )
         zaehler.chunks = await _tabelle_schreiben(schreiber, CHUNKS, "Chunks", quelle.chunks(), erwartet.chunks, melde)
+        zaehler.dokumente = await _tabelle_schreiben(
+            schreiber, DOKUMENTE, "Dokumente", _dokumente_mit_dateien(schreiber, quelle), erwartet.dokumente, melde
+        )
+        zaehler.dokument_abschnitte = await _tabelle_schreiben(
+            schreiber, DOKUMENT_ABSCHNITTE, "Abschnitte", quelle.dokument_abschnitte(), erwartet.dokument_abschnitte, melde
+        )
+        zaehler.dokument_chunks = await _tabelle_schreiben(
+            schreiber, DOKUMENT_CHUNKS, "Dokumentstücke", quelle.dokument_chunks(), erwartet.dokument_chunks, melde
+        )
         modelle: set[str] = set()
         zaehler.einbettungen = await _tabelle_schreiben(
             schreiber,
@@ -573,6 +734,7 @@ async def exportiere(
             melde,
         )
         zaehler.miniaturen = schreiber.miniaturen
+        zaehler.dokument_dateien = schreiber.dokument_dateien
         manifest = Manifest(
             version=version,
             erstellt=datetime.now(UTC),
@@ -632,6 +794,29 @@ def stufe_nach_import(stand: Videostand) -> Stufe:
 
 
 @dataclass(slots=True)
+class Dokumentstand:
+    """Was der Import für ein Dokument getan hat; daraus folgt am Ende die Stufe."""
+
+    id: str
+    neu: bool
+    bestehende_stufe: Dokumentstufe | None
+    abschnitte: int = 0
+    chunks: int = 0
+    chunks_eingebettet: int = 0
+    datei_pfad: str | None = None
+    abschnitt_ids: set[str] = field(default_factory=set)
+
+
+def dokumentstufe_nach_import(stand: Dokumentstand) -> Dokumentstufe:
+    """Die Stufe, die der Inhalt des Dokuments nach dem Import belegt (analog zu stufe_nach_import)."""
+    if stand.chunks > 0 and stand.chunks_eingebettet >= stand.chunks:
+        return Dokumentstufe.EINGEBETTET
+    if stand.chunks > 0:
+        return Dokumentstufe.GESTUECKELT
+    return Dokumentstufe.IMPORTIERT
+
+
+@dataclass(slots=True)
 class _Importzustand:
     manifest: Manifest | None = None
     je_quell_id: dict[str, Videostand] = field(default_factory=dict)
@@ -639,6 +824,8 @@ class _Importzustand:
     transkript_ids: set[str] = field(default_factory=set)
     korrektur_ids: set[str] = field(default_factory=set)
     chunk_video: dict[str, Videostand] = field(default_factory=dict)
+    dokumente: dict[str, Dokumentstand] = field(default_factory=dict)
+    chunk_dokument: dict[str, Dokumentstand] = field(default_factory=dict)
     eingebettete_chunks: set[str] = field(default_factory=set)
     modelle: set[str] = field(default_factory=set)
     ergebnis: ImportErgebnis = field(default_factory=ImportErgebnis)
@@ -654,6 +841,14 @@ class _Importzustand:
         stand = self.je_quell_id.get(quell_video_id)
         if stand is None:
             raise PaketFehler(f"'{eintrag}' verweist auf ein Video ({quell_video_id}), das im Paket fehlt")
+        return stand
+
+    def dokumentstand_fuer(self, dokument_id: str, eintrag: str) -> Dokumentstand:
+        if not self.dokumente:
+            raise PaketFehler(f"'{eintrag}' liegt im Paket vor der Dokumentliste")
+        stand = self.dokumente.get(dokument_id)
+        if stand is None:
+            raise PaketFehler(f"'{eintrag}' verweist auf ein Dokument ({dokument_id}), das im Paket fehlt")
         return stand
 
 
@@ -803,7 +998,7 @@ async def _einbettungen_importieren(
     abschnitt = ABSCHNITTE[EINBETTUNGEN]
     stapel: _Stapel[EinbettungZeile] = _Stapel(ziel.einbettungen_einfuegen)
     for nummer, zeile in enumerate(lese_jsonl(eintrag.daten, EinbettungZeile, eintrag.name), start=1):
-        if zeile.chunk_id not in zustand.chunk_video:
+        if zeile.chunk_id not in zustand.chunk_video and zeile.chunk_id not in zustand.chunk_dokument:
             raise PaketFehler(f"{eintrag.name}, Zeile {nummer}: Chunk {zeile.chunk_id} fehlt im Paket")
         if len(zeile.vektor) != manifest.dimension:
             raise PaketFehler(f"{eintrag.name}, Zeile {nummer}: Vektor mit {len(zeile.vektor)} statt {manifest.dimension} Dimensionen")
@@ -819,6 +1014,106 @@ async def _einbettungen_importieren(
     await stapel.leeren()
     zustand.ergebnis.einbettungen = stapel.gesamt
     await _melde(melde, abschnitt[1], f"Einbettungen: {_zahl(stapel.gesamt)} übernommen")
+
+
+async def _dokumente_importieren(eintrag: Paketeintrag, zustand: _Importzustand, ziel: Datenziel, melde: Fortschrittsmelder | None) -> None:
+    vorhandene = await ziel.vorhandene_dokumente()
+    erwartet = zustand.manifest_oder_fehler().zaehler.dokumente
+    for zeile in lese_jsonl(eintrag.daten, DokumentZeile, eintrag.name):
+        _pruefe_dokument_id(zeile.id)
+        stufe = vorhandene.get(zeile.id)
+        if stufe is None:
+            await ziel.dokument_anlegen(zeile)
+            zustand.dokumente[zeile.id] = Dokumentstand(id=zeile.id, neu=True, bestehende_stufe=None)
+            zustand.ergebnis.dokumente_neu += 1
+        else:
+            await ziel.dokument_aktualisieren(zeile)
+            zustand.dokumente[zeile.id] = Dokumentstand(id=zeile.id, neu=False, bestehende_stufe=Dokumentstufe(stufe))
+            zustand.ergebnis.dokumente_aktualisiert += 1
+        gelesen = len(zustand.dokumente)
+        if gelesen % STAPEL_ZEILEN == 0:
+            await _melde(melde, _anteil(ABSCHNITTE[DOKUMENTE], gelesen, erwartet), f"Dokumente: {_zahl(gelesen)} von {_zahl(erwartet)}")
+    await _melde(melde, ABSCHNITTE[DOKUMENTE][1], f"Dokumente: {_zahl(len(zustand.dokumente))} abgeglichen")
+
+
+async def _dokumentkinder_importieren[Z: DokumentKindzeile](
+    eintrag: Paketeintrag,
+    modell: type[Z],
+    titel: str,
+    erwartet: int,
+    zustand: _Importzustand,
+    loeschen: Callable[[str], Awaitable[None]],
+    einfuegen: Callable[[list[Z]], Awaitable[None]],
+    merken: Callable[[Z, Dokumentstand], Z],
+    melde: Fortschrittsmelder | None,
+) -> int:
+    """Abschnitte und Stücke eines Dokuments: alte Zeilen löschen, dann die des Pakets einfügen."""
+    abschnitt = ABSCHNITTE[eintrag.name]
+    geleert: set[str] = set()
+    stapel: _Stapel[Z] = _Stapel(einfuegen)
+    for zeile in lese_jsonl(eintrag.daten, modell, eintrag.name):
+        stand = zustand.dokumentstand_fuer(zeile.dokument_id, eintrag.name)
+        if stand.id not in geleert:
+            await loeschen(stand.id)
+            geleert.add(stand.id)
+        await stapel.hinzu(merken(zeile, stand))
+        if stapel.gesamt and stapel.gesamt % STAPEL_ZEILEN == 0:
+            await _melde(melde, _anteil(abschnitt, stapel.gesamt, erwartet), f"{titel}: {_zahl(stapel.gesamt)} von {_zahl(erwartet)}")
+    await stapel.leeren()
+    await _melde(melde, abschnitt[1], f"{titel}: {_zahl(stapel.gesamt)} übernommen")
+    return stapel.gesamt
+
+
+async def _dokument_abschnitte_importieren(
+    eintrag: Paketeintrag, zustand: _Importzustand, ziel: Datenziel, melde: Fortschrittsmelder | None
+) -> None:
+    def merken(zeile: AbschnittZeile, stand: Dokumentstand) -> AbschnittZeile:
+        stand.abschnitte += 1
+        stand.abschnitt_ids.add(zeile.id)
+        return zeile
+
+    zustand.ergebnis.dokument_abschnitte = await _dokumentkinder_importieren(
+        eintrag,
+        AbschnittZeile,
+        "Abschnitte",
+        zustand.manifest_oder_fehler().zaehler.dokument_abschnitte,
+        zustand,
+        ziel.dokument_abschnitte_loeschen,
+        ziel.dokument_abschnitte_einfuegen,
+        merken,
+        melde,
+    )
+
+
+async def _dokument_chunks_importieren(
+    eintrag: Paketeintrag, zustand: _Importzustand, ziel: Datenziel, melde: Fortschrittsmelder | None
+) -> None:
+    def merken(zeile: DokumentChunkZeile, stand: Dokumentstand) -> DokumentChunkZeile:
+        stand.chunks += 1
+        zustand.chunk_dokument[zeile.id] = stand
+        abschnitt_id = zeile.abschnitt_id if zeile.abschnitt_id in stand.abschnitt_ids else None
+        return zeile.model_copy(update={"abschnitt_id": abschnitt_id})
+
+    zustand.ergebnis.dokument_chunks = await _dokumentkinder_importieren(
+        eintrag,
+        DokumentChunkZeile,
+        "Dokumentstücke",
+        zustand.manifest_oder_fehler().zaehler.dokument_chunks,
+        zustand,
+        ziel.dokument_chunks_loeschen,
+        ziel.dokument_chunks_einfuegen,
+        merken,
+        melde,
+    )
+
+
+async def _dokument_datei_importieren(eintrag: Paketeintrag, zustand: _Importzustand, ziel: Datenziel) -> None:
+    name = Path(eintrag.name)
+    stand = zustand.dokumente.get(name.stem)
+    if stand is None:
+        raise PaketFehler(f"Die Dokumentdatei '{eintrag.name}' gehört zu keinem Dokument im Paket")
+    stand.datei_pfad = await ziel.dokument_datei_ablegen(stand.id, _pruefe_endung(name.suffix), eintrag.daten)
+    zustand.ergebnis.dokument_dateien += 1
 
 
 async def _miniatur_importieren(eintrag: Paketeintrag, zustand: _Importzustand, ziel: Datenziel) -> None:
@@ -850,11 +1145,21 @@ async def _eintrag_verarbeiten(
         await _korrekturen_importieren(eintrag, zustand, ziel, melde)
     elif eintrag.name == CHUNKS:
         await _chunks_importieren(eintrag, zustand, ziel, melde)
+    elif eintrag.name == DOKUMENTE:
+        await _dokumente_importieren(eintrag, zustand, ziel, melde)
+    elif eintrag.name == DOKUMENT_ABSCHNITTE:
+        await _dokument_abschnitte_importieren(eintrag, zustand, ziel, melde)
+    elif eintrag.name == DOKUMENT_CHUNKS:
+        await _dokument_chunks_importieren(eintrag, zustand, ziel, melde)
     elif eintrag.name == EINBETTUNGEN:
         await _einbettungen_importieren(eintrag, zustand, ziel, melde)
     elif eintrag.name.startswith(MINIATUREN_ORDNER + "/"):
         _miniatur_stand_pruefen(zustand, eintrag.name)
         await _miniatur_importieren(eintrag, zustand, ziel)
+    elif eintrag.name.startswith(DOKUMENTE_ORDNER + "/"):
+        if not zustand.dokumente:
+            raise PaketFehler(f"'{eintrag.name}' liegt im Paket vor der Dokumentliste")
+        await _dokument_datei_importieren(eintrag, zustand, ziel)
     else:
         log.warning("Unbekannter Paketeintrag übersprungen: %s", eintrag.name)
 
@@ -866,9 +1171,14 @@ def _miniatur_stand_pruefen(zustand: _Importzustand, name: str) -> None:
 
 async def _videos_abschliessen(zustand: _Importzustand, ziel: Datenziel) -> None:
     for chunk_id in zustand.eingebettete_chunks:
-        zustand.chunk_video[chunk_id].chunks_eingebettet += 1
+        if chunk_id in zustand.chunk_video:
+            zustand.chunk_video[chunk_id].chunks_eingebettet += 1
+        else:
+            zustand.chunk_dokument[chunk_id].chunks_eingebettet += 1
     for stand in zustand.je_quell_id.values():
         await ziel.video_abschliessen(stand.ziel_id, stufe_nach_import(stand), stand.miniatur_pfad)
+    for dokument in zustand.dokumente.values():
+        await ziel.dokument_abschliessen(dokument.id, dokumentstufe_nach_import(dokument), dokument.datei_pfad)
 
 
 async def importiere(
@@ -891,7 +1201,10 @@ async def importiere(
     zustand.ergebnis.einbettung_modelle = sorted(zustand.modelle)
     zustand.ergebnis.paket_version = manifest.version
     zustand.ergebnis.paket_erstellt = manifest.erstellt
-    await _melde(melde, 1.0, f"Fertig: {_zahl(len(zustand.je_quell_id))} Videos übernommen")
+    fertig = f"Fertig: {_zahl(len(zustand.je_quell_id))} Videos übernommen"
+    if zustand.dokumente:
+        fertig += f", {_zahl(len(zustand.dokumente))} Dokumente"
+    await _melde(melde, 1.0, fertig)
     return zustand.ergebnis
 
 
@@ -917,6 +1230,25 @@ def _video_zeile(v: Video) -> VideoZeile:
         auswahl_manuell=v.auswahl_manuell,
         notizen=v.notizen,
         stufe=v.stufe,
+    )
+
+
+def _dokument_zeile(d: Dokument) -> DokumentZeile:
+    return DokumentZeile(
+        id=d.id,
+        titel=d.titel,
+        autor=d.autor,
+        art=d.art,
+        sprache=d.sprache,
+        beschreibung=d.beschreibung,
+        veroeffentlicht=d.veroeffentlicht,
+        dateiname=d.dateiname,
+        groesse_bytes=d.groesse_bytes,
+        zeichen=d.zeichen,
+        metadaten_original=dict(d.metadaten_original or {}),
+        felder_manuell=list(d.felder_manuell or []),
+        notizen=d.notizen,
+        stufe=d.stufe,
     )
 
 
@@ -963,9 +1295,10 @@ class DatenbankQuelle:
                 transkripte=await _anzahl(s, select(func.count(Transkript.id)).where(Transkript.aktuell.is_(True))),
                 korrekturen=await _anzahl(s, select(func.count(Korrektur.id)).where(Korrektur.aktuell.is_(True))),
                 chunks=await _anzahl(s, select(func.count(Chunk.id)).where(Chunk.video_id.is_not(None))),
-                einbettungen=await _anzahl(
-                    s, select(func.count(Einbettung.id)).join(Chunk, Chunk.id == Einbettung.chunk_id).where(Chunk.video_id.is_not(None))
-                ),
+                einbettungen=await _anzahl(s, select(func.count(Einbettung.id))),
+                dokumente=await _anzahl(s, select(func.count(Dokument.id))),
+                dokument_abschnitte=await _anzahl(s, select(func.count(DokumentAbschnitt.id))),
+                dokument_chunks=await _anzahl(s, select(func.count(Chunk.id)).where(Chunk.dokument_id.is_not(None))),
             )
 
     def _miniatur_datei(self, video: Video) -> Path | None:
@@ -1050,12 +1383,62 @@ class DatenbankQuelle:
         )
         return _streame(stmt, _aus_spalten(ChunkZeile))
 
-    def einbettungen(self) -> AsyncIterator[EinbettungZeile]:
+    def _dokument_datei(self, d: Dokument) -> Path | None:
+        if not d.datei_pfad:
+            return None
+        p = Path(d.datei_pfad)
+        pfad = p if p.is_absolute() else self._daten / p
+        return pfad if pfad.is_file() else None
+
+    async def dokumente(self) -> AsyncIterator[Dokumentexport]:
+        stmt = select(Dokument).order_by(Dokument.erstellt, Dokument.id)
+        async with sitzung() as s:
+            ergebnis = await s.stream_scalars(stmt.execution_options(yield_per=STAPEL_ZEILEN))
+            async for d in ergebnis:
+                yield Dokumentexport(zeile=_dokument_zeile(d), datei=self._dokument_datei(d))
+
+    def dokument_abschnitte(self) -> AsyncIterator[AbschnittZeile]:
+        stmt = select(
+            DokumentAbschnitt.id,
+            DokumentAbschnitt.dokument_id,
+            DokumentAbschnitt.reihenfolge,
+            DokumentAbschnitt.ebene,
+            DokumentAbschnitt.titel,
+            DokumentAbschnitt.text,
+            DokumentAbschnitt.zeichen,
+            DokumentAbschnitt.anker,
+            DokumentAbschnitt.seite_von,
+            DokumentAbschnitt.seite_bis,
+            DokumentAbschnitt.position_von,
+            DokumentAbschnitt.erstellt,
+        ).order_by(DokumentAbschnitt.dokument_id, DokumentAbschnitt.reihenfolge)
+        return _streame(stmt, _aus_spalten(AbschnittZeile))
+
+    def dokument_chunks(self) -> AsyncIterator[DokumentChunkZeile]:
         stmt = (
-            select(Einbettung.chunk_id, Einbettung.modell, Einbettung.anbieter, Einbettung.dimension, Einbettung.vektor)
-            .join(Chunk, Chunk.id == Einbettung.chunk_id)
-            .where(Chunk.video_id.is_not(None))
-            .order_by(Einbettung.chunk_id, Einbettung.modell)
+            select(
+                Chunk.id,
+                Chunk.dokument_id,
+                Chunk.abschnitt_id,
+                Chunk.reihenfolge,
+                Chunk.text,
+                Chunk.zeichen,
+                Chunk.thema,
+                Chunk.ueberlappung_vor,
+                Chunk.ueberlappung_nach,
+                Chunk.position_von,
+                Chunk.position_bis,
+                Chunk.manuell_bearbeitet,
+                Chunk.erstellt,
+            )
+            .where(Chunk.dokument_id.is_not(None))
+            .order_by(Chunk.dokument_id, Chunk.reihenfolge)
+        )
+        return _streame(stmt, _aus_spalten(DokumentChunkZeile))
+
+    def einbettungen(self) -> AsyncIterator[EinbettungZeile]:
+        stmt = select(Einbettung.chunk_id, Einbettung.modell, Einbettung.anbieter, Einbettung.dimension, Einbettung.vektor).order_by(
+            Einbettung.chunk_id, Einbettung.modell
         )
         return _streame(stmt, _einbettung_zeile)
 
@@ -1081,6 +1464,22 @@ def _video_werte(zeile: VideoZeile) -> dict[str, Any]:
     }
 
 
+def _dokument_werte(zeile: DokumentZeile) -> dict[str, Any]:
+    return {
+        "titel": zeile.titel,
+        "autor": zeile.autor,
+        "art": zeile.art,
+        "sprache": zeile.sprache,
+        "beschreibung": zeile.beschreibung,
+        "veroeffentlicht": zeile.veroeffentlicht,
+        "dateiname": zeile.dateiname,
+        "groesse_bytes": zeile.groesse_bytes,
+        "zeichen": zeile.zeichen,
+        "metadaten_original": zeile.metadaten_original,
+        "felder_manuell": zeile.felder_manuell,
+    }
+
+
 class DatenbankZiel:
     """Import in die Datenbank innerhalb einer Sitzung; festgeschrieben wird erst in `abschliessen`.
 
@@ -1088,10 +1487,13 @@ class DatenbankZiel:
     Einbettungen keine Objekte im Speicher hält.
     """
 
-    def __init__(self, session: AsyncSession, daten_verzeichnis: Path, miniaturen_verzeichnis: Path) -> None:
+    def __init__(
+        self, session: AsyncSession, daten_verzeichnis: Path, miniaturen_verzeichnis: Path, dokumente_verzeichnis: Path | None = None
+    ) -> None:
         self._s = session
         self._daten = daten_verzeichnis
         self._miniaturen = miniaturen_verzeichnis
+        self._dokumente = dokumente_verzeichnis or (daten_verzeichnis / "dokumente")
 
     async def vorhandene_videos(self) -> VorhandeneVideos:
         rows = (await self._s.execute(select(Video.id, Video.extern_id, Video.stufe, Video.auswahl_manuell))).all()
@@ -1157,6 +1559,46 @@ class DatenbankZiel:
         if miniatur_pfad:
             werte["miniatur_pfad"] = miniatur_pfad
         await self._s.execute(update(Video).where(Video.id == video_id).values(**werte))
+
+    async def vorhandene_dokumente(self) -> dict[str, str]:
+        rows = (await self._s.execute(select(Dokument.id, Dokument.stufe))).all()
+        return {r.id: r.stufe for r in rows}
+
+    async def dokument_anlegen(self, zeile: DokumentZeile) -> None:
+        await self._s.execute(
+            insert(Dokument).values(id=zeile.id, stufe=Dokumentstufe.IMPORTIERT.value, notizen=zeile.notizen, **_dokument_werte(zeile))
+        )
+
+    async def dokument_aktualisieren(self, zeile: DokumentZeile) -> None:
+        werte = _dokument_werte(zeile)
+        werte["aktualisiert"] = jetzt()
+        await self._s.execute(update(Dokument).where(Dokument.id == zeile.id).values(**werte))
+
+    async def dokument_abschnitte_loeschen(self, dokument_id: str) -> None:
+        await self._s.execute(delete(DokumentAbschnitt).where(DokumentAbschnitt.dokument_id == dokument_id))
+
+    async def dokument_chunks_loeschen(self, dokument_id: str) -> None:
+        await self._s.execute(delete(Chunk).where(Chunk.dokument_id == dokument_id))
+
+    async def dokument_abschnitte_einfuegen(self, zeilen: list[AbschnittZeile]) -> None:
+        await self._s.execute(insert(DokumentAbschnitt), [z.model_dump() for z in zeilen])
+
+    async def dokument_chunks_einfuegen(self, zeilen: list[DokumentChunkZeile]) -> None:
+        await self._s.execute(insert(Chunk), [{**z.model_dump(), "video_id": None, "korrektur_id": None} for z in zeilen])
+
+    async def dokument_datei_ablegen(self, dokument_id: str, endung: str, daten: IO[bytes]) -> str:
+        self._dokumente.mkdir(parents=True, exist_ok=True)
+        ziel = self._dokumente / f"{dokument_id}{endung}"
+        with ziel.open("wb") as f:
+            shutil.copyfileobj(daten, f)
+        # Dokumente speichern den vollen Pfad (so legt sie auch der Hochlade-Import ab)
+        return str(ziel)
+
+    async def dokument_abschliessen(self, dokument_id: str, stufe: Dokumentstufe, datei_pfad: str | None) -> None:
+        werte: dict[str, Any] = {"stufe": stufe.value, "aktualisiert": jetzt()}
+        if datei_pfad:
+            werte["datei_pfad"] = datei_pfad
+        await self._s.execute(update(Dokument).where(Dokument.id == dokument_id).values(**werte))
 
     async def abschliessen(self) -> None:
         await self._s.commit()

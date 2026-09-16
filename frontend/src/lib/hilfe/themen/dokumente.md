@@ -34,4 +34,4 @@ Die Stückelung läuft je Kapitel: Ein Stück überschreitet nie eine Kapitelgre
 
 Unter Filter wählst du, ob die Antwort aus allem, nur aus Videos, nur aus Dokumenten oder aus einem bestimmten Dokument kommt. "Höchstens je Werk" begrenzt die Stellen je Video oder Dokument, damit ein einzelnes Buch die Antwort nicht dominiert.
 
-<div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Titel, Autor, Datum und Beschreibung lassen sich wie bei Videos von Hand pflegen; gepflegte Felder bleiben bei einem erneuten Import stehen. PDF folgt als nächste Art.</div>
+<div class="m-hinweis tipp"><i class="fa-solid fa-lightbulb"></i> Titel, Autor, Datum und Beschreibung lassen sich wie bei Videos von Hand pflegen; gepflegte Felder bleiben bei einem erneuten Import stehen. Dokumente reisen im Umzugspaket mit. PDF folgt als nächste Art.</div>

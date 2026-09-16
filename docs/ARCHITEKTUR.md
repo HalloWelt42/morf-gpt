@@ -319,11 +319,14 @@ nebeneinander belegen.
 ## 8. Umzug der Bibliothek
 
 `POST /api/export/bibliothek` schreibt ein Paket (`morf-gpt-bibliothek-<datum>.tar.gz`)
-mit JSONL je Tabelle (Videos, Korrekturen, Chunks, Einbettungen) plus Manifest
-(Version, Einbettungsmodell, Dimension, Zähler) sowie den Vorschaubildern.
-`POST /api/import/bibliothek` liest es in eine leere oder bestehende Datenbank (Abgleich
-über Video-Kennung). Audio wird nicht mitgenommen (Sprung zu YouTube bleibt immer
-möglich); Transkripte optional.
+mit JSONL je Tabelle (Videos, Korrekturen, Chunks, seit Formatversion 2 auch Dokumente,
+Abschnitte und Dokumentstücke, dann Einbettungen aller Stücke) plus Manifest (Version,
+Einbettungsmodell, Dimension, Zähler), den Vorschaubildern und den Originaldateien der
+Dokumente (`dokumente/<id>.<endung>`). `POST /api/export/import` liest es in eine leere
+oder bestehende Datenbank (Videos abgeglichen über die Video-Kennung, Dokumente über ihre
+Kennung; Abschnitte und Stücke eines Werks werden ersetzt, Kennungen bleiben erhalten).
+Ein Leser der Version 2 liest Pakete der Version 1 unverändert. Audio wird nicht
+mitgenommen (Sprung zu YouTube bleibt immer möglich); Transkripte optional.
 
 ## 9. Fremde Dienste und Werkzeuge
 

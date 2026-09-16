@@ -18,7 +18,11 @@ import pytest
 
 from app.dienste.export import paket
 from app.dienste.export.paket import (
+    AbschnittZeile,
     ChunkZeile,
+    DokumentChunkZeile,
+    Dokumentexport,
+    DokumentZeile,
     EinbettungZeile,
     KorrekturZeile,
     Manifest,
@@ -31,7 +35,7 @@ from app.dienste.export.paket import (
     VorhandeneVideos,
     Zaehler,
 )
-from app.domaene.fliessband import Stufe
+from app.domaene.fliessband import Dokumentstufe, Stufe
 
 TEST_WURZEL = Path(__file__).resolve().parents[1] / ".test-tmp" / "export"
 DIMENSION = 4
@@ -120,10 +124,57 @@ def _einbettung(chunk_id: str, modell: str = "bge-m3") -> EinbettungZeile:
     return EinbettungZeile(chunk_id=chunk_id, modell=modell, anbieter="lmstudio", dimension=DIMENSION, vektor=[0.1, 0.2, 0.3, 0.4])
 
 
-class FakeQuelle:
-    """Zwei Videos: das erste voll verarbeitet mit Vorschaubild, das zweite nur gestückelt."""
+DOKUMENT_ID = "dok" + "1" * 29
 
-    def __init__(self, miniatur: Path | None) -> None:
+
+def _dokument() -> DokumentZeile:
+    return DokumentZeile(
+        id=DOKUMENT_ID,
+        titel="Das gesellschaftliche Problem",
+        autor="M. Q. Flink",
+        art="epub",
+        sprache="de",
+        dateiname="buch.epub",
+        groesse_bytes=12,
+        zeichen=40,
+        felder_manuell=["titel"],
+        stufe="eingebettet",
+    )
+
+
+def _abschnitt(nr: int) -> AbschnittZeile:
+    return AbschnittZeile(
+        id=f"abs{nr}" + "0" * 28,
+        dokument_id=DOKUMENT_ID,
+        reihenfolge=nr,
+        ebene=1,
+        titel=f"Kapitel {nr}",
+        text="Text äöü",
+        zeichen=8,
+        erstellt=ZEIT,
+    )
+
+
+def _dokument_chunk(nr: int, abschnitt_id: str | None) -> DokumentChunkZeile:
+    return DokumentChunkZeile(
+        id=f"dc{nr}" + "0" * 29,
+        dokument_id=DOKUMENT_ID,
+        abschnitt_id=abschnitt_id,
+        reihenfolge=nr,
+        text=f"Dokumentstück {nr}",
+        zeichen=15,
+        thema=f"Kapitel {nr}",
+        position_von=nr * 10,
+        position_bis=nr * 10 + 9,
+        erstellt=ZEIT,
+    )
+
+
+class FakeQuelle:
+    """Zwei Videos: das erste voll verarbeitet mit Vorschaubild, das zweite nur gestückelt. Dazu ein
+    Dokument mit zwei Abschnitten, zwei Stücken (eines eingebettet) und Originaldatei."""
+
+    def __init__(self, miniatur: Path | None, dokument_datei: Path | None = None) -> None:
         self.v1 = _video(1, "abcDEF12345")
         self.v2 = _video(2, "xyzXYZ67890")
         self.miniatur = miniatur
@@ -131,10 +182,27 @@ class FakeQuelle:
         self.k1 = _korrektur(self.v1.id, self.t1.id)
         self.k2 = _korrektur(self.v2.id, None)
         self.c = [_chunk(self.v1.id, self.k1.id, 0), _chunk(self.v1.id, self.k1.id, 1), _chunk(self.v2.id, self.k2.id, 0)]
-        self.e = [_einbettung(self.c[0].id), _einbettung(self.c[1].id), _einbettung(self.c[1].id, "andere")]
+        self.d = _dokument()
+        self.dokument_datei = dokument_datei
+        self.a = [_abschnitt(1), _abschnitt(2)]
+        self.dc = [_dokument_chunk(1, self.a[0].id), _dokument_chunk(2, "unbekannt")]
+        self.e = [_einbettung(self.c[0].id), _einbettung(self.c[1].id), _einbettung(self.c[1].id, "andere"), _einbettung(self.dc[0].id)]
 
     async def zaehler(self) -> Zaehler:
-        return Zaehler(videos=2, transkripte=1, korrekturen=2, chunks=3, einbettungen=3)
+        return Zaehler(
+            videos=2, transkripte=1, korrekturen=2, chunks=3, einbettungen=4, dokumente=1, dokument_abschnitte=2, dokument_chunks=2
+        )
+
+    async def dokumente(self) -> AsyncIterator[Dokumentexport]:
+        yield Dokumentexport(zeile=self.d, datei=self.dokument_datei)
+
+    async def dokument_abschnitte(self) -> AsyncIterator[AbschnittZeile]:
+        for a in self.a:
+            yield a
+
+    async def dokument_chunks(self) -> AsyncIterator[DokumentChunkZeile]:
+        for c in self.dc:
+            yield c
 
     async def videos(self) -> AsyncIterator[Videoexport]:
         yield Videoexport(zeile=self.v1, miniatur_datei=self.miniatur)
@@ -172,6 +240,41 @@ class FakeZiel:
         self.miniaturen: dict[str, bytes] = {}
         self.stufen: dict[str, tuple[Stufe, str | None]] = {}
         self.abgeschlossen = False
+        self.vorhandene_dok: dict[str, str] = {}
+        self.dokumente_angelegt: dict[str, DokumentZeile] = {}
+        self.dokumente_aktualisiert: dict[str, DokumentZeile] = {}
+        self.abschnitte: list[AbschnittZeile] = []
+        self.dokument_chunks: list[DokumentChunkZeile] = []
+        self.dokument_dateien: dict[str, bytes] = {}
+        self.dokument_stufen: dict[str, tuple[Dokumentstufe, str | None]] = {}
+
+    async def vorhandene_dokumente(self) -> dict[str, str]:
+        return dict(self.vorhandene_dok)
+
+    async def dokument_anlegen(self, zeile: DokumentZeile) -> None:
+        self.dokumente_angelegt[zeile.id] = zeile
+
+    async def dokument_aktualisieren(self, zeile: DokumentZeile) -> None:
+        self.dokumente_aktualisiert[zeile.id] = zeile
+
+    async def dokument_abschnitte_loeschen(self, dokument_id: str) -> None:
+        self.geloescht.append(("abschnitte", dokument_id))
+
+    async def dokument_chunks_loeschen(self, dokument_id: str) -> None:
+        self.geloescht.append(("dokument_chunks", dokument_id))
+
+    async def dokument_abschnitte_einfuegen(self, zeilen: list[AbschnittZeile]) -> None:
+        self.abschnitte.extend(zeilen)
+
+    async def dokument_chunks_einfuegen(self, zeilen: list[DokumentChunkZeile]) -> None:
+        self.dokument_chunks.extend(zeilen)
+
+    async def dokument_datei_ablegen(self, dokument_id: str, endung: str, daten: IO[bytes]) -> str:
+        self.dokument_dateien[dokument_id] = daten.read()
+        return f"/ablage/dokumente/{dokument_id}{endung}"
+
+    async def dokument_abschliessen(self, dokument_id: str, stufe: Dokumentstufe, datei_pfad: str | None) -> None:
+        self.dokument_stufen[dokument_id] = (stufe, datei_pfad)
 
     async def vorhandene_videos(self) -> VorhandeneVideos:
         return VorhandeneVideos(je_extern_id=dict(self.vorhandene), ids={v.id for v in self.vorhandene.values()})
@@ -219,7 +322,9 @@ async def _exportiere(ordner: Path, mit_transkripten: bool, miniatur: bool = Tru
     if miniatur:
         bild = ordner / "bild.jpg"
         bild.write_bytes(b"\xff\xd8\xff\xe0JPEGPROBE")
-    quelle = FakeQuelle(bild)
+    buch = ordner / "buch.epub"
+    buch.write_bytes(b"PK\x03\x04EPUBPROBE")
+    quelle = FakeQuelle(bild, buch)
     meldungen: list[tuple[float, str]] = []
 
     async def melde(anteil: float, meldung: str) -> None:
@@ -280,13 +385,28 @@ async def test_export_schreibt_paket_in_richtiger_reihenfolge(ordner: Path) -> N
         "transkripte.jsonl",
         "korrekturen.jsonl",
         "chunks.jsonl",
+        "dokumente.jsonl",
+        "dokument_abschnitte.jsonl",
+        "dokument_chunks.jsonl",
         "einbettungen.jsonl",
         "miniaturen/abcDEF12345.jpg",
+        f"dokumente/{DOKUMENT_ID}.epub",
     ]
     m = ergebnis.manifest
     assert m.format == paket.FORMAT_KENNUNG and m.version == "0.1.0" and m.dimension == DIMENSION
     assert m.einbettung_modelle == ["andere", "bge-m3"]
-    assert m.zaehler == Zaehler(videos=2, transkripte=1, korrekturen=2, chunks=3, einbettungen=3, miniaturen=1)
+    assert m.zaehler == Zaehler(
+        videos=2,
+        transkripte=1,
+        korrekturen=2,
+        chunks=3,
+        einbettungen=4,
+        miniaturen=1,
+        dokumente=1,
+        dokument_abschnitte=2,
+        dokument_chunks=2,
+        dokument_dateien=1,
+    )
 
 
 async def test_export_ohne_transkripte(ordner: Path) -> None:
@@ -318,7 +438,7 @@ async def test_import_in_leeres_ziel(ordner: Path) -> None:
 
     assert ziel.abgeschlossen
     assert zaehler.videos_neu == 2 and zaehler.videos_aktualisiert == 0
-    assert (zaehler.transkripte, zaehler.korrekturen, zaehler.chunks, zaehler.einbettungen, zaehler.miniaturen) == (1, 2, 3, 3, 1)
+    assert (zaehler.transkripte, zaehler.korrekturen, zaehler.chunks, zaehler.einbettungen, zaehler.miniaturen) == (1, 2, 3, 4, 1)
     assert zaehler.einbettung_modelle == ["andere", "bge-m3"] and zaehler.paket_version == "0.1.0"
     # Kennungen bleiben erhalten, Verweise zeigen auf die importierten Zeilen
     assert set(ziel.angelegt) == {quelle.v1.id, quelle.v2.id}
@@ -473,3 +593,60 @@ def test_sicherer_dateiname() -> None:
 
 def test_vektor_kompakt_rundet() -> None:
     assert paket.vektor_kompakt([0.123456789123, 1.0]) == [0.12345679, 1.0]
+
+
+# --------------------------------------------------------------------------- Dokumente
+async def test_export_und_import_mit_dokumenten(ordner: Path) -> None:
+    ergebnis, quelle = await _exportiere(ordner, mit_transkripten=True)
+    with tarfile.open(ergebnis.datei, "r:gz") as tar:
+        namen = tar.getnames()
+    assert namen.index(paket.CHUNKS) < namen.index(paket.DOKUMENTE) < namen.index(paket.DOKUMENT_ABSCHNITTE)
+    assert namen.index(paket.DOKUMENT_ABSCHNITTE) < namen.index(paket.DOKUMENT_CHUNKS) < namen.index(paket.EINBETTUNGEN)
+    assert f"{paket.DOKUMENTE_ORDNER}/{DOKUMENT_ID}.epub" in namen and namen[-1].startswith(paket.DOKUMENTE_ORDNER + "/")
+    z = ergebnis.manifest.zaehler
+    assert (z.dokumente, z.dokument_abschnitte, z.dokument_chunks, z.dokument_dateien, z.einbettungen) == (1, 2, 2, 1, 4)
+    assert ergebnis.manifest.format_version == 2
+
+    ziel = FakeZiel(ordner)
+    imp = await paket.importiere(ergebnis.datei, ziel, erwartete_dimension=DIMENSION)
+    assert imp.dokumente_neu == 1 and imp.dokument_abschnitte == 2 and imp.dokument_chunks == 2 and imp.dokument_dateien == 1
+    assert imp.einbettungen == 4
+    assert ziel.dokumente_angelegt[DOKUMENT_ID].datei and ziel.dokumente_angelegt[DOKUMENT_ID].felder_manuell == ["titel"]
+    assert ziel.dokument_dateien[DOKUMENT_ID] == b"PK\x03\x04EPUBPROBE"
+    assert [c.abschnitt_id for c in ziel.dokument_chunks] == [quelle.a[0].id, None], "unbekannter Abschnitt wird gelöst"
+    assert ("abschnitte", DOKUMENT_ID) in ziel.geloescht and ("dokument_chunks", DOKUMENT_ID) in ziel.geloescht
+    # ein Stück von zweien eingebettet: gestückelt, nicht eingebettet
+    assert ziel.dokument_stufen[DOKUMENT_ID] == (Dokumentstufe.GESTUECKELT, f"/ablage/dokumente/{DOKUMENT_ID}.epub")
+    assert ziel.stufen[quelle.v1.id][0] == Stufe.EINGEBETTET
+
+
+async def test_import_vorhandenes_dokument_wird_ersetzt(ordner: Path) -> None:
+    ergebnis, _ = await _exportiere(ordner, mit_transkripten=False)
+    ziel = FakeZiel(ordner)
+    ziel.vorhandene_dok = {DOKUMENT_ID: "eingebettet"}
+    imp = await paket.importiere(ergebnis.datei, ziel, erwartete_dimension=DIMENSION)
+    assert imp.dokumente_neu == 0 and imp.dokumente_aktualisiert == 1
+    assert DOKUMENT_ID in ziel.dokumente_aktualisiert and DOKUMENT_ID not in ziel.dokumente_angelegt
+
+
+async def test_import_paket_ohne_dokumenttabellen_bleibt_lesbar(ordner: Path) -> None:
+    """Ein Paket der Formatversion 1 kennt keine Dokumente; der Leser darf sie nicht vermissen."""
+    ergebnis, _ = await _exportiere(ordner, mit_transkripten=False)
+    alt = ordner / "alt.tar.gz"
+    with tarfile.open(ergebnis.datei, "r:gz") as quelle, tarfile.open(alt, "w:gz") as ziel_tar:
+        for mitglied in quelle:
+            if mitglied.name.startswith("dokument") or mitglied.name == paket.EINBETTUNGEN:
+                continue
+            daten = quelle.extractfile(mitglied)
+            ziel_tar.addfile(mitglied, daten)
+    ziel = FakeZiel(ordner)
+    imp = await paket.importiere(alt, ziel, erwartete_dimension=DIMENSION)
+    assert imp.videos_neu == 2 and imp.dokumente_neu == 0 and not ziel.dokument_stufen
+
+
+def test_dokumentstufe_nach_import() -> None:
+    from app.dienste.export.paket import Dokumentstand, dokumentstufe_nach_import
+
+    assert dokumentstufe_nach_import(Dokumentstand("d", True, None)) == Dokumentstufe.IMPORTIERT
+    assert dokumentstufe_nach_import(Dokumentstand("d", True, None, chunks=3, chunks_eingebettet=2)) == Dokumentstufe.GESTUECKELT
+    assert dokumentstufe_nach_import(Dokumentstand("d", True, None, chunks=3, chunks_eingebettet=3)) == Dokumentstufe.EINGEBETTET
