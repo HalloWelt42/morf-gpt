@@ -110,14 +110,22 @@ for r in (
     app.include_router(r.router, prefix="/api")
 
 
-# Gebaute Oberfläche ausliefern (Betrieb ohne Vite), Fallback auf index.html für die SPA.
-_dist: Path = einstellungen.frontend_dist
-if _dist.exists() and (_dist / "index.html").exists():
-    app.mount("/assets", StaticFiles(directory=_dist / "assets"), name="assets")
+def oberflaeche_einbinden(ziel_app: FastAPI, dist: Path) -> None:
+    """Gebaute Oberfläche ausliefern (Betrieb ohne Vite), Fallback auf index.html für die SPA.
 
-    @app.get("/{pfad:path}", include_in_schema=False)
+    GET und HEAD: Browser und Prüfungen per HEAD (curl -I auf Symbole und Manifest) sehen dieselben Dateien;
+    nur mit GET beantwortete die Auffangroute HEAD mit 405.
+    """
+    if not (dist / "index.html").exists():
+        return
+    ziel_app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+    @ziel_app.api_route("/{pfad:path}", methods=["GET", "HEAD"], include_in_schema=False)
     async def spa(pfad: str) -> FileResponse:
-        ziel = _dist / pfad
+        ziel = dist / pfad
         if pfad and ziel.is_file():
             return FileResponse(ziel)
-        return FileResponse(_dist / "index.html")
+        return FileResponse(dist / "index.html")
+
+
+oberflaeche_einbinden(app, einstellungen.frontend_dist)
