@@ -5,6 +5,7 @@
   import type { DokumentAenderung, DokumentDetail, DokumentInhalt } from "../lib/typen";
   import { ereignisse } from "../lib/stores/ereignisse.svelte";
   import { ui } from "../lib/stores/ui.svelte";
+  import { neuladenAufhalten } from "../lib/stores/fassung.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
   import { bytes, datum, datumZeit, zahl } from "../lib/format";
   import InfoKnopf from "../lib/komponenten/InfoKnopf.svelte";
@@ -32,6 +33,8 @@
   let pflege = $state<Pflegeformular>({ titel: "", autor: "", sprache: "de", veroeffentlicht: "", beschreibung: "" });
   let loeschDialog = $state(false);
   let beschaeftigt = $state(false);
+  // Ein offenes Pflegeformular oder eine laufende Anfrage hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => bearbeiten || beschaeftigt);
   let aktiverAbschnitt = $state<number | null>(null);
   const abos: (() => void)[] = [];
 

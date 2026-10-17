@@ -6,6 +6,7 @@
   import { ereignisse } from "../lib/stores/ereignisse.svelte";
   import { spieler } from "../lib/stores/spieler.svelte";
   import { ui } from "../lib/stores/ui.svelte";
+  import { neuladenAufhalten } from "../lib/stores/fassung.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
   import { bytes, datum, datumZeit, dauerWorte, dezimal, zahl, zeitmarke, youtubeMitZeit } from "../lib/format";
   import { spieleVideo, spielerVergessen } from "../lib/spielen";
@@ -53,6 +54,8 @@
   let zuruecksetzDialog = $state(false);
   let zielStufe = $state("entdeckt");
   let beschaeftigt = $state(false);
+  // Ein offenes Pflegeformular oder ein laufendes Hochladen hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => bearbeiten || beschaeftigt);
   let aktiverReiter = $state("transkript");
   const abos: (() => void)[] = [];
 

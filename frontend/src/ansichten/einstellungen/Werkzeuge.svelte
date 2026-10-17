@@ -5,6 +5,7 @@
   import { api } from "../../lib/api";
   import type { Werkzeug, WerkzeugEingabe, WerkzeugPruefung, WerkzeugProbe, WerkzeugUebersicht } from "../../lib/typen";
   import { meldungen, meldeFehler } from "../../lib/stores/meldungen.svelte";
+  import { neuladenAufhalten } from "../../lib/stores/fassung.svelte";
   import { vorZeit } from "../../lib/format";
   import InfoKnopf from "../../lib/komponenten/InfoKnopf.svelte";
   import Bestaetigung from "../../lib/komponenten/Bestaetigung.svelte";
@@ -21,6 +22,8 @@
   let kopfzeilen = $state<Kopfzeile[]>([]);
   let parameterText = $state("");
   let beschaeftigt = $state(false);
+  // Ein offenes Formular oder eine laufende Anfrage hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => bearbeiten !== null || beschaeftigt);
   let pruefungen = $state<Record<string, WerkzeugPruefung | "laeuft">>({});
   let proben = $state<Record<string, WerkzeugProbe | "laeuft" | undefined>>({});
   let probeFrage = $state<Record<string, string>>({});

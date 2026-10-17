@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { ui } from "./lib/stores/ui.svelte";
   import { ereignisse } from "./lib/stores/ereignisse.svelte";
+  import { fassung, fassungVerfolgen, ruhig } from "./lib/stores/fassung.svelte";
   import { api } from "./lib/api";
   import type { Uebersicht } from "./lib/typen";
   import Kopfleiste from "./lib/komponenten/Kopfleiste.svelte";
@@ -32,18 +33,32 @@
 
   onMount(() => {
     ereignisse.start();
+    const fassungStoppen = fassungVerfolgen();
     void ladeUebersicht();
     const takt = window.setInterval(() => void ladeUebersicht(), 30000);
     const ab = ereignisse.abonniere("auftrag_status", () => void ladeUebersicht());
     return () => {
       window.clearInterval(takt);
       ab();
+      fassungStoppen();
     };
   });
 </script>
 
 <div class="m-app">
   <Kopfleiste {uebersicht} laeuferAktiv={uebersicht?.laeufer_aktiv ?? false} />
+  {#if fassung.neu}
+    <div class="m-fassung-band" role="status">
+      <i class="fa-solid fa-rotate"></i>
+      <span>
+        <strong>Neue Fassung {fassung.neu} ist da.</strong>
+        {ruhig()
+          ? "Beim nächsten Ansichtswechsel oder wenn das Fenster wieder nach vorn kommt, lädt morf-gpt sie von selbst."
+          : "Sie lädt von selbst, sobald Wiedergabe, Antwort, Hochladen und offene Eingaben fertig sind."}
+      </span>
+      <button class="btn btn-sm btn-primary" title="Die Seite jetzt mit der neuen Fassung laden" onclick={() => location.reload()}><i class="fa-solid fa-rotate"></i> Jetzt neu laden</button>
+    </div>
+  {/if}
   <main class="m-inhalt">
     {#if ui.route.ansicht === "chat"}
       <Chat id={ui.route.id} />

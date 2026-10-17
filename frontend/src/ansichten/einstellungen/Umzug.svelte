@@ -4,6 +4,7 @@
   import { api } from "../../lib/api";
   import type { ExportStatus, PaketInfo } from "../../lib/typen";
   import { ereignisse } from "../../lib/stores/ereignisse.svelte";
+  import { neuladenAufhalten } from "../../lib/stores/fassung.svelte";
   import { meldungen, meldeFehler } from "../../lib/stores/meldungen.svelte";
   import { bytes, datumZeit } from "../../lib/format";
   import InfoKnopf from "../../lib/komponenten/InfoKnopf.svelte";
@@ -16,6 +17,8 @@
   let datei = $state<File | null>(null);
   let importErgebnis = $state<Record<string, unknown> | null>(null);
   let beschaeftigt = $state(false);
+  // Ein laufendes Hochladen oder Erstellen eines Pakets hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => beschaeftigt);
   let loeschDialog = $state(false);
   let loeschZiel = $state<PaketInfo | null>(null);
   let takt: number | null = null;

@@ -5,6 +5,7 @@
   import { api, postStrom } from "../lib/api";
   import type { DokumentEintrag, EinsetzbaresWerkzeug, Nachricht, Seite, SerieEintrag, Stelle, SucheAusgabe, Suchparameter, Unterhaltung, UnterhaltungDetail, Werkzeugaufruf } from "../lib/typen";
   import { ui } from "../lib/stores/ui.svelte";
+  import { neuladenAufhalten } from "../lib/stores/fassung.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
   import { rendereMarkdown } from "../lib/markdown";
   import { uhrzeit, vorZeit, zahl } from "../lib/format";
@@ -21,6 +22,8 @@
   let frage = $state("");
   let laeuft = $state(false);
   let abbrechen: (() => void) | null = null;
+  // Eine entstehende Antwort oder eine noch nicht gesendete Frage hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => laeuft || frage.trim() !== "");
   let stellen = $state<Stelle[]>([]);
   let abgewaehlt = $state<Set<string>>(new Set());
   let hinweise = $state<string[]>([]);

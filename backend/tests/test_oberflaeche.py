@@ -1,5 +1,5 @@
 """Auslieferung der gebauten Oberfläche: Symbole und Manifest per GET und HEAD mit passendem Typ, SPA-Rückfall,
-kein Ausbruch aus dist.
+kein Ausbruch aus dist, Startseite ohne Zwischenspeicher und Bau-Dateien mit langer Haltezeit.
 
 Geprüft an einer eigenen kleinen App ohne Lebenszyklus und Datenbank, mit einer nachgebauten dist im Testordner.
 """
@@ -56,6 +56,21 @@ def test_kein_ausbruch_aus_dist(client: TestClient, pfad: str) -> None:
         antwort = client.request(methode, pfad)
         assert "geheim" not in antwort.text, (methode, pfad)
         assert antwort.status_code in (200, 404), (methode, pfad)
+
+
+@pytest.mark.parametrize("pfad", ["/", "/index.html", "/chat/irgendwas"])
+def test_startseite_ohne_zwischenspeicher(client: TestClient, pfad: str) -> None:
+    for methode in ("GET", "HEAD"):
+        antwort = client.request(methode, pfad)
+        assert antwort.status_code == 200, (methode, pfad)
+        assert antwort.headers["cache-control"] == "no-cache", (methode, pfad)
+
+
+def test_bau_dateien_bleiben_lange(client: TestClient) -> None:
+    for methode in ("GET", "HEAD"):
+        antwort = client.request(methode, "/assets/index.js")
+        assert antwort.status_code == 200, methode
+        assert "immutable" in antwort.headers["cache-control"], methode
 
 
 def test_ohne_gebaute_oberflaeche_keine_routen(tmp_path: Path) -> None:

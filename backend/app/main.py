@@ -10,10 +10,11 @@ import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
@@ -110,25 +111,40 @@ for r in (
     app.include_router(r.router, prefix="/api")
 
 
+class _GebauteDateien(StaticFiles):
+    """Skripte und Gestaltung aus dem Bau: Vite schreibt eine Prüfsumme in jeden Namen, der Inhalt ändert sich also
+    nie und darf ein Jahr im Zwischenspeicher bleiben."""
+
+    def file_response(self, *args: Any, **kwargs: Any) -> Response:
+        antwort = super().file_response(*args, **kwargs)
+        antwort.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return antwort
+
+
 def oberflaeche_einbinden(ziel_app: FastAPI, dist: Path) -> None:
     """Gebaute Oberfläche ausliefern (Betrieb ohne Vite), Fallback auf index.html für die SPA.
 
     GET und HEAD: Browser und Prüfungen per HEAD (curl -I auf Symbole und Manifest) sehen dieselben Dateien;
     nur mit GET beantwortete die Auffangroute HEAD mit 405.
+
+    Die Startseite kommt mit no-cache: der Browser fragt jedes Mal nach und bekommt nach dem Ausrollen sofort die
+    neuen Skriptnamen; sonst bliebe die alte Oberfläche stehen (Fassungsvergleich in lib/stores/fassung.svelte.ts).
     """
-    if not (dist / "index.html").exists():
+    startseite = dist / "index.html"
+    if not startseite.exists():
         return
-    ziel_app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+    ziel_app.mount("/assets", _GebauteDateien(directory=dist / "assets"), name="assets")
 
     wurzel = dist.resolve()
+    startseite_echt = startseite.resolve()
 
     @ziel_app.api_route("/{pfad:path}", methods=["GET", "HEAD"], include_in_schema=False)
     async def spa(pfad: str) -> FileResponse:
         ziel = (dist / pfad).resolve()
         # Kein Ausbruch aus dist: ../ kommt auch kodiert (%2F, %2E) an und führte sonst zu jeder Datei des Rechners.
-        if pfad and ziel.is_file() and ziel.is_relative_to(wurzel):
+        if pfad and ziel.is_file() and ziel.is_relative_to(wurzel) and ziel != startseite_echt:
             return FileResponse(ziel)
-        return FileResponse(dist / "index.html")
+        return FileResponse(startseite, headers={"Cache-Control": "no-cache"})
 
 
 oberflaeche_einbinden(app, einstellungen.frontend_dist)

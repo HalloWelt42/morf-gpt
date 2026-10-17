@@ -67,12 +67,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ----- Rahmen: Kopf | Inhalt | Spieler ----- */
+/* ----- Rahmen: Kopf | Band (nur bei neuer Fassung) | Inhalt | Spieler ----- */
 .m-app {
   height: 100vh;
   display: grid;
-  grid-template-rows: var(--m-kopf-h) 1fr auto;
-  grid-template-areas: "kopf" "inhalt" "spieler";
+  grid-template-rows: var(--m-kopf-h) auto minmax(0, 1fr) auto;
+  grid-template-areas: "kopf" "band" "inhalt" "spieler";
   overflow: hidden; /* nichts darf das Dokument über die Höhe hinaus wachsen lassen */
 }
 .m-kopf {
@@ -170,6 +170,29 @@ body {
 }
 .m-kopf-knopf:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* ----- Band unter dem Kopf: neue Fassung auf dem Server ----- */
+.m-fassung-band {
+  grid-area: band;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  background: var(--m-akzent-hell);
+  border-bottom: 1px solid var(--m-rand);
+  border-left: 4px solid var(--m-akzent);
+  font-size: 0.9rem;
+}
+.m-fassung-band > i {
+  color: var(--m-akzent);
+}
+.m-fassung-band > span {
+  flex: 1;
+  min-width: 0;
+}
+.m-fassung-band .btn {
+  white-space: nowrap;
 }
 
 /* ----- Inhalt: eine Ansicht = Kopfzeile (fest) + Körper (rollt) ----- */

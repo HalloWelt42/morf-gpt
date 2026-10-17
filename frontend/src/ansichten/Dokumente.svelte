@@ -5,6 +5,7 @@
   import type { DokumentArt, DokumentDetail, DokumentEintrag, EigenerText, Seite } from "../lib/typen";
   import { ereignisse } from "../lib/stores/ereignisse.svelte";
   import { ui } from "../lib/stores/ui.svelte";
+  import { neuladenAufhalten } from "../lib/stores/fassung.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
   import { datum, zahl } from "../lib/format";
   import InfoKnopf from "../lib/komponenten/InfoKnopf.svelte";
@@ -25,6 +26,8 @@
   let beschaeftigt = $state(false);
   let dateiEingabe = $state<HTMLInputElement | null>(null);
   let textOffen = $state(false);
+  // Laufendes Hochladen oder ein offener eigener Text hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => beschaeftigt || textOffen);
   let eigener = $state<EigenerText>({ titel: "", text: "", autor: "", art: "markdown" });
   let loeschDialog = $state(false);
   let ziel = $state<DokumentEintrag | null>(null);

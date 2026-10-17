@@ -5,6 +5,7 @@
   import type { ChunkDetail } from "../lib/typen";
   import { ui } from "../lib/stores/ui.svelte";
   import { meldungen, meldeFehler } from "../lib/stores/meldungen.svelte";
+  import { neuladenAufhalten } from "../lib/stores/fassung.svelte";
   import { zahl, zeitmarke, datumZeit } from "../lib/format";
   import { spieleVideo } from "../lib/spielen";
   import InfoKnopf from "../lib/komponenten/InfoKnopf.svelte";
@@ -19,6 +20,8 @@
   let ziel = $state(3000);
 
   const geaendert = $derived(c !== null && text !== c.text);
+  // Ungespeicherter Text oder ein laufendes Speichern hält das Neuladen bei neuer Fassung auf.
+  neuladenAufhalten(() => geaendert || beschaeftigt);
 
   async function laden(): Promise<void> {
     try {
