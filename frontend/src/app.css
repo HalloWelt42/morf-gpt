@@ -181,7 +181,6 @@ body {
   padding: 8px 18px;
   background: var(--m-akzent-hell);
   border-bottom: 1px solid var(--m-rand);
-  border-left: 4px solid var(--m-akzent);
   font-size: 0.9rem;
 }
 .m-fassung-band > i {
