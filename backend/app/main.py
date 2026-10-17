@@ -120,10 +120,13 @@ def oberflaeche_einbinden(ziel_app: FastAPI, dist: Path) -> None:
         return
     ziel_app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
 
+    wurzel = dist.resolve()
+
     @ziel_app.api_route("/{pfad:path}", methods=["GET", "HEAD"], include_in_schema=False)
     async def spa(pfad: str) -> FileResponse:
-        ziel = dist / pfad
-        if pfad and ziel.is_file():
+        ziel = (dist / pfad).resolve()
+        # Kein Ausbruch aus dist: ../ kommt auch kodiert (%2F, %2E) an und führte sonst zu jeder Datei des Rechners.
+        if pfad and ziel.is_file() and ziel.is_relative_to(wurzel):
             return FileResponse(ziel)
         return FileResponse(dist / "index.html")
 

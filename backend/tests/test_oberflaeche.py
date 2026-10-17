@@ -1,4 +1,5 @@
-"""Auslieferung der gebauten Oberfläche: Symbole und Manifest per GET und HEAD mit passendem Typ, SPA-Rückfall.
+"""Auslieferung der gebauten Oberfläche: Symbole und Manifest per GET und HEAD mit passendem Typ, SPA-Rückfall,
+kein Ausbruch aus dist.
 
 Geprüft an einer eigenen kleinen App ohne Lebenszyklus und Datenbank, mit einer nachgebauten dist im Testordner.
 """
@@ -14,13 +15,16 @@ from app.main import oberflaeche_einbinden
 
 @pytest.fixture
 def client(tmp_path: Path) -> TestClient:
-    (tmp_path / "assets").mkdir()
-    (tmp_path / "assets" / "index.js").write_text("export {};\n", encoding="utf-8")
-    (tmp_path / "index.html").write_text("<!doctype html><title>morf-gpt</title>\n", encoding="utf-8")
-    (tmp_path / "site.webmanifest").write_text('{"name": "morf-gpt"}\n', encoding="utf-8")
-    (tmp_path / "apple-touch-icon.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "assets" / "index.js").write_text("export {};\n", encoding="utf-8")
+    (dist / "index.html").write_text("<!doctype html><title>morf-gpt</title>\n", encoding="utf-8")
+    (dist / "site.webmanifest").write_text('{"name": "morf-gpt"}\n', encoding="utf-8")
+    (dist / "apple-touch-icon.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    # Liegt neben dist und darf nie ausgeliefert werden
+    (tmp_path / "geheim.txt").write_text("geheim\n", encoding="utf-8")
     app = FastAPI()
-    oberflaeche_einbinden(app, tmp_path)
+    oberflaeche_einbinden(app, dist)
     return TestClient(app)
 
 
@@ -44,6 +48,14 @@ def test_unbekannter_pfad_liefert_die_spa(client: TestClient) -> None:
         antwort = client.request(methode, "/chat/irgendwas")
         assert antwort.status_code == 200
         assert antwort.headers["content-type"].startswith("text/html")
+
+
+@pytest.mark.parametrize("pfad", ["/..%2Fgeheim.txt", "/assets/..%2F..%2Fgeheim.txt", "/%2E%2E/geheim.txt"])
+def test_kein_ausbruch_aus_dist(client: TestClient, pfad: str) -> None:
+    for methode in ("GET", "HEAD"):
+        antwort = client.request(methode, pfad)
+        assert "geheim" not in antwort.text, (methode, pfad)
+        assert antwort.status_code in (200, 404), (methode, pfad)
 
 
 def test_ohne_gebaute_oberflaeche_keine_routen(tmp_path: Path) -> None:
