@@ -15,6 +15,7 @@ from ..db.modelle import Auftrag, Chunk, Dokument, Einbettung, Video
 from ..dienste import speicherplatz as speicherplatz_dienst
 from ..dienste.auftraege.laeufer import laeufer
 from ..dienste.einstellungen import dienst as einstellungen_dienst
+from ..dienste.transkription import register as transkription_register
 from ..domaene.fliessband import STUFEN_REIHENFOLGE, STUFEN_TITEL
 from ..version import version_lesen
 
@@ -99,15 +100,15 @@ async def _pruefe(url: str) -> tuple[bool, str]:
 
 @router.get("/dienste", response_model=list[Dienst])
 async def dienste(session: AsyncSession = Depends(sitzung_abhaengigkeit)) -> list[Dienst]:
-    werte = await einstellungen_dienst.werte(session, "transkription.dienst_url", "transkription.worker_url", "transkription.app_url")
-    aus: list[Dienst] = []
-    for kennung, titel, adresse, pfad in (
-        ("morf", "morf-Transkription (eigener Dienst)", str(werte["transkription.dienst_url"]), "/health"),
-        ("worker", "Whisper-Worker (txt2voice)", str(werte["transkription.worker_url"]), "/health"),
-        ("app", "txt2voice-App", str(werte["transkription.app_url"]), "/api/system/health"),
-    ):
-        ok, hinweis = await _pruefe(adresse.rstrip("/") + pfad)
-        aus.append(Dienst(kennung=kennung, titel=titel, adresse=adresse, erreichbar=ok, hinweis=hinweis))
+    werte = await einstellungen_dienst.alle(session)
+    eigen = str(werte["transkription.dienst_url"])
+    ok, hinweis = await _pruefe(eigen.rstrip("/") + "/health")
+    aus = [Dienst(kennung="morf", titel="morf-Transkription (eigener Dienst)", adresse=eigen, erreichbar=ok, hinweis=hinweis)]
+    # Die App Transkription prüft die Engine selbst (Anmeldung mit dem App-Schlüssel bei der Kellerwolke)
+    verbund = transkription_register.BAUER["transkription"](werte)
+    ok, hinweis = await verbund.erreichbar()
+    aus.append(Dienst(kennung="transkription", titel="App Transkription (über die Kellerwolke)",
+                      adresse=str(werte["transkription.kellerwolke_url"]), erreichbar=ok, hinweis=hinweis))
     return aus
 
 

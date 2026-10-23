@@ -1,7 +1,7 @@
 """Schnittstelle der Transkription: Engine-Protokoll, Ergebnisformen, Fehler.
 
 Aufrufer (die Stufe Transkription, der Router) programmieren nur gegen dieses Modul.
-Welche Umsetzung dahintersteht (eigener Dienst, txt2voice-Worker oder txt2voice-App), entscheidet
+Welche Umsetzung dahintersteht (eigener Dienst oder die App Transkription), entscheidet
 `register.py` anhand der Einstellung `transkription.engine`.
 
 Die Segmentform in der Datenbank (Spalte transkripte.segmente) folgt den Schlüsseln

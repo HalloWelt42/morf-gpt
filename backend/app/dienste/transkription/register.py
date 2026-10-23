@@ -8,14 +8,16 @@ jede dort wählbare Kennung hier einen Bauer hat.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
+from ...config import einstellungen as umgebung
 from ..einstellungen import register as einstellungen_register
 from .basis import TranskriptionsEngine, TranskriptionsFehler
 from .eigener_dienst import EigenerDienst
-from .txt2voice_app import Txt2VoiceApp
-from .txt2voice_worker import Txt2VoiceWorker
+from .transkription_app import TranskriptionApp
 
 Bauer = Callable[[dict[str, Any]], TranskriptionsEngine]
 
@@ -39,17 +41,12 @@ def _morf(werte: dict[str, Any]) -> TranskriptionsEngine:
     )
 
 
-def _worker(werte: dict[str, Any]) -> TranskriptionsEngine:
-    return Txt2VoiceWorker(
-        basis_url=str(werte["transkription.worker_url"]),
-        wortzeiten_behalten=bool(werte["transkription.wortzeiten_speichern"]),
-        verbindungs_zeitgrenze_s=_verbindungs_zeitgrenze(werte),
-    )
-
-
-def _app(werte: dict[str, Any]) -> TranskriptionsEngine:
-    return Txt2VoiceApp(
-        basis_url=str(werte["transkription.app_url"]),
+def _transkription(werte: dict[str, Any]) -> TranskriptionsEngine:
+    return TranskriptionApp(
+        kellerwolke_url=str(werte["transkription.kellerwolke_url"]),
+        schluessel=umgebung.kellerwolke_schluessel,
+        app=str(werte["transkription.app"]),
+        ca=hausstelle_ca(),
         wortzeiten_behalten=bool(werte["transkription.wortzeiten_speichern"]),
         verbindungs_zeitgrenze_s=_verbindungs_zeitgrenze(werte),
     )
@@ -57,9 +54,16 @@ def _app(werte: dict[str, Any]) -> TranskriptionsEngine:
 
 BAUER: dict[str, Bauer] = {
     EigenerDienst.kennung: _morf,
-    Txt2VoiceWorker.kennung: _worker,
-    Txt2VoiceApp.kennung: _app,
+    TranskriptionApp.kennung: _transkription,
 }
+
+
+def hausstelle_ca() -> str:
+    """Stammzertifikat der Hausstelle: aus MORF_HAUSSTELLE_CA, sonst das von mkcert am Mac, sonst leer."""
+    if umgebung.hausstelle_ca:
+        return umgebung.hausstelle_ca
+    datei = Path(os.environ.get("CAROOT") or Path.home() / "Library" / "Application Support" / "mkcert") / "rootCA.pem"
+    return str(datei) if datei.is_file() else ""
 
 
 def kennungen() -> tuple[str, ...]:

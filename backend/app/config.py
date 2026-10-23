@@ -48,6 +48,12 @@ class Einstellungen(BaseSettings):
     # Beim Start des Backends ausstehende Migrationen anwenden (vor dem Auftragsläufer).
     migration_beim_start: bool = True
 
+    # App-Schlüssel der Kellerwolke (Zugang "morf-gpt") für die Transkription über die App Transkription; nur hier,
+    # nie in den Einstellungen der Oberfläche.
+    kellerwolke_schluessel: str = ""
+    # Stammzertifikat der Hausstelle für https im Heimnetz (leer: mkcert am Mac, sonst die üblichen Stellen)
+    hausstelle_ca: str = ""
+
     @property
     def datenbank_url(self) -> str:
         if self.db_url:

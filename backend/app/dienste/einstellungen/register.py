@@ -254,15 +254,14 @@ DEFINITIONEN: tuple[Definition, ...] = (
         "transkription.engine",
         "Transkriptionsdienst",
         "Eigener Dienst: der mitgelieferte Transkriptionsdienst (Whisper, mehrere Arbeiter möglich, läuft mit "
-        "start.sh). Worker: direkt der Whisper-Worker von txt2voice (ohne Sprechertrennung, ohne Eintrag in dessen "
-        "Bibliothek). App: über die txt2voice-Oberfläche (legt dort eine Transkription an).",
+        "start.sh). Transkription: die App Transkription im Heimnetz über die Kellerwolke (braucht den App-Schlüssel "
+        "MORF_KELLERWOLKE_SCHLUESSEL in der .env; Aufnahme und Transkript landen danach im Papierkorb der Kellerwolke).",
         "auswahl",
         "morf",
         "transkription",
         auswahl=(
             ("morf", "Eigener Dienst (morf-Transkription)"),
-            ("txt2voice_worker", "txt2voice-Worker"),
-            ("txt2voice_api", "txt2voice-App"),
+            ("transkription", "App Transkription (über die Kellerwolke)"),
         ),
     ),
     Definition(
@@ -289,19 +288,19 @@ DEFINITIONEN: tuple[Definition, ...] = (
         schritt=1,
     ),
     Definition(
-        "transkription.worker_url",
-        "Adresse des Whisper-Workers",
-        "HTTP-Adresse des txt2voice-Workers.",
+        "transkription.kellerwolke_url",
+        "Adresse der Kellerwolke",
+        "Über sie geht die Transkription an die App Transkription (Dienstweg im Verbund).",
         "text",
-        "http://127.0.0.1:10033",
+        "http://192.168.178.49:39278",
         "transkription",
     ),
     Definition(
-        "transkription.app_url",
-        "Adresse der txt2voice-App",
-        "HTTP-Adresse des txt2voice-Backends.",
+        "transkription.app",
+        "Name der App Transkription",
+        "So heißt der Zugang der App Transkription in der Kellerwolke.",
         "text",
-        "http://127.0.0.1:10031",
+        "Transkription",
         "transkription",
     ),
     Definition(
