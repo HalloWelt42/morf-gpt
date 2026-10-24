@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from ...config import einstellungen as _umgebung
+
 Typ = Literal["zahl", "ganzzahl", "text", "schalter", "auswahl"]
 
 
@@ -80,7 +82,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
         "Basisadresse des TubeVault-Backends samt Port, ohne Pfad. Alle Quellen vom Typ TubeVault nutzen diese eine "
         "Adresse; ändert sich Rechnername oder IP, genügt die Änderung hier.",
         "text",
-        "http://192.168.178.49:8031",
+        _umgebung.tubevault_api,  # Vorgabe aus MORF_TUBEVAULT_API (.env)
         "quelle",
     ),
     Definition(
@@ -88,7 +90,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
         "TubeVault: Adresse der Oberfläche",
         "Basisadresse der TubeVault-Weboberfläche samt Port. Aus ihr entstehen die Sprünge zur Videoseite in TubeVault.",
         "text",
-        "http://192.168.178.49:8032",
+        _umgebung.tubevault_oberflaeche,  # Vorgabe aus MORF_TUBEVAULT_OBERFLAECHE (.env)
         "quelle",
     ),
     Definition(
@@ -292,7 +294,7 @@ DEFINITIONEN: tuple[Definition, ...] = (
         "Adresse der Kellerwolke",
         "Über sie geht die Transkription an die App Transkription (Dienstweg im Verbund).",
         "text",
-        "http://192.168.178.49:39278",
+        _umgebung.kellerwolke_url,  # Vorgabe aus MORF_KELLERWOLKE_URL (.env)
         "transkription",
     ),
     Definition(

@@ -43,6 +43,10 @@ services:
       MORF_BACKEND_HOST: 0.0.0.0
       MORF_BACKEND_PORT: 8460
       MORF_DATEN_VERZEICHNIS: /app/data
+      # Vorgaben der Einstellungen für Adressen im Heimnetz aus der .env
+      MORF_TUBEVAULT_API: ${MORF_TUBEVAULT_API:-}
+      MORF_TUBEVAULT_OBERFLAECHE: ${MORF_TUBEVAULT_OBERFLAECHE:-}
+      MORF_KELLERWOLKE_URL: ${MORF_KELLERWOLKE_URL:-}
     ports:
       - "${MORF_APP_PORT:-8460}:8460"
     volumes:

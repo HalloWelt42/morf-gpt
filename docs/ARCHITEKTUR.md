@@ -469,7 +469,7 @@ der Datenbank noch fehlten, und verbrauchten ihre Versuche.
 | Backend | `http://127.0.0.1:8460` (per `MORF_BACKEND_PORT`) |
 | Frontend (Vite) | `http://127.0.0.1:5460` |
 | PostgreSQL (Docker) | `127.0.0.1:5462`, Daten als Bind-Mount unter `data/postgres` |
-| TubeVault (Quelle) | `http://192.168.178.49:8031` (Backend-API) |
+| TubeVault (Quelle) | `http://192.168.1.20:8031` (Backend-API) |
 | Eigener Transkriptionsdienst | `http://127.0.0.1:8463` (per `MORF_TRANSKRIPTION_PORT`), Modelle unter `data/modelle/hf` |
 | Übergaben | `data/uebergabe/<uuid>/` (zum Hochladen), Eingang unter `data/uebergabe/eingang/` |
 | txt2voice-Worker (Whisper, alternativ) | `http://127.0.0.1:10033` |

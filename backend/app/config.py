@@ -54,6 +54,12 @@ class Einstellungen(BaseSettings):
     # Stammzertifikat der Hausstelle für https im Heimnetz (leer: mkcert am Mac, sonst die üblichen Stellen)
     hausstelle_ca: str = ""
 
+    # Vorgaben der Einstellungen für Adressen im Heimnetz (TubeVault, Kellerwolke); sie stehen in der .env, nicht im
+    # Repo. Eine in der Oberfläche gespeicherte Einstellung geht vor; leer heißt: noch nicht bekannt.
+    tubevault_api: str = ""
+    tubevault_oberflaeche: str = ""
+    kellerwolke_url: str = ""
+
     @property
     def datenbank_url(self) -> str:
         if self.db_url:
