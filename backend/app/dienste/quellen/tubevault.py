@@ -11,6 +11,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+import ssl
+
 import httpx
 
 from .basis import Kanalinfo, QuellenFehler, QuellVideo, Videodetail, Videoseite
@@ -141,13 +143,19 @@ class TubeVault:
         kanal_id: str,
         zeitgrenze_s: float = ZEITGRENZE_S_VORGABE,
         transport: httpx.AsyncBaseTransport | None = None,
+        schluessel: str = "",
+        ca: str = "",
     ) -> None:
+        """`schluessel`: App-Schlüssel der Kellerwolke; TubeVault steht im Heimnetz hinter dem Vorbau des Pi, der
+        Programme daran erkennt (HELF-169). `ca`: Stammzertifikat der Hausstelle für HTTPS (leer: die üblichen Stellen)."""
         self.basis_url = basis_url.rstrip("/")
         self.kanal_id = kanal_id.strip()
         self._client = httpx.AsyncClient(
             base_url=self.basis_url,
             timeout=httpx.Timeout(zeitgrenze_s, connect=VERBINDUNGSGRENZE_S),
             transport=transport,
+            headers={"Authorization": f"Bearer {schluessel}"} if schluessel else None,
+            verify=ssl.create_default_context(cafile=ca) if ca else True,
         )
 
     async def schliessen(self) -> None:

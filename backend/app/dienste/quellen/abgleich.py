@@ -25,6 +25,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...db.modelle import Quelle, Video, neue_id
 from ...domaene.fliessband import Stufe
+from ...hausstelle import app_schluessel, hausstelle_ca
 from . import lokal, tubevault
 from .basis import QuellenFehler, QuellVideo, VideoQuelle, alle_seiten
 
@@ -158,7 +159,8 @@ def baue_quelle(typ: str, basis_url: str, kanal_id: str, werte: Mapping[str, Any
     if typ == tubevault.TYP_KENNUNG:
         if not kanal_id.strip():
             raise QuellenFehler("TubeVault braucht eine Kanalkennung")
-        return tubevault.TubeVault(tubevault_adresse(werte), kanal_id, zeitgrenze_s=zeitgrenze_aus(werte))
+        return tubevault.TubeVault(tubevault_adresse(werte), kanal_id, zeitgrenze_s=zeitgrenze_aus(werte),
+                                   schluessel=app_schluessel(), ca=hausstelle_ca())
     if typ == lokal.TYP_KENNUNG:
         return lokal.LokaleDateien(basis_url, dateiendungen_aus(werte))
     raise QuellenFehler(f"Unbekannter Quellentyp '{typ}' (bekannt: {', '.join(TYPEN)})")

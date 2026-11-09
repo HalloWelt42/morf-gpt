@@ -8,12 +8,11 @@ jede dort wählbare Kennung hier einen Bauer hat.
 
 from __future__ import annotations
 
-import os
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 
 from ...config import einstellungen as umgebung
+from ...hausstelle import hausstelle_ca
 from ..einstellungen import register as einstellungen_register
 from .basis import TranskriptionsEngine, TranskriptionsFehler
 from .eigener_dienst import EigenerDienst
@@ -56,14 +55,6 @@ BAUER: dict[str, Bauer] = {
     EigenerDienst.kennung: _morf,
     TranskriptionApp.kennung: _transkription,
 }
-
-
-def hausstelle_ca() -> str:
-    """Stammzertifikat der Hausstelle: aus MORF_HAUSSTELLE_CA, sonst das von mkcert am Mac, sonst leer."""
-    if umgebung.hausstelle_ca:
-        return umgebung.hausstelle_ca
-    datei = Path(os.environ.get("CAROOT") or Path.home() / "Library" / "Application Support" / "mkcert") / "rootCA.pem"
-    return str(datei) if datei.is_file() else ""
 
 
 def kennungen() -> tuple[str, ...]:
